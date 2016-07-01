@@ -26,11 +26,10 @@ Run composer update:
 After the installation you have a config file located in /website/config/plugin-process-manager.php
 By default the processes are checked when the pimcore maintenance is executed. It is advisable to set up a extra cronjob, which monitors the script execution.
 
-Just add
+Just add the following command to your crontab (and set "executeWithMaintenance" to "false" in the config file ;-))
 ```
 */5 * * * * php /home/tyrolit-pim/www/pimcore/cli/console.php process-manager:maintenance
 ```
-to your crontab
 
 ### Development instance
 Not jet available
