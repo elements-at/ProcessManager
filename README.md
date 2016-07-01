@@ -27,9 +27,10 @@ After the installation you have a config file located in /website/config/plugin-
 By default the processes are checked when the pimcore maintenance is executed. It is advisable to set up a extra cronjob, which monitors the script execution.
 
 Just add
-`
+```
 */5 * * * * php /home/tyrolit-pim/www/pimcore/cli/console.php process-manager:maintenance
-` to your crontab
+```
+to your crontab
 
 ### Development instance
 Not jet available
