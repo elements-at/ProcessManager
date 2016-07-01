@@ -1,6 +1,7 @@
 # ProcessManager
 
 ## Installation
+```
 {
     "require": {
         "pimcore-plugins/ProcessManager": "~1.0"
