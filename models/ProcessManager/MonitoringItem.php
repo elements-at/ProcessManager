@@ -514,10 +514,19 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
      */
     public function getLogger(){
         if(!$this->logger){
-            $this->logger = new Logger('process-manager-logger');
+            $this->logger = new \Pimcore\Log\ApplicationLogger();
+            $this->logger->setComponent("ProcessMonitor " . $this->getName());
+
+            /*$this->logger = new Logger('process-manager-logger');
             $this->logger->pushHandler(new StreamHandler($this->getLogFile(), Logger::DEBUG));
             if(php_sapi_name() === 'cli'){
                 $this->logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
+            }*/
+
+            $this->logger->addWriter(new StreamHandler($this->getLogFile(), Logger::DEBUG));
+            $this->logger->addWriter(new \Pimcore\Log\Handler\ApplicationLoggerDb());
+            if(php_sapi_name() === 'cli'){
+                $this->logger->addWriter(new StreamHandler('php://stdout', Logger::DEBUG));
             }
         }
         return $this->logger;
