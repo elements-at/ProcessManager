@@ -23,6 +23,7 @@ trait ExecutionTrait {
             $options['command'] = self::getCommand($options);
 
             $monitoringItem = new MonitoringItem();
+            $monitoringItem->setName($options['name']); 
             $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
             $monitoringItem->setPid(getmypid());
             foreach($options as $key => $value){
