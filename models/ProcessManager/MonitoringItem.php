@@ -209,9 +209,14 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
     }
 
 
+    /**
+     * @param $name
+     * @return $this
+     */
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     public function getName()
@@ -223,11 +228,11 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
      * @param mixed $message
      * @return $this
      */
-    public function setMessage($message,$autoLogMessage = false)
+    public function setMessage($message,$logLevel = \Monolog\Logger::NOTICE)
     {
         $this->message = $message;
-        if($autoLogMessage){
-            $this->getLogger()->debug($message);
+        if($logLevel){
+            $this->getLogger()->log($logLevel,$message);
         }
         return $this;
     }
@@ -407,7 +412,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
      */
     public function deleteLogFile(){
         if(is_file($this->getLogFile())){
-               unlink($this->getLogFile());
+            unlink($this->getLogFile());
         }
         return $this;
     }

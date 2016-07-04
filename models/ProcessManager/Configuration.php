@@ -268,5 +268,29 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
+    /**
+     * @param $method
+     * @param $arguments
+     * @throws \Exception
+     */
+    public static function __callStatic($method, $arguments)
+    {
+
+        // check for custom static getters like Object::getByMyfield()
+        $propertyName = lcfirst(preg_replace("/^getBy/i", "", $method));
+        $list = new Configuration\Listing();
+        $list->setCondition($propertyName.' = ?',[$arguments[0]]);
+
+        if($limit = $arguments[1]['limit']){
+            $list->setLimit($limit);
+        }
+        $result = $list->load();
+
+        if($limit == 1 && count($result) == 1){
+            return $result[0];
+        }else{
+            return $result;
+        }
+    }
 
 }

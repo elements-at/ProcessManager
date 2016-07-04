@@ -86,6 +86,7 @@ class Maintenance {
             $logger->debug($message);
             $diff = $nextRunTs-$currentTs;
             if($diff < 0){
+                #if(true){
                 $logger->debug('Execution job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff);
                 $command = $config->getExecutorClassObject()->getCommand();
                 $logger->notice('Executing Command: "' . $command.'" ');
