@@ -21,56 +21,59 @@ trait ExecutionTrait {
      */
     protected static function initProcessManager($monitoringId,$options = []){
 
-        $monitoringItem = MonitoringItem::getById($monitoringId);
-        Plugin::setMonitoringItem($monitoringItem);
-
-        if($options['autoCreate'] && !$monitoringItem){
-            $options['command'] = self::getCommand($options);
-
-            $monitoringItem = new MonitoringItem();
-            $monitoringItem->setName($options['name']);
-            $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
-            $monitoringItem->setPid(getmypid());
-            foreach($options as $key => $value){
-                $setter = "set" . ucfirst($key);
-                if(method_exists($monitoringItem,$setter)){
-                    $monitoringItem->$setter($value);
-                }
-            }
-            $monitoringItem->save();
-            $monitoringId = $monitoringItem->getId();
+        if(!Plugin::getMonitoringItem()){
+            $monitoringItem = MonitoringItem::getById($monitoringId);
             Plugin::setMonitoringItem($monitoringItem);
-        }
 
-        $monitoringItem = Plugin::getMonitoringItem();
-        if($monitoringId){
-            if($monitoringItem){
+            if($options['autoCreate'] && !$monitoringItem){
+                $options['command'] = self::getCommand($options);
 
-                $config = Configuration::getById($monitoringItem->getConfigurationId());
-                if($config){
-                    if(!$monitoringItem->getName()){
-                        $monitoringItem->setName($config->getName())->save();
-                    }
-                    if(!$config->getActive()){
-                        exit("ProcessManager: Config with ID " . $config->getId().' is disabled - exiting');
+                $monitoringItem = new MonitoringItem();
+                $monitoringItem->setName($options['name']);
+                $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
+                $monitoringItem->setPid(getmypid());
+                foreach($options as $key => $value){
+                    $setter = "set" . ucfirst($key);
+                    if(method_exists($monitoringItem,$setter)){
+                        $monitoringItem->$setter($value);
                     }
                 }
-                $values = $config ? $config->getExecutorClassObject()->getValues() : $options;
-                if($values["uniqueExecution"]){
-                    self::doUniqueExecutionCheck($config,$options);
-                }
+                $monitoringItem->save();
+                $monitoringId = $monitoringItem->getId();
+                Plugin::setMonitoringItem($monitoringItem);
             }
 
-            $options['monitoringItem'] = $monitoringItem;
-            register_shutdown_function(function($arguments){
-                Plugin::shutdownHandler($arguments);
-            }, $options);
-            Plugin::startup($options);
+            $monitoringItem = Plugin::getMonitoringItem();
+            if($monitoringId){
+                if($monitoringItem){
 
-            $monitoringItem->setCurrentStep($options['currentStop'] ?: 1)
-                ->setTotalSteps($options['totalSteps'] ?: 1)->setStatus(MonitoringItem::STATUS_RUNNING)->save();
+                    $config = Configuration::getById($monitoringItem->getConfigurationId());
+                    if($config){
+                        if(!$monitoringItem->getName()){
+                            $monitoringItem->setName($config->getName())->save();
+                        }
+                        if(!$config->getActive()){
+                            exit("ProcessManager: Config with ID " . $config->getId().' is disabled - exiting');
+                        }
+                    }
+                    $values = $config ? $config->getExecutorClassObject()->getValues() : $options;
+                    if($values["uniqueExecution"]){
+                        self::doUniqueExecutionCheck($config,$options);
+                    }
+                }
+
+                $options['monitoringItem'] = $monitoringItem;
+                register_shutdown_function(function($arguments){
+                    Plugin::shutdownHandler($arguments);
+                }, $options);
+                Plugin::startup($options);
+
+                $monitoringItem->setCurrentStep($options['currentStop'] ?: 1)
+                    ->setTotalSteps($options['totalSteps'] ?: 1)->setStatus(MonitoringItem::STATUS_RUNNING)->save();
+            }
         }
-        return $monitoringItem;
+
+        return Plugin::getMonitoringItem();
     }
 
     /**

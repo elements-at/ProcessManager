@@ -40,6 +40,7 @@
                 <path>/plugins/ProcessManager/static/js/executor/command.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/classMethod.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/pimcoreCommand.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/exportToolkit.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/action/abstractAction.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/action/download.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/callback/abstractCallback.js</path>

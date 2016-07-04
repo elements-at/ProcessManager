@@ -59,3 +59,6 @@
 "plugin_process_manager_clear_monitoring_items_success","The monitoring items have been deleted"
 "executedByUser","Executed by user"
 "keepVersions","Keep monitoring item versions"
+"plugin_process_manager_button_add_exportToolkit","Export toolkit"
+"executor_exportToolkit","Export toolkit"
+"plugin_process_manager_button_edit_exportToolkit","Export toolkit Command"

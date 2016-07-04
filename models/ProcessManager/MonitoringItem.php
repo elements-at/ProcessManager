@@ -91,6 +91,22 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
         return $self->getDao()->getById($id);
     }
 
+    public function setValues($data = [])
+    {
+        if (is_array($data) && count($data) > 0) {
+            foreach ($data as $key => $value) {
+                if($key == 'message'){
+                    $this->setMessage($value,false);
+                }else{
+                    $this->setValue($key, $value);
+                }
+
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * @return int
      */
@@ -231,7 +247,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
     public function setMessage($message,$logLevel = \Monolog\Logger::NOTICE)
     {
         $this->message = $message;
-        if($logLevel){
+        if($logLevel !== false){
             $this->getLogger()->log($logLevel,$message);
         }
         return $this;
