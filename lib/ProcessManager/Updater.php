@@ -10,7 +10,23 @@ namespace ProcessManager;
 
 class Updater {
 
-    public static function doUpdate(){
+    protected static $_instance;
+
+    protected function __construct(){}
+    protected function __clone(){}
+
+    /**
+     * @return Updater
+     */
+    public static function getInstance(){
+        if(!self::$_instance){
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    public function execute(){
+
         $lastVersion = '1.0.0';
         $versionFile = self::getVersionFile();
         if(is_readable($versionFile)){
@@ -40,7 +56,7 @@ class Updater {
     }
 
 
-    protected static function getVersionFile(){
+    protected function getVersionFile(){
         $dir = PIMCORE_WEBSITE_VAR . '/plugins/'.Plugin::PLUGIN_NAME.'/';
         if(!is_dir($dir)){
             \Pimcore\File::mkdir($dir);
@@ -48,11 +64,29 @@ class Updater {
         return $dir.'version.txt';
     }
 
-    public function install(){
+    public function updateVersion100(){
         $this->createPermissions();
         $this->createTables();
         $this->copyConfig();
         $this->createSampleCommandConfig();
+    }
+
+    protected function updateVersion106(){
+        $db = \Pimcore\Db::get();
+        $db->query("CREATE TABLE IF NOT EXISTS `".Plugin::TABLE_NAME_CALLBACK_SETTING."` (
+	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+	`modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+	`name` VARCHAR(255) NOT NULL,
+	`description` VARCHAR(255) NULL DEFAULT NULL,
+	`settings` TEXT NULL,
+	`type` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+");
+
     }
 
     protected function createSampleCommandConfig(){
@@ -151,21 +185,5 @@ ENGINE=InnoDB;
 
 
 
-    public function updateVersion106(){
-        $db = \Pimcore\Db::get();
-        $db->query("CREATE TABLE IF NOT EXISTS `".Plugin::TABLE_NAME_CALLBACK_SETTING."` (
-	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	`modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	`name` VARCHAR(255) NOT NULL,
-	`description` VARCHAR(255) NULL DEFAULT NULL,
-	`settings` TEXT NULL,
-	`type` VARCHAR(255) NOT NULL,
-	PRIMARY KEY (`id`)
-)
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB
-");
 
-    }
 }

@@ -9,7 +9,7 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
 {
     use ExecutionTrait;
 
-    const VERSION = '1.0.6';
+    const VERSION = '1.0.7';
 
     public static $maintenanceOptions = [
         'autoCreate' => true,
@@ -63,8 +63,7 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
 
     public static function install()
     {
-        $updater = new Updater();
-        $updater->install();
+        Updater::getInstance()->execute();
     }
 
     public static function uninstall()
