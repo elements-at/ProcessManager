@@ -87,6 +87,9 @@ class Updater {
 
     protected function copyConfig(){
         $configFile = PIMCORE_DOCUMENT_ROOT.'/plugins/ProcessManager/install/plugin-process-manager.php';
+        if(!is_dir(PIMCORE_CUSTOM_CONFIGURATION_DIRECTORY)){
+            \Pimcore\File::mkdir(PIMCORE_CUSTOM_CONFIGURATION_DIRECTORY);
+        }
         copy($configFile,PIMCORE_CUSTOM_CONFIGURATION_DIRECTORY.'/plugin-process-manager.php');
     }
 
