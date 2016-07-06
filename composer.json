@@ -9,5 +9,8 @@
         "psr-4": {
             "ProcessManager\\": "lib"
         }
+    },
+    "scripts": {
+        "post-update-cmd": "ProcessManager\\Updater::doUpdate"
     }
 }
