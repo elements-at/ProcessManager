@@ -46,7 +46,6 @@ class Updater {
         foreach($methods as $method){
             $vNumber = (int)str_replace('updateVersion','',$method);
             if($vNumber >= $lastVersion){
-                echo "ProcessManager updater: Executing method: \"" . $method."()\" \n";
                 $self->$method();
             }
             $vNumber = (string)$vNumber;

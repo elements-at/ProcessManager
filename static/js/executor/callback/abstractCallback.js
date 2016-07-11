@@ -201,7 +201,9 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 } else {
                     pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", data.message);
                 }
-                this.store.reload();
+                if(this.store){
+                    this.store.reload();
+                }
             }.bind(this.grid)
         });
     },

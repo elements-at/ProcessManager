@@ -42,6 +42,21 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         };
     },
 
+    getSelectField : function(fieldName,store){
+
+        return {
+            xtype: "combo",
+            name: fieldName,
+            store: store,
+            editable: false,
+            width: '100%',
+            triggerAction: 'all',
+            mode: "local",
+            value : this.getFieldValue(fieldName),
+            fieldLabel: t('plugin_pm_' + fieldName)
+        };
+    },
+
     getTextField : function(fieldName){
        return new Ext.form.TextField({
                 fieldLabel: t("plugin_pm_" + fieldName),

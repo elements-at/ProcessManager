@@ -292,6 +292,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             plugins: plugins,
             viewConfig: {
                 forceFit: false,
+                loadMask: false,
                 getRowClass: function(record) {
                     return 'plugin-process-manager-status-' + record.get('status');
                 }

@@ -1,62 +1,62 @@
 <?xml version="1.0"?>
 <zend-config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
-    <plugin>
+		<plugin>
 
-        <!-- the plugin name [A-Za-z_] -->
-        <pluginName>ProcessManager</pluginName>
+            <!-- the plugin name [A-Za-z_] -->
+            <pluginName>ProcessManager</pluginName>
 
-        <!-- a short description -->
-        <pluginDescription><![CDATA[]]></pluginDescription>
+            <!-- a short description -->
+			<pluginDescription><![CDATA[]]></pluginDescription>
 
-        <!-- meta data -->
-        <pluginVersion>1.0</pluginVersion>
-        <pluginRevision>1</pluginRevision>
-        <pluginBuildTimestamp>0</pluginBuildTimestamp>
+            <!-- meta data -->
+            <pluginVersion>1.0</pluginVersion>
+            <pluginRevision>1</pluginRevision>
+            <pluginBuildTimestamp>0</pluginBuildTimestamp>
 
-        <!-- className of the plugin which extends Pimcore_API_Plugin_Abstract-->
-        <pluginClassName>\ProcessManager\Plugin</pluginClassName>
+            <!-- className of the plugin which extends Pimcore_API_Plugin_Abstract-->
+			<pluginClassName>\ProcessManager\Plugin</pluginClassName>
 
-        <!-- include paths relative to plugin-directory -->
-        <pluginIncludePaths>
-            <path>/ProcessManager/lib</path>
-            <path>/ProcessManager/models</path>
-            <path>/ProcessManager/examples</path>
-        </pluginIncludePaths>
+            <!-- include paths relative to plugin-directory -->
+			<pluginIncludePaths>
+				<path>/ProcessManager/lib</path>
+				<path>/ProcessManager/models</path>
+				<path>/ProcessManager/examples</path>
+			</pluginIncludePaths>
 
-        <!-- namespaces to register with autoloader-->
-        <pluginNamespaces>
-            <namespace>ProcessManager</namespace>
-        </pluginNamespaces>
+			<!-- namespaces to register with autoloader-->
+			<pluginNamespaces>
+				<namespace>ProcessManager</namespace>
+			</pluginNamespaces>
 
-        <!-- js files with path relative to plugin-directory -->
-        <pluginJsPaths>
-            <path>/plugins/ProcessManager/static/js/startup.js</path>
-            <path>/plugins/ProcessManager/static/js/window/log.js</path>
-            <path>/plugins/ProcessManager/static/js/helper/form.js</path>
+			<!-- js files with path relative to plugin-directory -->
+			<pluginJsPaths>
+                <path>/plugins/ProcessManager/static/js/startup.js</path>
+                <path>/plugins/ProcessManager/static/js/window/log.js</path>
+                <path>/plugins/ProcessManager/static/js/helper/form.js</path>
 
 
-            <path>/plugins/ProcessManager/static/js/panel/config.js</path>
-            <path>/plugins/ProcessManager/static/js/panel/general.js</path>
-            <path>/plugins/ProcessManager/static/js/panel/monitoringItem.js</path>
-            <path>/plugins/ProcessManager/static/js/panel/callbackSetting.js</path>
+                <path>/plugins/ProcessManager/static/js/panel/config.js</path>
+                <path>/plugins/ProcessManager/static/js/panel/general.js</path>
+                <path>/plugins/ProcessManager/static/js/panel/monitoringItem.js</path>
+                <path>/plugins/ProcessManager/static/js/panel/callbackSetting.js</path>
 
-            <path>/plugins/ProcessManager/static/js/executor/class/abstractExecutor.js</path>
-            <path>/plugins/ProcessManager/static/js/executor/class/command.js</path>
-            <path>/plugins/ProcessManager/static/js/executor/class/classMethod.js</path>
-            <path>/plugins/ProcessManager/static/js/executor/class/pimcoreCommand.js</path>
-            <path>/plugins/ProcessManager/static/js/executor/class/exportToolkit.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/class/abstractExecutor.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/class/command.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/class/classMethod.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/class/pimcoreCommand.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/class/exportToolkit.js</path>
 
-            <path>/plugins/ProcessManager/static/js/executor/action/abstractAction.js</path>
-            <path>/plugins/ProcessManager/static/js/executor/action/download.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/action/abstractAction.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/action/download.js</path>
 
-            <path>/plugins/ProcessManager/static/js/executor/callback/abstractCallback.js</path>
-            <path>/plugins/ProcessManager/static/js/executor/callback/default.js</path>
-            <path>/plugins/ProcessManager/static/js/executor/callback/executionNote.js</path>
-        </pluginJsPaths>
+                <path>/plugins/ProcessManager/static/js/executor/callback/abstractCallback.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/callback/default.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/callback/executionNote.js</path>
+			</pluginJsPaths>
 
-        <!-- css files with path relative to plugin-directory -->
-        <pluginCssPaths>
-            <path>/plugins/ProcessManager/static/css/admin.css</path>
-        </pluginCssPaths>
-    </plugin>
+			<!-- css files with path relative to plugin-directory -->
+			<pluginCssPaths>
+                <path>/plugins/ProcessManager/static/css/admin.css</path>
+			</pluginCssPaths>
+		</plugin>
 </zend-config>

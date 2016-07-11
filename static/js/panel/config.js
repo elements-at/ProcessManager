@@ -330,6 +330,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
         }else{
             var callback = new pimcore.plugin.processmanager.executor.callback.default(grid, rowIndex);
         }
+        callback.setRecord(record);
         callback.execute();
     }
 
