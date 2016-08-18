@@ -21,6 +21,16 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         return this[fieldName];
     },
 
+    getDateField : function(fieldName) {
+        return {
+            xtype: 'datefield',
+            fieldLabel: t("plugin_pm_" + fieldName),
+            name: fieldName,
+            submitFormat: 'U',
+            value: this.getFieldValue(fieldName)
+        }
+    },
+
     getLocaleSelection : function () {
         var localestore = [];
         var websiteLanguages = pimcore.settings.websiteLanguages;
