@@ -450,7 +450,10 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
     public function setCompleted(){
         $this->setWorloadCompleted();
         $this->setCurrentStep($this->getTotalSteps());
-        $this->setStatus(self::STATUS_FINISHED);
+        //do not change the state if set it to failed - otherwise it would appear to be successfully finished
+        if($this->getStatus() != self::STATUS_FAILED){
+            $this->setStatus(self::STATUS_FINISHED);
+        }
         $this->save();
     }
 
