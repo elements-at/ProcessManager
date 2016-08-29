@@ -97,3 +97,4 @@
 "plugin_pm_localDoRemoteInstallation","Do remote installation"
 "plugin_pm_settings_phing_remote","Remote settings"
 "plugin_pm_remoteSkipDbBackup","Skip Db backup"
+"plugin_pm_action_download_delete_with_monitoring_item","Delete with monitoring item"

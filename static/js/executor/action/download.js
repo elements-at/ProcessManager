@@ -40,6 +40,14 @@ pimcore.plugin.processmanager.executor.action.download = Class.create(pimcore.pl
                 value: this.getFieldValue('filepath')
             },
             {
+                xtype: "checkbox",
+                fieldLabel: t("plugin_pm_action_download_delete_with_monitoring_item") + ' <span style="color:#f00;">*</span>',
+                name: "deleteWithMonitoringItem",
+                width: "100%",
+                readOnly: false,
+                checked: this.getFieldValue('deleteWithMonitoringItem')
+            },
+            {
                 xtype: "hidden",
                 name: "class",
                 readOnly: true,

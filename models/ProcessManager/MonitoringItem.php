@@ -48,6 +48,11 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
     public $pid;
 
     /**
+     * @var array
+     */
+    public $actions = [];
+
+    /**
      * @var int
      */
     public $executedByUser = 0;
@@ -106,6 +111,29 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getActions()
+    {
+        $actions = $this->actions;
+        if(is_string($actions)){
+            $actions = \Pimcore\Tool\Serialize::unserialize($actions);
+        }
+        return $actions;
+    }
+
+    /**
+     * @param array $actions
+     * @return $this
+     */
+    public function setActions($actions)
+    {
+        $this->actions = $actions;
+        return $this;
+    }
+
 
     /**
      * @return int

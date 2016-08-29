@@ -27,12 +27,12 @@ class Updater {
 
     public function execute(){
 
-        $lastVersion = '1.0.0';
+        $lastVersion = 1;
         $versionFile = self::getVersionFile();
         if(is_readable($versionFile)){
             $lastVersion = file_get_contents($versionFile);
         }
-        $lastVersion = (int)str_replace('.','',$lastVersion);
+        $lastVersion = (int)$lastVersion;
 
         $methods = [];
         $self = new self();
@@ -47,10 +47,8 @@ class Updater {
             $vNumber = (int)str_replace('updateVersion','',$method);
             if($vNumber >= $lastVersion){
                 $self->$method();
+                file_put_contents($versionFile,(int)$vNumber);
             }
-            $vNumber = (string)$vNumber;
-            $newVersion = $vNumber[0].'.'.$vNumber[1].'.'.$vNumber[2];
-            file_put_contents($versionFile,$newVersion);
         }
     }
 
@@ -63,14 +61,14 @@ class Updater {
         return $dir.'version.txt';
     }
 
-    public function updateVersion100(){
+    public function updateVersion1(){
         $this->createPermissions();
         $this->createTables();
         $this->copyConfig();
         $this->createSampleCommandConfig();
     }
 
-    protected function updateVersion106(){
+    protected function updateVersion2(){
         $db = \Pimcore\Db::get();
         $db->query("CREATE TABLE IF NOT EXISTS `".Plugin::TABLE_NAME_CALLBACK_SETTING."` (
 	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -86,6 +84,13 @@ COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ");
 
+    }
+    protected function updateVersion3(){
+        $db = \Pimcore\Db::get();
+        try{
+            $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD COLUMN actions TEXT");
+        }catch(\Exception $e){}
+        \Pimcore\Cache::clearTags(["system", "resource"]);
     }
 
     protected function createSampleCommandConfig(){

@@ -72,8 +72,8 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
             }
             $configObject = $item->getProcessManagerConfigObject();
             $tmp['action'] = '';
-            if($configObject){
-                $actions = $configObject->getExecutorClassObject()->getActions();
+
+            if($actions = $item->getActions()) {
                 foreach($actions as $action){
                     /**
                      * @var $class \ProcessManager\Executor\Action\AbstractAction
@@ -84,6 +84,7 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
                     }
                 }
             }
+
             $tmp['logFile'] = $logFile;
             $tmp['retry'] = 1;
             if($item->isAlive()){

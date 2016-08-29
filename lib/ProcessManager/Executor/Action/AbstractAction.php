@@ -88,4 +88,10 @@ abstract class AbstractAction {
      */
     abstract public function execute($monitoringItem,$actionData);
 
+    /**
+     * @param $monitoringItem \ProcessManager\MonitoringItem
+     * @param $actionData array
+     */
+    public function preMonitoringItemDeletion($monitoringItem,$actionData){}
+
 }

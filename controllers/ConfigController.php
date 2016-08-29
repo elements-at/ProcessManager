@@ -110,6 +110,7 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
                 }
             }
 
+
             $monitoringItem = new MonitoringItem();
             $monitoringItem->setName($config->getName());
             $monitoringItem->setProcessManagerConfig($config);
@@ -117,6 +118,7 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
             $monitoringItem->setConfigurationId($config->getId());
             $monitoringItem->setCallbackSettings($callbackSettings);
             $monitoringItem->setExecutedByUser($this->getUser()->getId());
+            $monitoringItem->setActions($executor->getActions());
             $item = $monitoringItem->save();
 
             $command = $executor->getCommand($callbackSettings,$monitoringItem);

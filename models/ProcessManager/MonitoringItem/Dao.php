@@ -42,6 +42,15 @@ class Dao extends \ProcessManager\Dao\AbstractDao {
 
     public function delete(){
         if($this->model->getId()){
+            foreach((array)$this->model->getActions() as $action){
+                if($class = $action['class']){
+                    /**
+                     * @var \ProcessManager\Executor\Action\AbstractAction $class
+                     */
+                    $class = new $class();
+                    $class->preMonitoringItemDeletion($this->model,$action);
+                }
+            }
             $this->db->query("DELETE FROM " . $this->getTableName().' where id='. $this->model->getId());
             if($logFile = $this->model->getLogFile()){
                 @unlink($logFile);

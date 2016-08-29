@@ -9,7 +9,7 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
 {
     use ExecutionTrait;
 
-    const VERSION = '1.0.8';
+    const VERSION = 3;
 
     public static $maintenanceOptions = [
         'autoCreate' => true,

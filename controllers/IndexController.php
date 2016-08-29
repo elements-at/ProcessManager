@@ -72,8 +72,7 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
     public function downloadAction(){
 
         $monitoringItem = MonitoringItem::getById($this->getParam('id'));
-        $executor = $monitoringItem->getProcessManagerConfigObject()->getExecutorClassObject();
-        $actions = $executor->getActions();
+        $actions = $monitoringItem->getActions();
         foreach($actions as $action){
             if($action['accessKey'] == $this->getParam('accessKey')){
                 $className = $action['class'];

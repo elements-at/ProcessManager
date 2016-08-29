@@ -18,7 +18,7 @@ class Download extends AbstractAction {
      * @return string
      */
     public function getGridActionHtml($monitoringItem,$actionData){
-        if(!$monitoringItem->getPid() && $actionData['filepath']){
+        if($monitoringItem->getStatus() == $monitoringItem::STATUS_FINISHED && $actionData['filepath']){
 
             $file = \PIMCORE_DOCUMENT_ROOT.$actionData['filepath'];
             if(is_readable($file)){
@@ -51,4 +51,18 @@ class Download extends AbstractAction {
             throw new \Exception('Download file "'.$file.'" not present');
         }
     }
+
+    /**
+     * @param $monitoringItem \ProcessManager\MonitoringItem
+     * @param $actionData array
+     */
+    public function preMonitoringItemDeletion($monitoringItem,$actionData){
+        if($actionData['deleteWithMonitoringItem']){
+            $file = \PIMCORE_DOCUMENT_ROOT.$actionData['filepath'];
+            if(is_readable($file)){
+                unlink($file);
+            }
+        }
+    }
+
 }
