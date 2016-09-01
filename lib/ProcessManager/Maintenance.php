@@ -33,14 +33,25 @@ class Maintenance {
         $this->monitoringItem->getLogger()->debug('Checking processes');
 
         $list = new MonitoringItem\Listing();
-        $list->setCondition('pid <> "" AND IFNULL(reportedDate,0) = 0 ');
+        $list->setCondition('IFNULL(reportedDate,0) = 0 ');
         $items = $list->load();
         $reportItems = [];
-        foreach($items as $item){
-            if(!$item->isAlive()){
-                $item->setMessage('Process died. ' . $item->getMessage().' Last State: ' . $item->getStatus())->setStatus($item::STATUS_FAILED);
-                $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process. PID ' . $item->getPid().' not available.');
-                $reportItems[] = $item;
+        foreach($items as $item) {
+            if ($item->isAlive()) {
+                $diff = time() - $item->getModificationDate();
+                if ($diff > (60 * 15)) {
+                    $item->getLogger()->error('Process was checked by ProcessManager maintenance. Considered as hanging process - TimeDiff: ' . $diff . ' seconds.');
+                    $reportItems[] = $item;
+                }
+            } else {
+                if ($item->getStatus() == $item::STATUS_FINISHED) {
+                    $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as successfull process.');
+                    $item->setReportedDate(time())->save();
+                } else {
+                    $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus())->setStatus($item::STATUS_FAILED);
+                    $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
+                    $reportItems[] = $item;
+                }
             }
         }
 
