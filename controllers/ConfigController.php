@@ -94,51 +94,8 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
 
     public function executeAction(){
         $this->checkPermission('plugin_pm_permission_execute');
-
-        try{
-            $config = Configuration::getById($this->getParam('id'));
-
-            $callbackSettings = $this->getParam('callbackSettings') ? \Zend_Json::decode($this->getParam('callbackSettings')) : [];
-
-            $executor = $config->getExecutorClassObject();
-            if($executor->getValues()['uniqueExecution']){
-                $running = $config->getRunningProcesses();
-                if(!empty($running)){
-
-                    $msg = "Can't start the process because " . count($running) . ' process is running (ID: '.$running[0]->getId() .'). Please wait until this processes is finished.';
-                    throw new \Exception($msg);
-                }
-            }
-
-
-            $monitoringItem = new MonitoringItem();
-            $monitoringItem->setName($config->getName());
-            $monitoringItem->setProcessManagerConfig($config);
-            $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
-            $monitoringItem->setConfigurationId($config->getId());
-            $monitoringItem->setCallbackSettings($callbackSettings);
-            $monitoringItem->setExecutedByUser($this->getUser()->getId());
-            $monitoringItem->setActions($executor->getActions());
-            $item = $monitoringItem->save();
-
-            $command = $executor->getCommand($callbackSettings,$monitoringItem);
-
-            if(!$executor->getIsShellCommand()){
-                $command .= ' --monitoring-item-id='.$item->getId();
-                $monitoringItem->getLogger()->info('Execution Command: ' . $command.' in Background');
-                $monitoringItem->setCommand($command)->save();
-            }else{
-                $monitoringItem->setCommand($command)->save();
-                $command = $executor->getShellCommand($monitoringItem);
-                $monitoringItem->getLogger()->info('Execution Command: ' . $command.' in Background');
-            }
-
-            $pid = \Pimcore\Tool\Console::execInBackground($command);
-            $monitoringItem->setPid($pid)->save();
-
-            $this->_helper->json(['success' => true,'executedCommand' => $command,'monitoringItemId' => $item->getId()]);
-        }catch(\Exception $e){
-            $this->_helper->json(['success' => false,'message' => $e->getMessage()]);
-        }
+        $callbackSettings = $this->getParam('callbackSettings') ? \Zend_Json::decode($this->getParam('callbackSettings')) : [];
+        $result = \ProcessManager\Helper::executeJob($this->getParam('id'),$callbackSettings,$this->getUser()->getId());
+        $this->_helper->json($result);
     }
 }

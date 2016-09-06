@@ -97,12 +97,13 @@ class Maintenance {
             $logger->debug($message);
             $diff = $nextRunTs-$currentTs;
             if($diff < 0){
-            #if(true){
-                $logger->debug('Execution job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff);
-                $command = $config->getExecutorClassObject()->getCommand();
-                $logger->notice('Executing Command: "' . $command.'" ');
-                \Pimcore\Tool\Console::execInBackground($command);
-                $config->setLastCronJobExecution(time())->save();
+                $result = \ProcessManager\Helper::executeJob($config->getId(),[],0);
+                if($result['success']){
+                    $logger->debug('Execution job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff.' Command: '. $result['executedCommand']);
+                    $config->setLastCronJobExecution(time())->save();
+                }else{
+                    $logger->emergency("Can't start the Cronjob. Data: " . print_r($result,true));
+                }
             }else{
                 $logger->debug('Skipping job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff);
             }
