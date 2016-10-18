@@ -38,7 +38,7 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
              * and we don't know if the command was successfully or not because the error_get_last() doesn't cotain
              * the correct error
              */
-            if(strpos(implode(' ',$_SERVER["argv"]), "monitoring-item-id")) {
+            if(strpos(implode(' ',(array)$_SERVER["argv"]), "monitoring-item-id")) {
                 $application->setCatchExceptions(false);
             }
 
