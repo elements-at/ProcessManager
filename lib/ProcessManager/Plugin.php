@@ -29,7 +29,19 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
     public function init(){
         parent::init();
         \Pimcore::getEventManager()->attach('system.console.init', function (\Zend_EventManager_Event $e) {
+            /**
+             * @var $application \Symfony\Component\Console\Application
+             */
             $application = $e->getTarget();
+            /**
+             * Deactivate the nice formatted Exception because the script would exit with a status code
+             * and we don't know if the command was successfully or not because the error_get_last() doesn't cotain
+             * the correct error
+             */
+            if(strpos(implode(' ',$_SERVER["argv"]), "monitoring-item-id")) {
+                $application->setCatchExceptions(false);
+            }
+
             $application->add(new \ProcessManager\Console\Command\ClassMethodExecutorCommand());
             $application->add(new \ProcessManager\Console\Command\SampleCommand());
             $application->add(new \ProcessManager\Console\Command\MaintenanceCommand());
