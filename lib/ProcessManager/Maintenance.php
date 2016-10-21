@@ -45,7 +45,7 @@ class Maintenance {
                 }
             } else {
                 if ($item->getStatus() == $item::STATUS_FINISHED) {
-                    $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as successfull process.');
+                    $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
                     $item->setReportedDate(time())->save();
                 } else {
                     $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus())->setStatus($item::STATUS_FAILED);
