@@ -174,4 +174,9 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
             $monitoringItem->save();
         }
     }
+
+    public static function update($event)
+    {
+        Updater::getInstance()->execute();
+    }
 }
