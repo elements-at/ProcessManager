@@ -145,7 +145,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
                         icon: "/pimcore/static6/img/flat-color-icons/settings.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
-                            var className = rec.get('settings').executorConfig.extJsConfigurationClass;
+                            var className = rec.get('extJsSettings').executorConfig.extJsConfigurationClass;
                             var obj =  eval('new ' + className);
                             obj.setRecord(rec);
                             obj.show();
@@ -324,7 +324,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
 
     executeJob : function (grid, rowIndex) {
         var record = grid.getStore().getAt(rowIndex);
-        var callbackClass = record.get('settings').values.callback;
+        var callbackClass = record.get('extJsSettings').values.callback;
         if(callbackClass){
             var callback = eval('new ' + callbackClass + '(grid, rowIndex)');
         }else{

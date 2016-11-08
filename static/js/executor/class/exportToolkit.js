@@ -6,9 +6,11 @@ pimcore.plugin.processmanager.executor.class.exportToolkit = Class.create(pimcor
 
         var store = [];
 
-        for (var key in processmanagerPlugin.config.executorClass.exportToolkit.config.jobs) {
-            if (processmanagerPlugin.config.executorClass.exportToolkit.config.jobs.hasOwnProperty(key)) {
-                store.push([key,key]);
+        if(typeof processmanagerPlugin.config.executorClass.exportToolkit != 'undefined'){
+            for (var key in processmanagerPlugin.config.executorClass.exportToolkit.config.jobs) {
+                if (processmanagerPlugin.config.executorClass.exportToolkit.config.jobs.hasOwnProperty(key)) {
+                    store.push([key,key]);
+                }
             }
         }
 

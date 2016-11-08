@@ -18,9 +18,12 @@ class Download extends AbstractAction {
      * @return string
      */
     public function getGridActionHtml($monitoringItem,$actionData){
-        if($monitoringItem->getStatus() == $monitoringItem::STATUS_FINISHED && $actionData['filepath']){
-
-            $file = \PIMCORE_DOCUMENT_ROOT.$actionData['filepath'];
+        if($monitoringItem->getStatus() == $monitoringItem::STATUS_FINISHED){
+            if($actionData['filepath']){
+                $file = \PIMCORE_DOCUMENT_ROOT.$actionData['filepath'];
+            }else{
+                $file = $monitoringItem->getLogFile();
+            }
             if(is_readable($file)){
                 return '<a href="#" onClick="processmanagerPlugin.download('.$monitoringItem->getId().',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download"><img src="/pimcore/static6/img/flat-color-icons/download.svg" alt="Download" height="16"/></a>';
             }else{

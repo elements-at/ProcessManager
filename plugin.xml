@@ -31,7 +31,7 @@
 			<!-- js files with path relative to plugin-directory -->
 			<pluginJsPaths>
                 <path>/plugins/ProcessManager/static/js/startup.js</path>
-                <path>/plugins/ProcessManager/static/js/window/log.js</path>
+                <path>/plugins/ProcessManager/static/js/window/detailwindow.js</path>
                 <path>/plugins/ProcessManager/static/js/helper/form.js</path>
 
 
@@ -50,10 +50,19 @@
                 <path>/plugins/ProcessManager/static/js/executor/action/abstractAction.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/action/download.js</path>
 
+
+                <path>/plugins/ProcessManager/static/js/executor/logger/abstractLogger.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/logger/file.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/logger/console.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/logger/application.js</path>
+
+
                 <path>/plugins/ProcessManager/static/js/executor/callback/abstractCallback.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/callback/default.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/callback/executionNote.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/callback/phing.js</path>
+
+
 			</pluginJsPaths>
 
 			<!-- css files with path relative to plugin-directory -->

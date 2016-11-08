@@ -18,8 +18,13 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
 
     setRecord : function(record){
         this.rec = record;
-        this.executorConfig = record.get('settings').executorConfig;
-        this.actions = record.get('settings').actions;
+
+        this.extJsSettings = record.get('extJsSettings');
+
+        this.executorConfig = record.get('extJsSettings').executorConfig;
+        this.actions = record.get('extJsSettings').actions;
+        this.loggers = record.get('extJsSettings').loggers;
+
         this.id = record.get('id');
         this.mode = 'edit';
     },
@@ -54,6 +59,15 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
             items : [this.getActionsPanel()]
         });
 
+        this.panelLoggers = new Ext.Panel({
+            title: t("plugin_pm_executor_loggers"),
+            border: false,
+            iconCls: "pimcore_icon_log_admin",
+            layout: "fit",
+            region: "center",
+            items : [this.getLoggersPanel()]
+        });
+
         this.windowButtons = [
             this.getFieldSaveButton(),
             {
@@ -73,14 +87,14 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
             activeTab: 0,
             id: "pimcore_plugin_pm_panel_config_tabs",
             iconCls: "plugin_pmicon_header",
-            items: [this.panelConfiguration,this.panelActions],
+            items: [this.panelConfiguration,this.panelActions,this.panelLoggers],
             buttons : this.windowButtons
         });
 
 
         this.window = new Ext.Window({
             id:'editWindow',
-            minHeight: this.settings.windowHeight,
+            height : '80%',
             layout : "fit",
             title: title,
             modal:true,
@@ -99,6 +113,14 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
             }
         }
 
+        for (var key in this.loggers) {
+            if (this.loggers.hasOwnProperty(key)) {
+                var obj = eval('new ' + this.loggers[key].extJsClass + '()');
+                obj.setValues(this.loggers[key]);
+                obj.getForm();
+                obj.addForm();
+            }
+        }
         this.window.show();
     },
 
@@ -178,12 +200,14 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         var values = this.getStorageValues();
 
         var actions = this.getActionsValues();
+        var loggers = this.getLoggersValues();
+
         if(!values.name){
             alert('Please provide a name');
             return;
         }
 
-        var data = Ext.encode({values : values,executorConfig : this.executorConfig,actions : actions});
+        var data = Ext.encode({values : values,executorConfig : this.executorConfig,actions : actions , loggers : loggers});
 
         Ext.Ajax.request({
             url: this.saveUrl,
@@ -207,6 +231,42 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         });
     },
 
+    getLoggersPanel : function(){
+        var actionButtons = [];
+        var loggerButtons = [];
+        for (var key in processmanagerPlugin.config.executorLoggerClasses) {
+            if (processmanagerPlugin.config.executorLoggerClasses.hasOwnProperty(key)) {
+                var loggerObj = eval('new ' + processmanagerPlugin.config.executorLoggerClasses[key].extJsClass + '()');
+                actionButtons.push(loggerObj.getButton());
+            }
+        }
+
+        this.loggerPanel = new Ext.Panel({
+            bodyStyle:'background-color: #fff;',
+            id : 'plugin_pm_logger_panel',
+            autoScroll: true,
+            padding: 0,
+            border: false,
+            //layout: "fit",
+            forceLayout: true,
+            defaults: {
+                forceLayout: true
+            },
+            items: items,
+            listeners: {
+                afterrender: function () {
+                    pimcore.layout.refresh();
+                }
+            },
+            tbar: [{
+                iconCls: "pimcore_icon_add",
+                menu: actionButtons
+            }
+            ]
+        });
+        return this.loggerPanel;
+    },
+
     getActionsPanel : function(){
 
         var actionButtons = [];
@@ -219,7 +279,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
 
 
 
-        this.actionPanel = new Ext.Panel({
+        this.actionPanel =  new Ext.Panel({
             bodyStyle:'background-color: #fff;',
             id : 'plugin_pm_action_panel',
             autoScroll: true,
@@ -241,11 +301,19 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
                 menu: actionButtons
             }]
         });
-
-
-
-
         return this.actionPanel;
+    },
+
+    getLoggersValues : function(){
+        var data = [];
+        var loggers = this.loggerPanel.items.getRange();
+
+        for (var i=0; i < loggers.length; i++) {
+            if(loggers[i].type == 'formPanel'){
+                data.push(loggers[i].getValues());
+            }
+        }
+        return data;
     },
 
     getActionsValues : function(){

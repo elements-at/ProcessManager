@@ -26,13 +26,12 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
     },
 
     applyCallbackSettings : function(data){
-
         if(data){
             this.formPanel.getForm().setValues(data);
         }else if(this.record){
             this.callbackSettingsForm.getForm().findField('name').setValue(this.record.get('name'));
             this.callbackSettingsForm.getForm().findField('description').setValue(this.record.get('description'));
-            var settings = this.record.get('settings');
+            var settings = this.record.get('extJsSettings');
             this.formPanel.getForm().setValues(settings);
         }
     },
@@ -119,7 +118,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         this.saveSettingsWindow = new Ext.Window({
             id:'callbackSettingsWindow',
             autoScroll: true,
-            height: this.settings.windowHeight+250,
+            height: '80%',
             layout : "fit",
             title: t("plugin_pm_callback_settings_save"),
             icon : '/pimcore/static6/img/flat-color-icons/settings.svg',
@@ -254,7 +253,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                     var data = record.getData();
                     //console.log(data.settings);
                     Ext.getCmp("plugin_pm_executor_callback_form").getForm().reset();
-                    this.applyCallbackSettings(data.settings);
+                    this.applyCallbackSettings(data.extJsSettings);
                 }.bind(this)
             }
         };
@@ -282,6 +281,4 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
     closeWindow : function(){
         this.window.destroy();
     }
-
-
 });

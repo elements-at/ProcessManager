@@ -8,6 +8,8 @@
 
 namespace ProcessManager;
 
+use Pimcore\Model\Asset\Image\Thumbnail\Config;
+
 class Updater {
 
     protected static $_instance;
@@ -53,7 +55,7 @@ class Updater {
     }
 
 
-    protected function getVersionFile(){
+    public static function getVersionFile(){
         $dir = PIMCORE_WEBSITE_VAR . '/plugins/'.Plugin::PLUGIN_NAME.'/';
         if(!is_dir($dir)){
             \Pimcore\File::mkdir($dir);
@@ -65,7 +67,6 @@ class Updater {
         $this->createPermissions();
         $this->createTables();
         $this->copyConfig();
-        $this->createSampleCommandConfig();
     }
 
     protected function updateVersion2(){
@@ -93,35 +94,74 @@ ENGINE=InnoDB
         \Pimcore\Cache::clearTags(["system", "resource"]);
     }
 
-    protected function createSampleCommandConfig(){
-        $executor = new \ProcessManager\Executor\PimcoreCommand();
-        $values = [
-            'name' => 'Sample Command - ProcessManager',
-            'keepVersions' => 5,
-            'group' => 'test-commands',
-            'command' => 'process-manager:sample-command',
-            'commandOptions' => '-v',
-            'active' => true,
-            'description' => 'Just an example to try (loads class objects)'
+    protected function updateVersion4(){
+        $db = \Pimcore\Db::get();
+
+        $configColumns = array_keys($db->describeTable(Plugin::TABLE_NAME_CONFIGURATION));
+        if(!in_array('executorSettings',$configColumns)){
+            $db->query("ALTER TABLE ".Plugin::TABLE_NAME_CONFIGURATION." ADD COLUMN `executorSettings` TEXT");
+        }
+
+        $monitoringItemColumns = $configColumns = array_keys($db->describeTable(Plugin::TABLE_NAME_MONITORING_ITEM));
+
+        if(!in_array('loggers',$monitoringItemColumns)){
+            $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD COLUMN `loggers` TEXT ");
+        }
+
+        if(in_array('processManagerConfig',$monitoringItemColumns)){
+            $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." DROP COLUMN `processManagerConfig`");
+        }
+
+        \Pimcore\Cache::clearTags(["system", "resource"]);
+
+
+        $entries = $db->fetchAll('SELECT * FROM ' .  Plugin::TABLE_NAME_CONFIGURATION);
+        foreach($entries as $entry) {
+            $executorClass = \Pimcore\Tool\Serialize::unserialize($entry['executorClass']);
+            if($executorClass instanceof \ProcessManager\Executor\AbstractExecutor){
+                $loggers = [
+                    [
+                        'logLevel' => 'NOTICE',
+                        'simpleLogFormat' => 'on',
+                        'class' => '\ProcessManager\Executor\Logger\Application'
+                    ],
+                    [
+                        'logLevel' => 'DEBUG',
+                        'simpleLogFormat' => 'on',
+                        'class' => '\ProcessManager\Executor\Logger\Console'
+                    ],
+                    [
+                        'logLevel' => 'DEBUG',
+                        'filepath' => '',
+                        'simpleLogFormat' => 'on',
+                        'class' => '\ProcessManager\Executor\Logger\File'
+                    ],
+                ];
+                $data = [
+                    'values' => (array)$executorClass->getValues(),
+                    'actions' => (array)$executorClass->getActions(),
+                    'loggers' => $loggers,
+                ];
+
+                $entry['executorClass'] = get_class($executorClass);
+                $entry['executorSettings'] = json_encode($data);
+                $db->update(Plugin::TABLE_NAME_CONFIGURATION,$entry,"id=".$entry['id']);
+            }
+        }
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_CONFIGURATION." CHANGE COLUMN `executorClass` executorClass VARCHAR(500) not null");
+        $db->query("DELETE FROM " . Plugin::TABLE_NAME_MONITORING_ITEM);
+
+
+        $configFile = \Pimcore\Config::locateConfigFile("plugin-process-manager.php");
+        $config = Plugin::getConfig();
+        $config['executorLoggerClasses'] = [
+            '\ProcessManager\Executor\Logger\File' => [],
+            '\ProcessManager\Executor\Logger\Console' => [],
+            '\ProcessManager\Executor\Logger\Application' => [],
         ];
-        $executor->setValues($values);
-        $executor->setActions([
-            [
-                'accessKey' => 'download',
-                'filepath' => '/website/var/tmp/process-manager-example.csv',
-                'class' => '\ProcessManager\Executor\Action\Download'
-            ]
-        ]);
-        $executor->setExecutorConfig([
-            "name" => "pimcoreCommand",
-            "class" => "\\ProcessManager\\Executor\\PimcoreCommand",
-            "config" => [],
-            "extJsConfigurationClass" => "pimcore.plugin.processmanager.executor.class.pimcoreCommand"
-        ]);
-        $config = new Configuration();
-        $config->setValues($values);
-        $config->setExecutorClass($executor)->save();
+        \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));
     }
+
 
     protected function copyConfig(){
         $configFile = PIMCORE_DOCUMENT_ROOT.'/plugins/ProcessManager/install/plugin-process-manager.php';

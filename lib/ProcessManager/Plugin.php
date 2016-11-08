@@ -14,6 +14,17 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
     public static $maintenanceOptions = [
         'autoCreate' => true,
         'name' => 'ProcessManager maintenance',
+        'loggers' => [
+            [
+                "logLevel" => "DEBUG",
+                "class" => '\ProcessManager\Executor\Logger\Console'
+            ],
+            [
+                "logLevel" => "DEBUG",
+                "filepath" => '/website/var/log/process-manager-maintenance.log',
+                'class' => '\ProcessManager\Executor\Logger\File'
+            ]
+        ]
     ];
 
     protected static $_config = null;
@@ -88,7 +99,7 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
     public static function isInstalled()
     {
         $config = self::getConfig();
-        return !empty($config);
+        return !empty($config) && is_readable(Updater::getVersionFile());
     }
 
     public static function getLogDir(){

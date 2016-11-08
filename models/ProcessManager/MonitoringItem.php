@@ -47,6 +47,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
 
     public $pid;
 
+    public $loggers = [];
+
     /**
      * @var array
      */
@@ -119,7 +121,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
     {
         $actions = $this->actions;
         if(is_string($actions)){
-            $actions = \Pimcore\Tool\Serialize::unserialize($actions);
+            $actions = \Zend_Json::decode($actions);
         }
         return $actions;
     }
@@ -490,7 +492,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
      */
     public function getCallbackSettings()
     {
-        return \Pimcore\Tool\Serialize::unserialize($this->callbackSettings);
+        return \Zend_Json::decode($this->callbackSettings);
     }
 
     public function getCallbackSettingsForGrid(){
@@ -562,12 +564,32 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
     }
 
     /**
-     * @return \Monolog\Logger
+     * @return \Pimcore\Log\ApplicationLogger
      */
     public function getLogger(){
         if(!$this->logger){
             $this->logger = new \Pimcore\Log\ApplicationLogger();
-            $this->logger->setComponent("ProcessMonitor " . $this->getName());
+            $this->logger->setComponent($this->getName());
+            if($loggerData = $this->getLoggers()){
+                foreach($loggerData as $loggerConfig){
+                    /**
+                     * @var \ProcessManager\Executor\Logger\AbstractLogger $obj
+                     */
+                    $class = $loggerConfig['class'];
+
+                    if(\Pimcore\Tool::classExists($class)){
+                        $obj = new $class();
+                        $streamHandler = $obj->createStreamHandler($loggerConfig,$this);
+                        if($streamHandler){
+                            $this->logger->addWriter($streamHandler);
+                        }
+                    }
+                }
+            }
+
+
+
+         #
 
             /*$this->logger = new Logger('process-manager-logger');
             $this->logger->pushHandler(new StreamHandler($this->getLogFile(), Logger::DEBUG));
@@ -575,11 +597,11 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
                 $this->logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
             }*/
 
-            $this->logger->addWriter(new StreamHandler($this->getLogFile(), Logger::DEBUG));
-            $this->logger->addWriter(new \Pimcore\Log\Handler\ApplicationLoggerDb());
-            if(php_sapi_name() === 'cli'){
-                $this->logger->addWriter(new StreamHandler('php://stdout', Logger::DEBUG));
-            }
+         #   $this->logger->addWriter(new StreamHandler($this->getLogFile(), Logger::DEBUG));
+          #  $this->logger->addWriter(new \Pimcore\Log\Handler\ApplicationLoggerDb());
+          #  if(php_sapi_name() === 'cli'){
+          #      $this->logger->addWriter(new StreamHandler('php://stdout', Logger::DEBUG));
+          #  }
         }
         return $this->logger;
     }
@@ -599,6 +621,30 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
     public function setExecutedByUser($executedByUser)
     {
         $this->executedByUser = (int)$executedByUser;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLoggers()
+    {
+
+        $loggers = $this->loggers;
+        if(is_string($loggers)){
+            $loggers = \Zend_Json::decode($loggers);
+        }
+
+        return $loggers;
+    }
+
+    /**
+     * @param array $loggers
+     * @return $this
+     */
+    public function setLoggers($loggers)
+    {
+        $this->loggers = $loggers;
         return $this;
     }
 

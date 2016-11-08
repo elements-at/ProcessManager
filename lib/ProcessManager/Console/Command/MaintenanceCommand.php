@@ -42,7 +42,7 @@ class MaintenanceCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $options = Plugin::$maintenanceOptions;
-        $this->initProcessManager($input->getOption('monitoring-item-id'),$options);
+        $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'),$options);
         $this->doUniqueExecutionCheck(null,['command' => $this->getCommand($options)]);
 
         \Pimcore\Tool\Console::checkExecutingUser();

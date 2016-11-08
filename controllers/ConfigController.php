@@ -22,9 +22,13 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
 
         foreach($list->load() as $item){
             $tmp = $item->getObjectVars();
+
+            try {
+
             $tmp['command'] = $item->getCommand();
             $tmp['type'] = $item->getExecutorClassObject()->getName();
-            $tmp['settings'] = $item->getExecutorClassObject()->getExtJsSettings();
+            $tmp['extJsSettings'] = $item->getExecutorClassObject()->getExtJsSettings();
+
             $tmp['active'] = (int)$tmp['active'];
             if($item->getCronJob()){
                 $nextRunTs = $item->getNextCronJobExecutionTimestamp();
@@ -33,6 +37,10 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
                 }
             }
             $data[] = $tmp;
+            }catch(\Exception $e){
+
+            }
+
         }
 
         $this->_helper->json(['total' => $list->getTotalCount(),'success' => true,'data' => $data]);
@@ -42,17 +50,22 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
         $this->checkPermission('plugin_pm_permission_configure');
 
         $data = \Zend_Json::decode($this->getParam('data'));
+
+
         $values = $data['values'];
         $executorConfig = $data['executorConfig'];
 
         $actions = $data['actions'];
-
         /**
          * @var $executorClass \ProcessManager\Executor\AbstractExecutor
+         * @var $configuration \ProcessManager\Configuration
          */
         $executorClass = new $executorConfig['class']();
+        $executorClass->setValues($data['values']);
+        $executorClass->setActions($data['actions']);
+        $executorClass->setLoggers($data['loggers']);
 
-        $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);
+       # $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);
 
         if(!$this->getParam('id')){
             $configuration = new \ProcessManager\Configuration();
@@ -66,7 +79,8 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
                 $configuration->$setter(trim($v));
             }
         }
-        $configuration->setExecutorClass($executorClass);
+        $configuration->setExecutorClass($executorConfig['class']);
+        $configuration->setExecutorSettings($executorClass->getStorageValue());
         $configuration->save();
         $this->_helper->json(['success' => true,'id' => $configuration->getId()]);
     }

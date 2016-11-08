@@ -13,7 +13,7 @@
 
 pimcore.registerNS("pimcore.plugin.processmanager.panel.monitoringItem");
 pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
-    refreshInterval : 2,
+    refreshInterval : 5,
 
     getPanel: function () {
         if (this.layout == null) {
@@ -29,14 +29,17 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
         }
 
         this.layout.on("activate", this.panelActivated.bind(this));
+        this.layout.on("deactivate", this.panelDeActivated.bind(this));
 
         return this.layout;
     },
 
+    panelDeActivated : function(){
+        Ext.TaskManager.stop(this.autoRefreshTask);
+    },
+
     panelActivated: function() {
-        if (this.store) {
-            this.store.reload();
-        }
+        Ext.TaskManager.start(this.autoRefreshTask);
     },
 
     createGrid: function(response) {
@@ -83,7 +86,6 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
 
 
 
-        Ext.TaskManager.start(this.autoRefreshTask);
 
 
         this.autoRefresh = new Ext.form.Checkbox({
@@ -208,16 +210,9 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
         gridColumns.push({header: t("action"), width: 50, dataIndex: 'action',sortable : false});
         gridColumns.push({
             header: t("plugin_pm_log"),
-            dataIndex: 'logFile',
+            dataIndex: 'logger',
             sortable : false,
-            width: 50,
-            renderer : function(v,x,record){
-                if(v){
-                    return '<a href="#" onClick="new pimcore.plugin.processmanager.window.log(' + record.get('id') + ')"><img src="/pimcore/static6/img/flat-color-icons/rules.svg" height="18" /></a>';
-                }else{
-                    return '';
-                }
-            }
+            width: 50
         });
 
         gridColumns.push({
@@ -227,6 +222,8 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             renderer : function(v,x,record){
                 if(record.get('retry')){
                     return '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/pimcore/static6/img/flat-color-icons/refresh.svg" height="18" /></a>';
+                }else{
+                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/pimcore/static6/img/flat-color-icons/cancel.svg" height="18" /></a>';
                 }
                 return '';
             }
@@ -269,7 +266,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
         var tbar = []
         tbar.push(this.autoRefresh);
         tbar.push(this.intervalInSeconds);
-        tbar.push(t("plugin_pm_auto_refresh_seconds"))
+        tbar.push(t("plugin_pm_auto_refresh_seconds"));
 
         var clearMonitoringItems = new Ext.Button({
             icon: "/pimcore/static/img/icon/cross.png",
@@ -296,6 +293,11 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                 getRowClass: function(record) {
                     return 'plugin-process-manager-status-' + record.get('status');
                 }
+            },
+            listeners: {
+                rowdblclick : function(grid, record, tr, rowIndex, e, eOpts ) {
+                    new pimcore.plugin.processmanager.window.detailwindow(this.store.getAt(rowIndex).data);
+                }.bind(this)
             },
             bbar: this.pagingtoolbar,
             tbar: tbar

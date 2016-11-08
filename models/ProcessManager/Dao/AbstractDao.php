@@ -23,11 +23,14 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao {
 
     protected function getValidStorageValues(){
         $data = [];
-
         foreach ($this->model->getObjectVars() as $key => $value) {
             if (in_array($key, $this->validColumns)) {
                 if (is_array($value) || is_object($value)) {
-                    $value = serialize($value);
+                    if(is_object($value)){
+                        $value = get_class($value);
+                    }else{
+                        $value = \Zend_Json::encode($value);
+                    }
                 } else  if(is_bool($value)) {
                     $value = (int)$value;
                 }
@@ -48,6 +51,7 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao {
         if(!$data){
             return null;
         }
+        $data['id'] = (int)$data['id'];
         $this->model->setValues($data);
         return $this->model;
     }

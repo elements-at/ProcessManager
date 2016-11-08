@@ -4,7 +4,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     getFieldValue : function(fieldName){
         var value = '';
         if(this.rec){
-            value = this.rec.get('settings').values[fieldName];
+            value = this.rec.get('extJsSettings').values[fieldName];
         }
         return value;
     },
@@ -52,7 +52,14 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         };
     },
 
-    getSelectField : function(fieldName,store){
+    getSelectField : function(fieldName,store,options){
+
+        var fieldLabel = t('plugin_pm_' + fieldName);
+        if(options){
+            if(options.mandatory){
+                fieldLabel += ' <span style="color:#f00;">*</span>';
+            }
+        }
 
         return {
             xtype: "combo",
@@ -63,8 +70,21 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             triggerAction: 'all',
             mode: "local",
             value : this.getFieldValue(fieldName),
-            fieldLabel: t('plugin_pm_' + fieldName)
+            fieldLabel: fieldLabel
         };
+    },
+
+    getLogLevelField : function(){
+        return this.getSelectField('logLevel',[
+            ['DEBUG','DEBUG'],
+            ['INFO','INFO'],
+            ['NOTICE','NOTICE'],
+            ['WARNING','WARNING'],
+            ['ERROR','ERROR'],
+            ['CRITICAL','CRITICAL'],
+            ['ALERT','ALERT'],
+            ['EMERGENCY','EMERGENCY']
+        ],{mandatory : true});
     },
 
     getTextField : function(fieldName){

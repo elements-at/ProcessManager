@@ -62,6 +62,20 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
             }.bind(this)
         });
     },
+    monitoringItemCancel : function (id) {
+        Ext.Ajax.request({
+            url: '/plugin/ProcessManager/monitoring-item/cancel?id=' + id,
+            success: function(response, opts) {
+                var data = Ext.decode(response.responseText);
+                if(data.success){
+                    pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
+                    Ext.getCmp("plugin_pmmonitoring_item_list_panel").store.reload();
+                }else{
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error",data.message);
+                }
+            }.bind(this)
+        });
+    },
 
     download : function(id,accessKey){
 

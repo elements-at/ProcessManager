@@ -17,6 +17,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     public $creationDate;
     public $modificationDate;
     public $executorClass;
+    public $executorSettings;
     public $cronJob;
     public $lastCronJobExecution;
     public $active;
@@ -123,6 +124,25 @@ class Configuration extends \Pimcore\Model\AbstractModel
     /**
      * @return mixed
      */
+    public function getExecutorSettings()
+    {
+        return $this->executorSettings;
+    }
+
+    /**
+     * @param mixed $executorSettings
+     * @return $this
+     */
+    public function setExecutorSettings($executorSettings)
+    {
+        $this->executorSettings = $executorSettings;
+        return $this;
+    }
+
+
+    /**
+     * @return mixed
+     */
     public function getExecutorClass()
     {
         return $this->executorClass;
@@ -143,7 +163,14 @@ class Configuration extends \Pimcore\Model\AbstractModel
      */
     public function getExecutorClassObject(){
         if(!$this->executorClassObject){
-            $this->executorClassObject = \Pimcore\Tool\Serialize::unserialize($this->executorClass);
+
+            /**
+             * @var \ProcessManager\Executor\AbstractExecutor $class
+             */
+            $className = $this->getExecutorClass();
+            $class = new $className();
+            $class->setDataFromResource($this);
+            $this->executorClassObject = $class;
         }
         return $this->executorClassObject;
     }

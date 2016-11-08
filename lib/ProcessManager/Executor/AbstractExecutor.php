@@ -8,21 +8,29 @@
 
 namespace ProcessManager\Executor;
 
-abstract class AbstractExecutor {
+use ProcessManager\Configuration;
+
+abstract class AbstractExecutor implements \JsonSerializable{
 
     protected $name = '';
 
-    protected $config = [];
+
 
     protected $extJsConfigurationClass = '';
 
     protected $values = [];
+
+    protected $loggers = [];
 
     protected $executorConfig = [];
 
     protected $actions = [];
 
     protected $isShellCommand = false;
+    /**
+     * @var \ProcessManager\Configuration
+     */
+    protected $config;
 
     public function __construct($config = []){
         $this->config = $config;
@@ -68,7 +76,7 @@ abstract class AbstractExecutor {
     }
 
     /**
-     * @return array
+     * @return \ProcessManager\Configuration
      */
     public function getConfig()
     {
@@ -76,7 +84,7 @@ abstract class AbstractExecutor {
     }
 
     /**
-     * @param array $config
+     * @param \ProcessManager\Configuration $config
      * @return $this
      */
     public function setConfig($config)
@@ -121,35 +129,31 @@ abstract class AbstractExecutor {
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getExecutorConfig()
-    {
-        return $this->executorConfig;
-    }
-
-    /**
-     * @param array $executorConfig
-     * @return $this
-     */
-    public function setExecutorConfig($executorConfig)
-    {
-        $this->executorConfig = $executorConfig;
-        return $this;
-    }
-
     public function getExtJsSettings(){
-        $data = [];
+
+        $executorConfig = [
+            'extJsConfigurationClass' => $this->getExtJsConfigurationClass(),
+            'name' => $this->getName(),
+            'class' => $this->getConfig()->getExecutorClass(),
+        ];
+        $data['executorConfig'] = $executorConfig;
+
         $data['values'] = $this->getValues();
-        $data['executorConfig'] = $this->getExecutorConfig();
+        $data['loggers'] = $this->getLoggers();
         $data['actions'] = $this->getActions();
 
-        foreach($data['actions'] as $i => $actionData){
+        foreach((array)$data['actions'] as $i => $actionData){
             $className = $actionData['class'];
             $x = new $className();
             $data['actions'][$i]['extJsClass'] = $x->getExtJsClass();
             $data['actions'][$i]['config'] = $x->getConfig();
+        }
+
+        foreach((array)$data['loggers'] as $i => $loggerData){
+            $className = $loggerData['class'];
+            $x = new $className();
+            $data['loggers'][$i]['extJsClass'] = $x->getExtJsClass();
+            $data['loggers'][$i]['config'] = $x->getConfig();
         }
         return $data;
     }
@@ -196,5 +200,60 @@ abstract class AbstractExecutor {
      */
     abstract function getCommand($callbackSettings = [], $monitoringItem = null);
 
+
+    public function jsonSerialize() {
+        $values = array_merge(['class' => get_class($this)],get_object_vars($this));
+        return $values;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLoggers()
+    {
+        return $this->loggers;
+    }
+
+    /**
+     * @param array $loggers
+     * @return $this
+     */
+    public function setLoggers($loggers)
+    {
+        $this->loggers = $loggers;
+        return $this;
+    }
+
+
+    public function getStorageValue(){
+        $data = [
+            'values' => (array)$this->getValues(),
+            'actions' => (array)$this->getActions(),
+            'loggers' => (array)$this->getLoggers()
+        ];
+        return json_encode($data);
+    }
+
+    protected function setData($values){
+        foreach($values as $key => $value){
+            $setter = "set" . ucfirst($key);
+            if(method_exists($this,$setter)){
+                $this->$setter($value);
+            }
+        }
+        return $this;
+    }
+    /**
+     * @param \ProcessManager\Configuration $configuration
+     * @return \ProcessManager\Configuration
+     */
+    public function setDataFromResource(\ProcessManager\Configuration $configuration){
+        $settings = $configuration->getExecutorSettings();
+        if(is_string($settings)){
+            $this->setData(\Zend_Json::decode($settings));
+        }
+        $this->setConfig($configuration);
+        return $configuration;
+    }
 
 }

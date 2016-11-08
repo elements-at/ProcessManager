@@ -22,22 +22,19 @@ trait ExecutionTrait {
     protected static function initProcessManager($monitoringId,$options = []){
 
         if(!Plugin::getMonitoringItem()){
-            $monitoringItem = MonitoringItem::getById($monitoringId);
-            Plugin::setMonitoringItem($monitoringItem);
+            if($monitoringId){
+                $monitoringItem = MonitoringItem::getById($monitoringId);
+                Plugin::setMonitoringItem($monitoringItem);
+            }
 
             if($options['autoCreate'] && !$monitoringItem){
                 $options['command'] = self::getCommand($options);
 
                 $monitoringItem = new MonitoringItem();
-                $monitoringItem->setName($options['name']);
+                unset($options['id']);
+                $monitoringItem->setValues($options);
                 $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
                 $monitoringItem->setPid(getmypid());
-                foreach($options as $key => $value){
-                    $setter = "set" . ucfirst($key);
-                    if(method_exists($monitoringItem,$setter)){
-                        $monitoringItem->$setter($value);
-                    }
-                }
                 $monitoringItem->save();
                 $monitoringId = $monitoringItem->getId();
                 Plugin::setMonitoringItem($monitoringItem);

@@ -34,6 +34,7 @@ class Helper {
             $monitoringItem->setCallbackSettings($callbackSettings);
             $monitoringItem->setExecutedByUser($userId);
             $monitoringItem->setActions($executor->getActions());
+            $monitoringItem->setLoggers($executor->getLoggers());
             $item = $monitoringItem->save();
 
             $command = $executor->getCommand($callbackSettings,$monitoringItem);
@@ -45,6 +46,7 @@ class Helper {
             }else{
                 $monitoringItem->setCommand($command)->save();
                 $command = $executor->getShellCommand($monitoringItem);
+
                 $monitoringItem->getLogger()->info('Execution Command: ' . $command.' in Background');
             }
 

@@ -39,9 +39,7 @@ class Dao extends \ProcessManager\Dao\AbstractDao {
      */
     public function save()
     {
-
         $data = $this->getValidStorageValues();
-
         if(!$data['id']){
             unset($data['id']);
             $this->db->insert($this->getTableName(),$data);
@@ -51,6 +49,21 @@ class Dao extends \ProcessManager\Dao\AbstractDao {
         }
 
         return $this->getById($this->model->getId());
+    }
+
+    public function getById($id){
+        $model = parent::getById($id);
+        if($model){
+            /**
+             * @var $class \ProcessManager\Executor\AbstractExecutor
+             */
+            $className = $model->getExecutorClass();
+            if($className){
+                $class = new $className;
+                $class->setDataFromResource($model);
+            }
+            return $model;
+        }
     }
 
 

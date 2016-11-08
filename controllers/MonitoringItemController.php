@@ -43,7 +43,6 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
 
         foreach($list->load() as $item){
             $tmp = $item->getObjectVars();
-            unset($tmp['processManagerConfig']);
             $tmp['steps'] = '-';
             if($item->getTotalSteps() > 0 || $item->getCurrentStep()){
                 $tmp['steps'] = $item->getCurrentStep().'/'.$item->getTotalSteps();
@@ -64,13 +63,12 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
             }
 
             $logFile = 0;
-            if(is_readable($item->getLogFile())){
+           /* if(is_readable($item->getLogFile())){
                 $content = trim(file_get_contents($item->getLogFile()));
                 if($content){
                     $logFile = 1;
                 }
-            }
-            $configObject = $item->getProcessManagerConfigObject();
+            }*/
             $tmp['action'] = '';
 
             if($actions = $item->getActions()) {
@@ -85,11 +83,27 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
                 }
             }
 
-            $tmp['logFile'] = $logFile;
+            $tmp['logger'] = '';
+            if($loggers = $item->getLoggers()) {
+                foreach((array)$loggers as $i => $logger){
+                    /**
+                     * @var $class \ProcessManager\Executor\Logger\AbstractLogger
+                     */
+                    $class = new $logger['class'];
+                    if(\Pimcore\Tool::classExists(get_class($class))){
+                        $logger['index'] = $i;
+                        if($s = $class->getGridLoggerHtml($item,$logger)){
+                            $tmp['logger'] .= $s;
+                        }
+                    }
+                }
+            }
+
             $tmp['retry'] = 1;
             if($item->isAlive()){
                 $tmp['retry'] = 0;
             }
+
             if($tmp['retry'] == 1){
                 $config = Configuration::getById($item->getConfigurationId());
                 if($config){
@@ -107,10 +121,12 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
                 }
             }
             $tmp['isAlive'] = $item->isAlive();
+
             if($item->getCurrentWorkload() && $item->getTotalWorkload()){
                 $tmp['progress'] = round($item->getCurrentWorkload()/($item->getTotalWorkload()/100));
             }
-            $tmp['callbackSettings'] = '<pre>' .print_r($item->getCallbackSettings(),true).'</pre>';
+
+            $tmp['callbackSettingsString'] = \Zend_Json::encode($item->getCallbackSettings());
             $tmp['callbackSettings'] = $item->getCallbackSettingsForGrid();
             #$tmp['callbackSettings'] = '<table><tr><td><th>Key</th><th>Value</th></td></tr><tr><td>name:</td><td>testaa</td></tr></table>';
             $data[] = $tmp;
@@ -119,28 +135,96 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
         $this->_helper->json(['success' => true,'total' => $total, 'data' => $data]);
     }
 
-    public function logAction(){
-        $monitoringItem = MonitoringItem::getById($this->getParam('id'));
-        $data = file_get_contents($monitoringItem->getLogFile());
+    public function logApplicationLoggerAction()
+    {
+        try {
+            $monitoringItem = MonitoringItem::getById($this->getParam('id'));
 
-        $data = explode("\n",$data);
-        foreach($data as $i => $row){
-            if($row){
-                if(strpos($row,'.WARNING')){
-                    $data[$i] = '<span style="color:#ffb13b">' .$row.'</span>';
-                }
-                if(strpos($row,'.ERROR')){
-                    $data[$i] = '<span style="color:#ff131c">' .$row.'</span>';
-                }
-                if(strpos($row,'dev-server > ') === 0 || strpos($row,'production-server > ') === 0){
-                    $data[$i] = '<span style="color:#35ad33">' .$row.'</span>';
-                }
-                foreach(['[echo]','[mkdir]','[delete]','[copy]'] as $k){
-                    if(strpos($row,$k)){
-                        $data[$i] = '<span style="color:#49b7d4">' .$row.'</span>';
+            if(!$monitoringItem){
+                throw new \Exception('Monitoring Item with id' . $this->getParam('id').' not found');
+            }
+            $loggerIndex = $this->getParam('loggerIndex');
+            if ($loggers = $monitoringItem->getLoggers()) {
+                foreach ((array)$loggers as $i => $config) {
+                    /**
+                     * @var $class \ProcessManager\Executor\Logger\AbstractLogger
+                     * @var $logger \ProcessManager\Executor\Logger\Application
+                     */
+                    $class = new $config['class'];
+                    if (\Pimcore\Tool::classExists(get_class($class))) {
+
+                        if ($i == $loggerIndex) {
+                            $logger = $class;
+                            if (!$config['logLevel']) {
+                                $config['logLevel'] = 'DEBUG';
+                            }
+                            break;
+                        }
                     }
                 }
             }
+
+            $result = $monitoringItem->getObjectVars();
+            $result['logLevel'] = strtolower($config['logLevel']);
+
+            $this->_helper->json(['success' => true,'data' => $result]);
+        }catch(\Exception $e){
+            $this->_helper->json(['success' => false,'message' => $e->getMessage()]);
+        }
+    }
+
+    public function logFileLoggerAction(){
+        $monitoringItem = MonitoringItem::getById($this->getParam('id'));
+
+        $loggerIndex = $this->getParam('loggerIndex');
+        if($loggers = $monitoringItem->getLoggers()) {
+            foreach((array)$loggers as $i => $config){
+                /**
+                 * @var $class \ProcessManager\Executor\Logger\AbstractLogger
+                 * @var $logger \ProcessManager\Executor\Logger\File
+                 */
+                $class = new $config['class'];
+                if(\Pimcore\Tool::classExists(get_class($class))){
+
+                    if($i == $loggerIndex){
+                        $logger = $class;
+                        $logFile = $logger->getLogFile($config,$monitoringItem);
+                        if(!$config['logLevel']){
+                            $config['logLevel'] = 'DEBUG';
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        $this->view->logLevel = $config['logLevel'];
+        $this->view->logFile = $logFile;
+
+        if(is_readable($logFile)){
+
+            $data = file_get_contents($logFile);
+
+            $data = explode("\n",$data);
+            foreach($data as $i => $row){
+                if($row){
+                    if(strpos($row,'.WARNING')){
+                        $data[$i] = '<span style="color:#ffb13b">' .$row.'</span>';
+                    }
+                    if(strpos($row,'.ERROR')){
+                        $data[$i] = '<span style="color:#ff131c">' .$row.'</span>';
+                    }
+                    if(strpos($row,'dev-server > ') === 0 || strpos($row,'production-server > ') === 0){
+                        $data[$i] = '<span style="color:#35ad33">' .$row.'</span>';
+                    }
+                    foreach(['[echo]','[mkdir]','[delete]','[copy]'] as $k){
+                        if(strpos($row,$k)){
+                            $data[$i] = '<span style="color:#49b7d4">' .$row.'</span>';
+                        }
+                    }
+                }
+            }
+        }else{
+            $data = ["Log file doesn't exist. " .  $logFile];
         }
         $data = implode("\n",$data);
         $this->view->data = $data;
@@ -175,6 +259,23 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
         }else{
             $this->_helper->json(['success' => false,'message' => 'No statuses -> didn\'t deleted logs. Please select at least one status']);
         }
+    }
+
+    public function cancelAction() {
+        $monitoringItem  = MonitoringItem::getById($this->getParam('id'));
+        try {
+            $pid = $monitoringItem->getPid();
+            if($pid){
+                $message = 'Process with PID "' . $pid . '" killed by Backend User: ' . $this->getUser()->getName();
+                $monitoringItem->getLogger()->warning($message);
+                $monitoringItem->setPid(null)->setStatus($monitoringItem::STATUS_FAILED)->save();
+                \Pimcore\Tool\Console::exec('kill -9 ' . $pid);
+            }
+            $this->_helper->json(['success' => true]);
+        }catch (\Exception $e){
+            $this->_helper->json(['success' => false,'message' => $e->getMessage()]);
+        }
+
     }
 
     public function restartAction(){

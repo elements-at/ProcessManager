@@ -68,7 +68,7 @@ class ProcessManager_CallbackSettingsController extends \Pimcore\Controller\Acti
 
         foreach($list->load() as $item){
             $tmp = $item->getObjectVars();
-            $tmp['settings'] = \Zend_Json::decode($tmp['settings']);
+            $tmp['extJsSettings'] = \Zend_Json::decode($tmp['settings']);
             $data[] = $tmp;
         }
         

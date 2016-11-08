@@ -276,7 +276,7 @@ pimcore.plugin.processmanager.callbackSettingPanel = Class.create({
 
     executeJob : function (grid, rowIndex) {
         var record = grid.getStore().getAt(rowIndex);
-        var callbackClass = record.get('settings').values.callback;
+        var callbackClass = record.get('extJsSettings').values.callback;
         if(callbackClass){
             var callback = eval('new ' + callbackClass + '(grid, rowIndex)');
         }else{

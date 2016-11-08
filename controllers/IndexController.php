@@ -14,6 +14,7 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
             'executorActionClasses' => [],
         ];
 
+
         $pluginConfig = Plugin::getConfig();
 
         foreach((array)$pluginConfig['executorClasses'] as $class => $config){
@@ -51,6 +52,19 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
                 }
             }
         }
+
+        foreach((array)$pluginConfig['executorLoggerClasses'] as $class => $config){
+            if(\Pimcore\Tool::classExists($class)){
+                $o = new $class($config);
+                if($o instanceof \ProcessManager\Executor\Logger\AbstractLogger){
+                    $data['executorLoggerClasses'][$o->getName()]['name'] = $o->getName();
+                    $data['executorLoggerClasses'][$o->getName()]['class'] = '\\'.get_class($o);
+                    $data['executorLoggerClasses'][$o->getName()]['config'] = $o->getConfig();
+                    $data['executorLoggerClasses'][$o->getName()]['extJsClass'] = $o->getExtJsClass();
+                }
+            }
+        }
+
 
         $pimcoreCommands = [];
 
