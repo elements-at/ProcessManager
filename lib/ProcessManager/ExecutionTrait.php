@@ -84,10 +84,15 @@ trait ExecutionTrait {
         }else{
             $list = new MonitoringItem\Listing();
             $list->setCondition('command = ? AND pid <> ""',[$options['command']]);
-            $processesRunning = $list->load();
+            $processesRunning = [];
+            foreach($list->load() as $item){
+                if($item->isAlive()){
+                    $processesRunning[] = $item;
+                }
+            }
         }
 
-        //remove own pid -> is set as running when it is executed in the admin
+        //remove own pid
         foreach($processesRunning as $i => $item){
             if($item->getPid() == getmypid()){
                 unset($processesRunning[$i]);
@@ -95,7 +100,13 @@ trait ExecutionTrait {
         }
 
         if($count = count($processesRunning)){
-            Plugin::getMonitoringItem()->delete();
+            foreach($processesRunning as $process){
+                //only delete the item if the other process doesn't use the same monitoring ID
+                if($process->getId() != Plugin::getMonitoringItem()->getId()){
+                    Plugin::getMonitoringItem()->delete();
+                }
+            }
+            Plugin::getMonitoringItem()->getLogger()->info('Another process with the PID ' . getmypid().' started. Exiting Process:' . getmypid());
             Plugin::setMonitoringItem(null);
             exit("\n\nProcessManager: $count ".($count > 1 ? 'processes running' : 'process running'). " - exiting\n\n");
         }

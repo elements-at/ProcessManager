@@ -188,7 +188,13 @@ class Configuration extends \Pimcore\Model\AbstractModel
     public function getRunningProcesses(){
         $list = new \ProcessManager\MonitoringItem\Listing();
         $list->setCondition('configurationId = ? AND pid > 0 AND status != ? ',[$this->getId(),MonitoringItem::STATUS_FAILED]);
-        return $list->load();
+        $items = [];
+        foreach($list->load() as $item){
+            if($item->isAlive()){
+                $items[] = $item;
+            }
+        }
+        return $items;
     }
 
     /**
