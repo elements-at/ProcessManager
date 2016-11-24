@@ -69,7 +69,7 @@ trait ExecutionTrait {
                     ->setTotalSteps($options['totalSteps'] ?: 1)->setStatus(MonitoringItem::STATUS_RUNNING)->save();
             }
         }
-
+        \Pimcore\Tool\Console::checkExecutingUser();
         return Plugin::getMonitoringItem();
     }
 

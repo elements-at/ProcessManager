@@ -17,6 +17,22 @@ abstract class AbstractCallback
     protected $config = [];
 
     /**
+     * AbstractCallback constructor.
+     * @param null | array $config
+     */
+    public function __construct($config)
+    {
+        if(is_array($config)){
+            foreach($config as $key => $value){
+                $setter = "set".ucfirst($key);
+                if(method_exists($this,$setter)){
+                    $this->$setter($value);
+                }
+            }
+        }
+    }
+
+    /**
      * @return string
      */
     public function getExtJsClass()
