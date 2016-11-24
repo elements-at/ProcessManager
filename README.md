@@ -1,5 +1,21 @@
 # ProcessManager
 
+## Release notes
+
+### 1.0.23 
+
+Added general Callback class (\ProcessManager\Executor\Callback\General) + automatically check executing user. 
+
+Callbacks can now be defined in the config as:
+
+```
+'\ProcessManager\Executor\Callback\General' => [
+            'extJsClass' => 'pimcore.plugin.tyrolitpim.processmanager.executor.callback.exportEasyCatalog',
+            'name' => 'exportEasyCatalog'
+    ]
+```
+
+
 ## Introduction
 
 > The    ProcessManager allows you to manage (define,execute...) arbitrary processes/commands in the Pimcore backend. 
