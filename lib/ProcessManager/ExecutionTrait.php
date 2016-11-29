@@ -21,7 +21,7 @@ trait ExecutionTrait {
      */
     protected static function initProcessManager($monitoringId,$options = []){
 
-        if(!Plugin::getMonitoringItem()){
+        if(!Plugin::getMonitoringItem(false)){
             if($monitoringId){
                 $monitoringItem = MonitoringItem::getById($monitoringId);
                 Plugin::setMonitoringItem($monitoringItem);

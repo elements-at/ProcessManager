@@ -61,11 +61,12 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
     }
 
     /**
+     * @param bool $createDummyObjectIfRequired
      * @return \ProcessManager\MonitoringItem
      */
-    public static function getMonitoringItem()
+    public static function getMonitoringItem($createDummyObjectIfRequired = true)
     {
-        if(!self::$monitoringItem){
+        if($createDummyObjectIfRequired && !self::$monitoringItem){
             echo "\n\n#####################################################################
 WARNING - MONITORING ITEM NOT INITIALIZED - NO MESSAGES ARE LOGGED... Just an dummy object is registered
 #####################################################################\n\n
