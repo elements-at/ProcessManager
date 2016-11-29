@@ -52,7 +52,7 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
             if(strpos(implode(' ',(array)$_SERVER["argv"]), "monitoring-item-id")) {
                 $application->setCatchExceptions(false);
             }
-
+            $application->add(new \ProcessManager\Console\Command\UpdateCommand());
             $application->add(new \ProcessManager\Console\Command\ClassMethodExecutorCommand());
             $application->add(new \ProcessManager\Console\Command\SampleCommand());
             $application->add(new \ProcessManager\Console\Command\MaintenanceCommand());
