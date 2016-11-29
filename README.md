@@ -1,5 +1,12 @@
 # ProcessManager
 
+## Update notes
+
+To update the plugin please use the following command
+```
+composer update pimcore-plugins/ProcessManager; php pimcore/cli/console.php process-manager:update
+```
+
 ## Release notes
 
 ### 1.0.23
