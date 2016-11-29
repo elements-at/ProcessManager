@@ -28,6 +28,7 @@ class Updater {
     }
 
     public function execute(){
+        $monitoringItem = Plugin::getMonitoringItem();
 
         $lastVersion = 1;
         $versionFile = self::getVersionFile();
@@ -36,6 +37,7 @@ class Updater {
         }
         $lastVersion = (int)$lastVersion;
 
+        $monitoringItem->getLogger()->notice('Current Version:' . $lastVersion);
         $methods = [];
         $self = new self();
         foreach (get_class_methods(get_class($self)) as $method) {
@@ -48,8 +50,10 @@ class Updater {
         foreach($methods as $method){
             $vNumber = (int)str_replace('updateVersion','',$method);
             if($vNumber >= $lastVersion){
+                $monitoringItem->getLogger()->notice('Updating to version: ' . $vNumber.' | executin method: ' . $method.'()');
                 $self->$method();
                 file_put_contents($versionFile,(int)$vNumber);
+                $monitoringItem->getLogger()->notice('Update to version: ' . $vNumber.' successfully.');
             }
         }
     }

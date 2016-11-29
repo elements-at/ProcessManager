@@ -65,6 +65,13 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
      */
     public static function getMonitoringItem()
     {
+        if(!self::$monitoringItem){
+            echo "\n\n#####################################################################
+WARNING - MONITORING ITEM NOT INITIALIZED - NO MESSAGES ARE LOGGED... Just an dummy object is registered
+#####################################################################\n\n
+";
+            self::$monitoringItem = new MonitoringItem();
+        }
         return self::$monitoringItem;
     }
 

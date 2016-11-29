@@ -32,6 +32,15 @@ trait ExecutionTrait {
 
                 $monitoringItem = new MonitoringItem();
                 unset($options['id']);
+                if(is_null($options['loggers'])){
+                    $monitoringItem->setLoggers([
+                        [
+                            'logLevel'=> 'DEBUG',
+                            'simpleLogFormat'=> 'on',
+                            'class'=> '\ProcessManager\Executor\Logger\Console'
+                        ]
+                    ]);
+                }
                 $monitoringItem->setValues($options);
                 $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
                 $monitoringItem->setPid(getmypid());
