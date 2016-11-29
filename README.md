@@ -2,6 +2,9 @@
 
 ## Release notes
 
+### 1.0.23
+Added process-manager:update Command. Plugin updates can now be done with php pimcore/cli/console.php process-manager:update
+
 ### 1.0.23 
 
 Added general Callback class (\ProcessManager\Executor\Callback\General) + automatically check executing user. 
