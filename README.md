@@ -8,8 +8,10 @@ composer update pimcore-plugins/ProcessManager; php pimcore/cli/console.php proc
 ```
 
 ## Release notes
+### 1.0.25
+Return a dummy Monitoring item if it doesn't exist and added a CLI Logger if "autocreate" was passed and a Monitoring Item has to be created. 
 
-### 1.0.23
+### 1.0.24
 Added process-manager:update Command. Plugin updates can now be done with php pimcore/cli/console.php process-manager:update
 
 ### 1.0.23 
