@@ -505,7 +505,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
                 $html .= '<tr><td>'.$key.'</td><td>';
 
                 if(is_array($value)){
-                    $html .= '<pre>'.print_r($value).'</pre>';
+                    $html .= '<pre>'.print_r($value,true).'</pre>';
                 }else{
                     $html .= $value;
                 }
