@@ -32,7 +32,7 @@ class UpdateCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $monitoringItem = $this->initProcessManager(null,['autoCreate' => true]);
+        $monitoringItem = $this->initProcessManager(null,['autoCreate' => true,'name' => $this->getName()]);
 
         $monitoringItem->getLogger()->debug('Start update');
         \ProcessManager\Updater::getInstance()->execute();
