@@ -23,13 +23,4 @@ class ExportToolkit extends AbstractExecutor
         $command = \Pimcore\Tool\Console::getPhpCli().' ' . PIMCORE_DOCUMENT_ROOT.'/pimcore/cli/console.php export-toolkit:export --config-name=' . $this->getValues()['configName'];
         return $command;
     }
-
-    public function getConfig()
-    {
-        $config= parent::getConfig();
-        if(\Pimcore\Tool::classExists('ExportToolkit_Configuration')){
-            $config['jobs'] = \ExportToolkit_Configuration::getList();
-        }
-        return $config;
-    }
 }
