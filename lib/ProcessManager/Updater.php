@@ -49,7 +49,7 @@ class Updater {
         sort($methods);
         foreach($methods as $method){
             $vNumber = (int)str_replace('updateVersion','',$method);
-            if($vNumber >= $lastVersion){
+            if($vNumber > $lastVersion){
                 $monitoringItem->getLogger()->notice('Updating to version: ' . $vNumber.' | executin method: ' . $method.'()');
                 $self->$method();
                 file_put_contents($versionFile,(int)$vNumber);
