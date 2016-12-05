@@ -28,16 +28,20 @@ class Updater {
     }
 
     public function execute(){
-        $monitoringItem = Plugin::getMonitoringItem();
 
-        $lastVersion = 1;
+        $monitoringItem = Plugin::getMonitoringItem(php_sapi_name() === 'cli' ? true : false);
+
+        $lastVersion = 0;
         $versionFile = self::getVersionFile();
         if(is_readable($versionFile)){
             $lastVersion = file_get_contents($versionFile);
         }
         $lastVersion = (int)$lastVersion;
 
-        $monitoringItem->getLogger()->notice('Current Version:' . $lastVersion);
+        if($monitoringItem){
+            $monitoringItem->getLogger()->notice('Current Version:' . $lastVersion);
+        }
+
         $methods = [];
         $self = new self();
         foreach (get_class_methods(get_class($self)) as $method) {
@@ -50,10 +54,15 @@ class Updater {
         foreach($methods as $method){
             $vNumber = (int)str_replace('updateVersion','',$method);
             if($vNumber > $lastVersion){
-                $monitoringItem->getLogger()->notice('Updating to version: ' . $vNumber.' | executin method: ' . $method.'()');
+                if($monitoringItem){
+                    $monitoringItem->getLogger()->notice('Updating to version: ' . $vNumber.' | executin method: ' . $method.'()');
+                }
                 $self->$method();
                 file_put_contents($versionFile,(int)$vNumber);
-                $monitoringItem->getLogger()->notice('Update to version: ' . $vNumber.' successfully.');
+
+                if($monitoringItem){
+                    $monitoringItem->getLogger()->notice('Update to version: ' . $vNumber.' successfully.');
+                }
             }
         }
     }
