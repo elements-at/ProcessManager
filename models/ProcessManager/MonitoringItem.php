@@ -176,30 +176,13 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
 
 
     /**
-     * @return mixed
-     */
-    public function getProcessManagerConfig()
-    {
-        return $this->processManagerConfig;
-    }
-
-    /**
      * @return \ProcessManager\Configuration
      */
     public function getProcessManagerConfigObject(){
-        if($s = $this->getProcessManagerConfig()){
-            $object = \Pimcore\Tool\Serialize::unserialize($s);
-            return $object;
+        if($id = $this->getConfigurationId()){
+            $config = Configuration::getById($id);
+            return $config;
         }
-    }
-
-    /**
-     * @param mixed $processManagerConfig
-     */
-    public function setProcessManagerConfig($processManagerConfig)
-    {
-        $this->processManagerConfig = $processManagerConfig;
-        return $this;
     }
 
     /**

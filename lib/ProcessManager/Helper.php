@@ -28,7 +28,6 @@ class Helper {
 
             $monitoringItem = new MonitoringItem();
             $monitoringItem->setName($config->getName());
-            $monitoringItem->setProcessManagerConfig($config);
             $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
             $monitoringItem->setConfigurationId($config->getId());
             $monitoringItem->setCallbackSettings($callbackSettings);
