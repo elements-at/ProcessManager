@@ -31,8 +31,21 @@ trait ExecutionTrait {
                 $options['command'] = self::getCommand($options);
 
                 $monitoringItem = new MonitoringItem();
+                $monitoringItem->setValues($options);
+
+                if($configId = $monitoringItem->getConfigurationId()){
+                    $config = \ProcessManager\Configuration::getById($configId);
+                    if($executor = $config->getExecutorClassObject()){
+                        $monitoringItem->setLoggers($executor->getLoggers());
+                    }
+                }
+
                 unset($options['id']);
-                if(is_null($options['loggers'])){
+
+                /**
+                 * only set console logger if dont pass loggers or the config doesn't have loggers
+                 */
+                if(is_null($options['loggers']) && empty($monitoringItem->getLoggers())){
                     $monitoringItem->setLoggers([
                         [
                             'logLevel'=> 'DEBUG',
@@ -41,7 +54,7 @@ trait ExecutionTrait {
                         ]
                     ]);
                 }
-                $monitoringItem->setValues($options);
+
                 $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
                 $monitoringItem->setPid(getmypid());
                 $monitoringItem->save();
