@@ -8,6 +8,9 @@ composer update pimcore-plugins/ProcessManager; php pimcore/cli/console.php proc
 ```
 
 ## Release notes
+### 1.0.34 
+Added restrictions/permissions for roles
+
 ### 1.0.25
 Return a dummy Monitoring item if it doesn't exist and added a CLI Logger if "autocreate" was passed and a Monitoring Item has to be created. 
 
