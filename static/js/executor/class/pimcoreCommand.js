@@ -36,19 +36,14 @@ pimcore.plugin.processmanager.executor.class.pimcoreCommand = Class.create(pimco
     },
 
     getFormItems : function(){
-        var items = [];
-        items.push(this.getTextFieldName());
-        items.push(this.getTextField('group'));
-        items.push(this.getTextArea('description'));
-        if(processmanagerPlugin.config.executorCallbackClasses){
-            items.push(this.getCallbackSelect());
-        }
+        var items = this.getDefautlItems();
         items.push(this.getCommandList());
         items.push(this.getTextField('commandOptions'));
         items.push(this.getCheckbox('uniqueExecution'));
         items.push(this.getCronjobField());
         items.push(this.getCronjobDescription());
         items.push(this.getNumberField("keepVersions"));
+
         return items;
     }
 

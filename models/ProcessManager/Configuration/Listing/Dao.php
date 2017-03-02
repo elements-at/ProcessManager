@@ -11,9 +11,11 @@ namespace ProcessManager\Configuration\Listing;
 use ProcessManager\Plugin;
 use Pimcore\Model;
 
-class Dao extends Model\Listing\Dao\AbstractDao {
+class Dao extends Model\Listing\Dao\AbstractDao
+{
 
-    protected function getTableName(){
+    public static function getTableName()
+    {
         return Plugin::TABLE_NAME_CONFIGURATION;
     }
 
@@ -24,14 +26,32 @@ class Dao extends Model\Listing\Dao\AbstractDao {
     {
         $items = [];
 
-        $ids = $this->db->fetchCol("SELECT id FROM " . $this->getTableName() . $this->getCondition() . $this->getOrder() . $this->getOffsetLimit(), $this->model->getConditionVariables());
+        $ids = $this->loadIdList();
         foreach ($ids as $id) {
             $items[] = \ProcessManager\Configuration::getById($id);
         }
         return $items;
     }
 
-    public function getTotalCount() {
-        return (int) $this->db->fetchOne("SELECT COUNT(*) as amount FROM " . $this->getTableName() . " ". $this->getCondition(), $this->model->getConditionVariables());
+    public function getTotalCount()
+    {
+        return (int)$this->db->fetchOne("SELECT COUNT(*) as amount FROM " . $this->getTableName() . " " . $this->getCondition(), $this->model->getConditionVariables());
+    }
+
+    public function loadIdList()
+    {
+        $condition = $this->getCondition();
+        if($user = $this->model->getUser()){
+            if($ids = \ProcessManager\Helper::getAllowedConfigIdsByUser($user)){
+                if($condition) {
+                    $condition .= ' AND ';
+                }else{
+                    $condition .= ' WHERE ';
+                }
+                $condition .= ' id IN(' . implode(',',$ids).')';
+            }
+        }
+
+        return $this->db->fetchCol("SELECT id FROM " . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $this->model->getConditionVariables());
     }
 }

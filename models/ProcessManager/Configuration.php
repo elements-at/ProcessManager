@@ -22,6 +22,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     public $lastCronJobExecution;
     public $active;
     public $keepVersions;
+    public $restrictToRoles;
 
     protected $executorClassObject;
 
@@ -325,5 +326,35 @@ class Configuration extends \Pimcore\Model\AbstractModel
             return $result;
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRestrictToRoles()
+    {
+        return $this->restrictToRoles;
+    }
+
+    /**
+     * @param mixed $restrictToRoles
+     * @return $this
+     */
+    public function setRestrictToRoles($restrictToRoles)
+    {
+        if(is_array($restrictToRoles)){
+            $restrictToRoles = implode(',',$restrictToRoles);
+        }
+        if(is_string($restrictToRoles) && $restrictToRoles != "" && $restrictToRoles[0] != ","){
+            $restrictToRoles = ",".$restrictToRoles;
+        }
+        if(substr($restrictToRoles,-1,1) != "," && $restrictToRoles != ""){
+            $restrictToRoles .= ',';
+        }
+        $this->restrictToRoles = $restrictToRoles;
+        return $this;
+    }
+
+
+
 
 }

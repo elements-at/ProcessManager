@@ -128,7 +128,37 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         this.window.destroy();
     },
 
-   
+    getRoleSelection: function (name) {
+
+        var roles = processmanagerPlugin.config.roles;
+        roles.unshift({
+            'id' : 0,
+            'name' : t('plugin_pm_role_admin')
+        });
+        var rolesStore = Ext.create('Ext.data.JsonStore', {
+            fields: ["id","name"],
+            data: roles
+        });
+
+        var value = this.getFieldValue(name);
+        if(value == ''){
+            value = null;
+        }
+        this.roles = Ext.create('Ext.ux.form.MultiSelect', {
+            name: name,
+            triggerAction:"all",
+            editable:false,
+            fieldLabel:t("plugin_pm_" + name),
+            width:'100%',
+            maxHeight : 100,
+            store: rolesStore,
+            displayField: "name",
+            valueField: "id",
+            value: value
+        });
+
+        return this.roles;
+    },
 
     getCallbackSelect : function () {
         var store = [['','']];
@@ -339,6 +369,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         this.formPanel = new Ext.FormPanel({
             id:'plugin_pm_executor_config_form',
             //title : '',
+            autoScroll: true,
             border: false,
             bodyPadding: 15,
             items: this.getFormItems()
@@ -355,6 +386,19 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
     getFormItems : function(){
         var items = [];
         items.push(this.getTextField('name'));
+        return items;
+    },
+
+    getDefautlItems : function () {
+        var items = [];
+        items.push(this.getTextFieldName());
+        items.push(this.getTextField('group'));
+        items.push(this.getTextArea('description'));
+        items.push(this.getRoleSelection('restrictToRoles'));
+
+        if(processmanagerPlugin.config.executorCallbackClasses){
+            items.push(this.getCallbackSelect());
+        }
         return items;
     }
 });

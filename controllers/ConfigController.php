@@ -16,6 +16,9 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
         $list->setOrderKey('id');
         $list->setLimit($this->getParam('limit',25));
         $list->setOffset($this->getParam("start"));
+
+        $list->setUser($this->user);
+
         if($filterCondition = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($this->getParam('filter'))){
             $list->setCondition($filterCondition);
         }
@@ -25,18 +28,18 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
 
             try {
 
-            $tmp['command'] = $item->getCommand();
-            $tmp['type'] = $item->getExecutorClassObject()->getName();
-            $tmp['extJsSettings'] = $item->getExecutorClassObject()->getExtJsSettings();
+                $tmp['command'] = $item->getCommand();
+                $tmp['type'] = $item->getExecutorClassObject()->getName();
+                $tmp['extJsSettings'] = $item->getExecutorClassObject()->getExtJsSettings();
 
-            $tmp['active'] = (int)$tmp['active'];
-            if($item->getCronJob()){
-                $nextRunTs = $item->getNextCronJobExecutionTimestamp();
-                if($nextRunTs){
-                    $tmp['cronJob'] .= ' <br/>(Next run:'. date('Y-m-d H:i:s',$nextRunTs).')';
+                $tmp['active'] = (int)$tmp['active'];
+                if($item->getCronJob()){
+                    $nextRunTs = $item->getNextCronJobExecutionTimestamp();
+                    if($nextRunTs){
+                        $tmp['cronJob'] .= ' <br/>(Next run:'. date('Y-m-d H:i:s',$nextRunTs).')';
+                    }
                 }
-            }
-            $data[] = $tmp;
+                $data[] = $tmp;
             }catch(\Exception $e){
 
             }
@@ -66,7 +69,6 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
         $executorClass->setLoggers($data['loggers']);
 
        # $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);
-
         if(!$this->getParam('id')){
             $configuration = new \ProcessManager\Configuration();
             $configuration->setActive(true);

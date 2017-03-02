@@ -79,6 +79,18 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
         ksort($pimcoreCommands);
         $data['pimcoreCommands'] = $pimcoreCommands;
 
+        $data['roles'] = [];
+
+        $list = new \Pimcore\Model\User\Role\Listing();
+        $list->setOrder('ASC')->setOrderKey('name');
+        foreach($list->load() as $role){
+            $data['roles'][] = [
+                'id' => $role->getId(),
+                'name' => $role->getName()
+            ];
+        }
+
+
         $this->_helper->json($data);
 
     }

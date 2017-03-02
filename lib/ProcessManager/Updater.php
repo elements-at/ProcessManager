@@ -175,6 +175,15 @@ ENGINE=InnoDB
         \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));
     }
 
+    public function updateVersion5(){
+        $db = \Pimcore\Db::get();
+        $metadata = $db->describeTable(Plugin::TABLE_NAME_CONFIGURATION);
+        if(!in_array('restrictToRoles',array_keys($metadata))){
+            $db->query("ALTER TABLE ".Plugin::TABLE_NAME_CONFIGURATION." ADD COLUMN `restrictToRoles` VARCHAR(100) not null default ''");
+        }
+        \Pimcore\Cache::clearTags(["system", "resource"]);
+    }
+
 
     protected function copyConfig(){
         $configFile = PIMCORE_DOCUMENT_ROOT.'/plugins/ProcessManager/install/plugin-process-manager.php';

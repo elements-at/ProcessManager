@@ -110,3 +110,5 @@
 "plugin_pm_logger_data","Logger data"
 "plugin_pm_logger_actions","Action data"
 "plugin_pm_monitor_reportedDate","Reported on"
+"plugin_pm_restrictToRoles","Restrict to roles"
+"plugin_pm_role_admin","Admin"

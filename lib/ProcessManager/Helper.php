@@ -56,4 +56,20 @@ class Helper {
             return ['success' => false,'message' => $e->getMessage()];
         }
     }
+
+    public static function getAllowedConfigIdsByUser(\Pimcore\Model\User $user){
+        if(!$user->isAdmin()){
+            $roles = $user->getRoles();
+            if(empty($roles)){
+                $roles[] = 'no_result';
+            }
+            $c = [];
+            foreach($roles as $r){
+                $c[] = 'restrictToRoles LIKE "%,'.$r.',%" ';
+            }
+            $c = ' (restrictToRoles = "" OR ('.implode(' OR ',$c).')) ';
+            $ids = \Pimcore\Db::get()->fetchCol("SELECT id FROM " . \ProcessManager\Configuration\Listing\Dao::getTableName() .' WHERE ' . $c);
+            return $ids;
+        }
+    }
 }

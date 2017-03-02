@@ -15,6 +15,7 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
         $list->setOrder('DESC');
         $list->setOrderKey('id');
         $list->setLimit($this->getParam('limit',25));
+        $list->setUser($this->user);
 
         $list->setOffset($this->getParam("start"));
 
