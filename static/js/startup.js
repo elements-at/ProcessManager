@@ -1,3 +1,13 @@
+String.prototype.ucFirst = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase();
+}
+
+if(typeof defaultValue != 'function'){
+    window.defaultValue = function(val,defaultValue){
+        return typeof val != 'undefined' ? val : defaultValue;
+    }
+}
+
 pimcore.registerNS("pimcore.plugin.processmanager");
 
 pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
@@ -23,13 +33,7 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                 text: t("plugin_pm"),
                 iconCls: "plugin_pmicon",
                 cls: "pimcore_main_menu",
-                handler: function () {
-                    if (pimcore.globalmanager.get("plugin_pm_cnf")) {
-                        Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_pm_panel");
-                    } else {
-                        pimcore.globalmanager.add("plugin_pm_cnf", new pimcore.plugin.processmanager.panel.general());
-                    }
-                }
+                handler: this.showProcessManager.bind(this)
             });
         }
         if(extrasMenu){
@@ -39,13 +43,89 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
         this.getConfig();
     },
 
+    showProcessManager : function (config){
+        config = defaultValue(config,{});
+        if (pimcore.globalmanager.get("plugin_pm_cnf")) {
+            return Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_pm_panel");
+        } else {
+            return pimcore.globalmanager.add("plugin_pm_cnf", new pimcore.plugin.processmanager.panel.general(config));
+        }
+    },
+
     getConfig : function(){
         Ext.Ajax.request({
             url: '/plugin/ProcessManager/index/get-plugin-config',
             success: function(response, opts) {
                 this.config = Ext.decode(response.responseText);
+                this.addShortcutMenu();
             }.bind(this)
         });
+    },
+
+    getMenuItem : function (data) {
+        return {
+            text: data.name,
+            iconCls: "pm_icon_cli",
+            handler : this.executeJob.bind(this,data.id)
+        }
+    },
+    addShortcutMenu : function () {
+        if(pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_execute")){
+
+            if(this.config.shortCutMenu){
+                var menuItems = [];
+                for(var key in this.config.shortCutMenu){
+                    if(key != 'default'){
+                        var group = {
+                            text: key,
+                            iconCls: "pimcore_icon_folder",
+                            hideOnClick: false,
+                            menu: {
+                                cls: "pimcore_navigation_flyout",
+                                shadow: false,
+                                items: []
+                            }
+                        }
+                        var childs = this.config.shortCutMenu[key];
+                        for(var i = 0; i < childs.length; i++ ){
+                            group.menu.items.push(this.getMenuItem(childs[i]))
+                        }
+                        menuItems.push(group);
+                    }
+                }
+
+                if(this.config.shortCutMenu['default']){
+                    var childs = this.config.shortCutMenu['default'];
+                    for(var i = 0; i < childs.length; i++ ){
+                        menuItems.push(this.getMenuItem(childs[i]));
+                    }
+                }
+
+                var menu = new Ext.menu.Menu({
+                    items: menuItems,
+                    shadow: false,
+                    cls: "pimcore_navigation_flyout"
+                });
+
+
+                var insertPoint = Ext.get("pimcore_menu_settings");
+                if(!insertPoint) {
+                    var dom = Ext.dom.Query.select('#pimcore_navigation ul li:last');
+                    insertPoint = Ext.get(dom[0]);
+                }
+                var toolbar = pimcore.globalmanager.get("layout_toolbar");
+
+                this.navEl = Ext.get(
+                    insertPoint.insertHtml(
+                        "afterEnd",
+                        '<li id="plugin_pm_shortcut_menu" class="pimcore_menu_item" data-menu-tooltip="' + t('plugin_pm')+'">' + t('plugin_pm') + '</li>'
+                    )
+                );
+
+                this.navEl.on("mousedown", toolbar.showSubMenu.bind(menu));
+                pimcore.helpers.initMenuTooltips();
+            }
+        }
     },
 
     monitoringItemRestart : function(id){
@@ -78,9 +158,31 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     },
 
     download : function(id,accessKey){
-
         var url = '/plugin/ProcessManager/index/download/?id='+ id +'&accessKey=' + accessKey;
         pimcore.helpers.download(url);
+    },
+
+    executeJob: function (id) {
+        Ext.Ajax.request({
+            url: '/plugin/ProcessManager/config/get-by-id?id=' + id,
+            success: function (response) {
+                var data = Ext.decode(response.responseText);
+                if (data.success) {
+                    var configData = data.data;
+                    var callbackClass = configData.executorSettings.values.callback;
+                    if (callbackClass) {
+                        callbackClass = eval('new ' + callbackClass + '()');
+                    } else {
+                        callbackClass = new pimcore.plugin.processmanager.executor.callback.default();
+                    }
+                    callbackClass.reset();
+                    callbackClass.setConfig(configData);
+                    callbackClass.execute();
+                } else {
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", data.message);
+                }
+            }.bind(this)
+        });
     }
 });
 

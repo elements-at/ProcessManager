@@ -2,7 +2,7 @@ pimcore.registerNS("pimcore.plugin.processmanager.executor.class.classMethod");
 pimcore.plugin.processmanager.executor.class.classMethod = Class.create(pimcore.plugin.processmanager.executor.class.abstractExecutor,{
 
     getFormItems : function(){
-        var items = this.getDefautlItems();
+        var items = this.getDefaultItems();
         items.push(this.getTextField('executorClass'));
         items.push(this.getTextField('executorMethod'));
         items.push(this.getCheckbox('uniqueExecution'));

@@ -5,11 +5,17 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
     grid : null,
     rowIndex : null,
     record : null,
+    config : null,
 
     settings : {
         windowWidth: 800,
         windowHeight: 400,
         windowTitle : t('plugin_pm_callback_title')
+    },
+
+    reset : function () {
+        this.specialFormFields = [];
+        this.mandatoryFields = [];
     },
 
     initialize : function (grid,rowIndex) {
@@ -21,20 +27,39 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         }
     },
 
+    /**
+     * record is set only by predefined callback settings
+     * @param record
+     */
     setRecord : function(record){
         this.record = record;
     },
 
+    setConfig : function (config) {
+        this.config = config;
+    },
+
     applyCallbackSettings : function(data){
+
         if(data){
-            this.formPanel.getForm().setValues(data);
+            this.setFormData(data);
         }else if(this.record){
             this.callbackSettingsForm.getForm().findField('name').setValue(this.record.get('name'));
             this.callbackSettingsForm.getForm().findField('description').setValue(this.record.get('description'));
             var settings = this.record.get('extJsSettings');
-            this.formPanel.getForm().setValues(settings);
+            this.setFormData(settings);
         }
     },
+
+    setFormData : function (data) {
+        this.formPanel.getForm().setValues(data);
+        for(var i =0; i < this.specialFormFields.length; i++){
+            var rec = this.specialFormFields[i];
+            var method = 'setStorageValue' + Ext.util.Format.capitalize(rec.type);
+            this[method](rec.name,data);
+        }
+    },
+
     openSaveSettingsWindow : function(){
 
         var items = [];
@@ -42,7 +67,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         var fieldSetGeneral = new Ext.form.FieldSet({
             title: t("plugin_pm_field_set_general"),
             combineErrors:false,
-            items:[this.getTextField('name'),
+            items:[this.getTextField('name',{mandatory : true}),
                 this.getTextArea('description')]
         });
         items.push(fieldSetGeneral);
@@ -74,10 +99,19 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 handler: function(){
                     var settings = this.getStorageValues();
                     var values = this.callbackSettingsForm.getValues();
+
+                    var merged = Ext.merge(settings, values);
+
+                    var errors = this.formHasErrors(merged);
+                    if(errors){
+                        this.alertFormErrors(errors);
+                        return false;
+                    }
                     var params = {values : Ext.encode(values),
                                   settings: Ext.encode(settings),
                                   type : this.name
                     };
+
                     if(this.record){
                         params.id = this.record.get('id');
                     }
@@ -122,7 +156,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             layout : "fit",
             title: t("plugin_pm_callback_settings_save"),
             icon : '/pimcore/static6/img/flat-color-icons/settings.svg',
-            modal:true,
+            modal:false,
             width: 700,
             items:[this.callbackSettingsForm],
             buttons : buttons
@@ -174,12 +208,50 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         if(this.formPanel){
             data = this.formPanel.getForm().getValues();
         }
+
+        for(var i =0; i < this.specialFormFields.length; i++){
+            var rec = this.specialFormFields[i];
+            var method = 'getStorageValue' + Ext.util.Format.capitalize(rec.type);
+            data[rec.name] = this[method](rec.name);
+        }
         return data;
     },
 
+    getStorageValueGrid : function (name) {
+        var elementData = [];
+        this['formElement' + name].getStore().each(function(rec) {
+                elementData.push(rec.data);
+            }
+        );
+        return elementData;
+    },
+
+    setStorageValueGrid : function (name,data) {
+        var d = data[name];
+        if(d){
+            for(var i = 0; i < d.length;i++){
+                this['formElement' + name].getStore().add(d[i]);
+            }
+        }
+    },
+
     doExecute : function () {
-        var params = {id: this.record.get('id'),
-                      callbackSettings: Ext.encode(this.getStorageValues())};
+        var data = this.getStorageValues();
+
+        var errors = this.formHasErrors(data);
+        if(errors){
+            this.alertFormErrors(errors);
+            return false;
+        }
+
+        if(this.config){
+            var id = this.config.id;
+        }else{
+            var id = this.record.get('id');
+        }
+
+        var params = {id: id,
+                      callbackSettings: Ext.encode(data)};
 
         if(this.window){
             this.closeWindow();
@@ -196,7 +268,11 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 var data = Ext.decode(response.responseText);
                 if (data.success) {
                     pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
-                    Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(1);
+                    if(Ext.getCmp("pimcore_plugin_pm_panel")){
+                        Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(1);
+                    }else{
+                        processmanagerPlugin.showProcessManager({activeTab : 1});
+                    }
                 } else {
                     pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", data.message);
                 }
@@ -217,6 +293,8 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             bodyPadding: 15,
             items: this.getFormItems()
         });
+
+
 
         return this.formPanel;
     },
@@ -267,7 +345,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             layout : "fit",
             title: this.settings.windowTitle,
             iconCls: "pimcore_icon_system",
-            modal:true,
+            modal:false,
             width:this.settings.windowWidth,
             close : this.closeWindow.bind(this),
             items:[this.getFormPanel()],

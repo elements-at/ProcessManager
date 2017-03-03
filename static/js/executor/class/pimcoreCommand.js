@@ -36,7 +36,7 @@ pimcore.plugin.processmanager.executor.class.pimcoreCommand = Class.create(pimco
     },
 
     getFormItems : function(){
-        var items = this.getDefautlItems();
+        var items = this.getDefaultItems();
         items.push(this.getCommandList());
         items.push(this.getTextField('commandOptions'));
         items.push(this.getCheckbox('uniqueExecution'));

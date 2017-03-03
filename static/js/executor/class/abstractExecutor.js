@@ -128,37 +128,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         this.window.destroy();
     },
 
-    getRoleSelection: function (name) {
 
-        var roles = processmanagerPlugin.config.roles;
-        roles.unshift({
-            'id' : 0,
-            'name' : t('plugin_pm_role_admin')
-        });
-        var rolesStore = Ext.create('Ext.data.JsonStore', {
-            fields: ["id","name"],
-            data: roles
-        });
-
-        var value = this.getFieldValue(name);
-        if(value == ''){
-            value = null;
-        }
-        this.roles = Ext.create('Ext.ux.form.MultiSelect', {
-            name: name,
-            triggerAction:"all",
-            editable:false,
-            fieldLabel:t("plugin_pm_" + name),
-            width:'100%',
-            maxHeight : 100,
-            store: rolesStore,
-            displayField: "name",
-            valueField: "id",
-            value: value
-        });
-
-        return this.roles;
-    },
 
     getCallbackSelect : function () {
         var store = [['','']];
@@ -223,7 +193,8 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
     },
 
     getStorageValues : function () {
-        return this.formPanel.getForm().getValues();
+        var values = this.formPanel.getForm().getValues();
+        return values;
     },
 
     updateConfig : function(){
@@ -389,9 +360,9 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         return items;
     },
 
-    getDefautlItems : function () {
+    getDefaultItems : function () {
         var items = [];
-        items.push(this.getTextFieldName());
+        items.push(this.getTextField('name',{mandatory : true}));
         items.push(this.getTextField('group'));
         items.push(this.getTextArea('description'));
         items.push(this.getRoleSelection('restrictToRoles'));

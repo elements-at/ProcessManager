@@ -2,7 +2,8 @@
 pimcore.registerNS("pimcore.plugin.processmanager.panel.general");
 pimcore.plugin.processmanager.panel.general = Class.create({
 
-    initialize: function () {
+    initialize: function (config) {
+        config = defaultValue(config,{});
 
         if (!this.panel) {
             this.configPanel = new pimcore.plugin.processmanager.panel.config();
@@ -35,6 +36,10 @@ pimcore.plugin.processmanager.panel.general = Class.create({
                 Ext.TaskManager.stop(this.monitoringItems.autoRefreshTask);
                 pimcore.globalmanager.remove("plugin_pm_cnf");
             }.bind(this));
+
+            if(config.activeTab){
+                this.panel.setActiveTab(config.activeTab);
+            }
 
             pimcore.layout.refresh();
 

@@ -29,7 +29,7 @@ pimcore.plugin.processmanager.executor.class.exportToolkit = Class.create(pimcor
     },
 
     getFormItems : function(){
-        var items = this.getDefautlItems();
+        var items = this.getDefaultItems();
         items.push(this.getConfigList());
         items.push(this.getCheckbox('uniqueExecution'));
         items.push(this.getCronjobField());

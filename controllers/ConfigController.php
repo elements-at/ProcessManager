@@ -7,6 +7,30 @@ use ProcessManager\Plugin;
 
 class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
 {
+    public function getByIdAction(){
+
+        try {
+            $list = new Configuration\Listing();
+            $list->setUser($this->user)->setCondition('id = ?',[$this->getParam('id')]);
+            $config = $list->load()[0];
+
+            $values = $config->getObjectVars();
+            if($tmp = $values['executorSettings']){
+                $values['executorSettings'] = json_decode($tmp,true);
+            }
+            $result = [
+                'success' => true,
+                'data' => $values
+            ];
+        }catch (\Exception $e){
+            $result = [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+        $this->_helper->json($result);
+    }
+
     public function listAction()
     {
         $this->checkPermission('plugin_pm_permission_view');

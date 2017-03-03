@@ -74,9 +74,9 @@ pimcore.plugin.processmanager.panel.config = Class.create({
             }
         );
         gridColumns.push({header: t("plugin_pm_name"), width: 200, sortable: true, dataIndex: 'name', filter: 'string'});
-        gridColumns.push({header: t("plugin_pm_description"), width: 300, sortable: true, dataIndex: 'description', filter: 'string'});
-        gridColumns.push({header: t("plugin_pm_command"), flex: 400, sortable: false, dataIndex: 'command'});
         gridColumns.push({header: t("plugin_pm_group"), width: 100, sortable: true, dataIndex: 'group', filter: 'string'});
+        gridColumns.push({header: t("plugin_pm_description"), flex: 300, sortable: true, dataIndex: 'description', filter: 'string'});
+        gridColumns.push({header: t("plugin_pm_command"), flex: 400, sortable: false, dataIndex: 'command',hidden : true});
         gridColumns.push({
             header: t("plugin_pm_cronjob"),
             width: 100,
@@ -115,13 +115,15 @@ pimcore.plugin.processmanager.panel.config = Class.create({
                     hideable: false,
                     xtype: 'actioncolumn',
 
-                    header: t("plugin_pm_permission_execute"),
+                    header: t("plugin_pm_permission_execute_column_name"),
                     width: 60,
                     items: [
                         {
                             tooltip: t('plugin_pm_permission_execute'),
                             icon: "/pimcore/static6/img/flat-color-icons/go.svg",
-                            handler: this.executeJob.bind(this),
+                            handler: function(grid,rowIndex){
+                                processmanagerPlugin.executeJob(grid.getStore().getAt(rowIndex).get('id'));
+                            },
                             getClass: function (v, meta, rec) {
                                 if(!rec.get("active")){
                                     return 'process-manager-hide-icon';
@@ -320,19 +322,22 @@ pimcore.plugin.processmanager.panel.config = Class.create({
         this.layout.removeAll();
         this.layout.add(this.grid);
         this.layout.updateLayout();
-    },
+    }
+
+    /*,
 
     executeJob : function (grid, rowIndex) {
         var record = grid.getStore().getAt(rowIndex);
         var callbackClass = record.get('extJsSettings').values.callback;
         if(callbackClass){
-            var callback = eval('new ' + callbackClass + '(grid, rowIndex)');
+            this.callback = eval('new ' + callbackClass + '(grid, rowIndex)');
         }else{
-            var callback = new pimcore.plugin.processmanager.executor.callback.default(grid, rowIndex);
+            this.callback = new pimcore.plugin.processmanager.executor.callback.default(grid, rowIndex);
         }
-        callback.setRecord(record);
-        callback.execute();
-    }
+        this.callback.reset();
+        this.callback.setRecord(record);
+        this.callback.execute();
+    }*/
 
 });
 

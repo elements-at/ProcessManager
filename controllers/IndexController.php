@@ -91,6 +91,18 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
         }
 
 
+        $shortCutMenu = [];
+
+        $list = new Configuration\Listing();
+        $list->setUser($this->user);
+        $list->setOrderKey('name');
+        foreach($list->load() as $config){
+            $group = $config->getGroup() ?: 'default';
+            $shortCutMenu[$group][] = ['id' => $config->getId(),'name' => $config->getName(),'group' => $config->getGroup()];
+        }
+        $data['shortCutMenu'] = $shortCutMenu ?: false;
+
+
         $this->_helper->json($data);
 
     }

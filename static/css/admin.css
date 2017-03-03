@@ -12,6 +12,14 @@
     background: url(/pimcore/static6/img/flat-color-icons/cable_release.svg) center center no-repeat !important;
 }
 
+#plugin_pm_shortcut_menu {
+    background-image: url(/pimcore/static6/img/flat-color-icons/cable_release.svg) !important;
+}
+
+.pm_icon_cli {
+    background: url(/pimcore/static6/img/flat-color-icons/go.svg) center center no-repeat !important;
+}
+
 .plugin-process-manager-status-finished {
     background-color: #9ACD32;
 }
@@ -47,4 +55,14 @@
 
 .process-manager-hide-icon {
     display: none;
+}
+
+.pm_tooltip_icon {
+    position: relative;
+    left:3px;
+    top:3px;
+}
+.pm_number_select .x-form-trigger-wrap-default{
+    height: auto;
+    vertical-align: top;
 }
