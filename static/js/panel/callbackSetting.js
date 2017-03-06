@@ -110,7 +110,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                             var conf = processmanagerPlugin.config.executorCallbackClasses[rec.get('type')];
                             var obj =  eval('new ' + conf.extJsClass);
                             obj.setRecord(rec);
-                            obj.openSaveSettingsWindow();
+                            obj.openSaveSettings();
                         }.bind(this)
                     }
                 ]
@@ -215,7 +215,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                 if (processmanagerPlugin.config.executorCallbackClasses.hasOwnProperty(key)) {
                     var h = function(button){
                         var obj =  eval('new ' + processmanagerPlugin.config.executorCallbackClasses[this.callbackType].extJsClass);
-                        obj.openSaveSettingsWindow();
+                        obj.openSaveSettings();
                     };
 
                     if(i == 0){

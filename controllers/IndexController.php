@@ -76,6 +76,7 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
                 $pimcoreCommands[$key] = $tmp;
             }
         }
+
         ksort($pimcoreCommands);
         $data['pimcoreCommands'] = $pimcoreCommands;
 

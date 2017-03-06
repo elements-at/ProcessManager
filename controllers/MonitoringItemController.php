@@ -123,8 +123,10 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
             }
             $tmp['isAlive'] = $item->isAlive();
 
+            $tmp['progress'] = '-';
             if($item->getCurrentWorkload() && $item->getTotalWorkload()){
-                $tmp['progress'] = round($item->getCurrentWorkload()/($item->getTotalWorkload()/100));
+                $progress = $item->getProgressPercentage();
+                $tmp['progress'] = '<div class="x-progress x-progress-default x-border-box" style="width:100%;"><div class="x-progress-text x-progress-text-back">'.$progress.'%</div><div class="x-progress-bar x-progress-bar-default" style="width:'.$progress.'%"><div class="x-progress-text"><div>'.$progress.'%</div></div></div></div>';
             }
 
             $tmp['callbackSettingsString'] = \Zend_Json::encode($item->getCallbackSettings());

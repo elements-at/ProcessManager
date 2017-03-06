@@ -177,21 +177,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             header: 'Progress',
             dataIndex: 'progress',
             sortable: false,
-            width: 110,
-            renderer: function (v, m, r) {
-                if(!v){
-                    return '-';
-                }
-                var id = Ext.id();
-                Ext.defer(function () {
-                    Ext.widget('progressbar', {
-                        renderTo: id,
-                        value: v / 100,
-                        width: 100
-                    });
-                }, 50);
-                return Ext.String.format('<div id="{0}"></div>', id);
-            }
+            width: 110
         });
 
         gridColumns.push({header: t("plugin_pm_message"), flex: 30, sortable: true, dataIndex: 'message', filter: 'string'});

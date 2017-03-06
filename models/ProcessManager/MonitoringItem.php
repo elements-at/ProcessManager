@@ -639,5 +639,14 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
         return $data;
     }
 
+    /**
+     * @return int|null
+     */
+    public function getProgressPercentage(){
+        if($this->getCurrentWorkload() && $this->getTotalWorkload()){
+            return round($this->getCurrentWorkload()/($this->getTotalWorkload()/100));
+        }
+        return null;
+    }
 
 }
