@@ -185,6 +185,16 @@ ENGINE=InnoDB
     }
 
 
+    protected function updateVersion6(){
+        $db = \Pimcore\Db::get();
+        try {
+            $db->query("ALTER TABLE ".Plugin::TABLE_NAME_CONFIGURATION." ADD UNIQUE INDEX `name` (`name`)");
+        }catch (\Exception $e){
+            echo "Can't add Unique key to column 'name' in '" . Plugin::TABLE_NAME_CONFIGURATION."'. Please add them manually!";
+        }
+    }
+
+
     protected function copyConfig(){
         $configFile = PIMCORE_DOCUMENT_ROOT.'/plugins/ProcessManager/install/plugin-process-manager.php';
         if(!is_dir(PIMCORE_CUSTOM_CONFIGURATION_DIRECTORY)){

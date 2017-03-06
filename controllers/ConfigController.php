@@ -107,7 +107,11 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
         }
         $configuration->setExecutorClass($executorConfig['class']);
         $configuration->setExecutorSettings($executorClass->getStorageValue());
-        $configuration->save();
+        try {
+            $configuration->save();
+        }catch(\Exception $e){
+            $this->_helper->json(['success' => false,'message' => $e->getMessage()]);
+        }
         $this->_helper->json(['success' => true,'id' => $configuration->getId()]);
     }
 

@@ -335,6 +335,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                             var data = Ext.decode(response.responseText);
                             if(data.success){
                                 pimcore.helpers.showNotification(t("success"), t("plugin_pm_clear_monitoring_items_success"), "success");
+                                this.store.reload();
                                 this.window.destroy();
                             }else {
                                 pimcore.helpers.showNotification(t("error"), t("plugin_pm_error_process_manager"), "error",t(data.message));

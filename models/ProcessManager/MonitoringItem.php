@@ -35,8 +35,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
 
     public $command;
 
-    public $processManagerConfig;
-
     public $creationDate;
 
     public $configurationId;
@@ -631,6 +629,15 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
         return $this;
     }
 
+    public function getForWebserviceExport(){
+        $data = $this->getObjectVars();
+
+        $data['callbackSettings'] = json_decode($data['callbackSettings'],true);
+        $data['actions'] = json_decode($data['actions'],true);
+        $data['loggers'] = json_decode($data['loggers'],true);
+        unset($data['command']);
+        return $data;
+    }
 
 
 }
