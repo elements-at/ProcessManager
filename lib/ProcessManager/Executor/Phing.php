@@ -13,7 +13,7 @@ class Phing extends AbstractExecutor
     protected $name = 'phing';
     protected $useMonitoringItem = false;
     protected $isShellCommand = true;
-    protected $extJsConfigurationClass = 'pimcore.plugin.processmanager.executor.phing';
+    protected $extJsClass = 'pimcore.plugin.processmanager.executor.phing';
 
     /**
      * @param string[] $callbackSettings

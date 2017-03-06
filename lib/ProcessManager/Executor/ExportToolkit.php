@@ -11,7 +11,7 @@ namespace ProcessManager\Executor;
 class ExportToolkit extends AbstractExecutor
 {
     protected $name = 'exportToolkit';
-    protected $extJsConfigurationClass = 'pimcore.plugin.processmanager.executor.class.exportToolkit';
+    protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.exportToolkit';
 
     /**
      * @param string[] $callbackSettings

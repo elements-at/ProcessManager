@@ -194,6 +194,21 @@ ENGINE=InnoDB
         }
     }
 
+    public function updateVersion7(){
+        $configFile = \Pimcore\Config::locateConfigFile("plugin-process-manager.php");
+        $config = Plugin::getConfig();
+
+        foreach(['executorClasses','executorLoggerClasses','executorActionClasses','executorCallbackClasses'] as $classType){
+            $tmp = [];
+            foreach($config[$classType] as $key => $value){
+                $value['class'] = $key;
+                $tmp[] = $value;
+            }
+            $config[$classType] = $tmp;
+        }
+        \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));
+    }
+
 
     protected function copyConfig(){
         $configFile = PIMCORE_DOCUMENT_ROOT.'/plugins/ProcessManager/install/plugin-process-manager.php';

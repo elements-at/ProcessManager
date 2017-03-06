@@ -16,7 +16,7 @@ abstract class AbstractExecutor implements \JsonSerializable{
 
 
 
-    protected $extJsConfigurationClass = '';
+    protected $extJsClass = '';
 
     protected $values = [];
 
@@ -96,18 +96,18 @@ abstract class AbstractExecutor implements \JsonSerializable{
     /**
      * @return string
      */
-    public function getExtJsConfigurationClass()
+    public function getExtJsClass()
     {
-        return $this->extJsConfigurationClass;
+        return $this->extJsClass;
     }
 
     /**
-     * @param string $extJsConfigurationClass
+     * @param string $extJsClass
      * @return $this
      */
-    public function setExtJsConfigurationClass($extJsConfigurationClass)
+    public function setExtJsClass($extJsClass)
     {
-        $this->extJsConfigurationClass = $extJsConfigurationClass;
+        $this->extJsClass= $extJsClass;
         return $this;
     }
 
@@ -132,7 +132,7 @@ abstract class AbstractExecutor implements \JsonSerializable{
     public function getExtJsSettings(){
 
         $executorConfig = [
-            'extJsConfigurationClass' => $this->getExtJsConfigurationClass(),
+            'extJsClass' => $this->getExtJsClass(),
             'name' => $this->getName(),
             'class' => $this->getConfig()->getExecutorClass(),
         ];

@@ -11,7 +11,7 @@ namespace ProcessManager\Executor;
 class ClassMethod extends AbstractExecutor
 {
     protected $name = 'classMethod';
-    protected $extJsConfigurationClass = 'pimcore.plugin.processmanager.executor.class.classMethod';
+    protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.classMethod';
 
     /**
      * @param string[] $callbackSettings

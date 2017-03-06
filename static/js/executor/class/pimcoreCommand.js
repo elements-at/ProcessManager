@@ -10,7 +10,7 @@ pimcore.plugin.processmanager.executor.class.pimcoreCommand = Class.create(pimco
 
         var store = [];
 
-        var commandWhiteList = processmanagerPlugin.config.executorClass.pimcoreCommand.config.commandWhiteList;
+        var commandWhiteList = processmanagerPlugin.config.executorClasses.pimcoreCommand.config.commandWhiteList;
 
         for (var key in processmanagerPlugin.config.pimcoreCommands) {
             if (processmanagerPlugin.config.pimcoreCommands.hasOwnProperty(key)) {

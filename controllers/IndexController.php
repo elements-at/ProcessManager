@@ -9,62 +9,33 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
 
     public function getPluginConfigAction(){
         $this->checkPermission('plugin_pm_permission_view');
-        $data = [
-            'executorClass' => [],
-            'executorActionClasses' => [],
-        ];
+        $data = [];
 
 
         $pluginConfig = Plugin::getConfig();
 
-        foreach((array)$pluginConfig['executorClasses'] as $class => $config){
-            if(\Pimcore\Tool::classExists($class)){
-                $o = new $class($config);
-                if($o instanceof \ProcessManager\Executor\AbstractExecutor){
-                    $data['executorClass'][$o->getName()]['name'] = $o->getName();
-                    $data['executorClass'][$o->getName()]['class'] = '\\'.get_class($o);
-                    $data['executorClass'][$o->getName()]['config'] = $o->getConfig();
-                    $data['executorClass'][$o->getName()]['extJsConfigurationClass'] = $o->getExtJsConfigurationClass();
+        $classTypeMapping = ['executorClasses' => '\ProcessManager\Executor\AbstractExecutor',
+                            'executorActionClasses' => '\ProcessManager\Executor\Action\AbstractAction',
+                            'executorCallbackClasses' => '\ProcessManager\Executor\Callback\AbstractCallback',
+                            'executorLoggerClasses' => '\ProcessManager\Executor\Logger\AbstractLogger',
+                        ];
+        foreach($classTypeMapping as $classType => $abstractClassType){
+            if(is_null($data[$classType])){
+                $data[$classType] = [];
+            }
+            foreach((array)$pluginConfig[$classType] as $config){
+                $class = $config['class'];
+                if(\Pimcore\Tool::classExists($class)){
+                    $o = new $class($config);
+                    if($o instanceof $abstractClassType){
+                        $data[$classType][$o->getName()]['name'] = $o->getName();
+                        $data[$classType][$o->getName()]['class'] = '\\'.get_class($o);
+                        $data[$classType][$o->getName()]['config'] = $o->getConfig();
+                        $data[$classType][$o->getName()]['extJsClass'] = $o->getExtJsClass();
+                    }
                 }
             }
         }
-
-        foreach((array)$pluginConfig['executorActionClasses'] as $class => $config){
-            if(\Pimcore\Tool::classExists($class)){
-                $o = new $class($config);
-                if($o instanceof \ProcessManager\Executor\Action\AbstractAction){
-                    $data['executorActionClasses'][$o->getName()]['name'] = $o->getName();
-                    $data['executorActionClasses'][$o->getName()]['class'] = '\\'.get_class($o);
-                    $data['executorActionClasses'][$o->getName()]['config'] = $o->getConfig();
-                    $data['executorActionClasses'][$o->getName()]['extJsClass'] = $o->getExtJsClass();
-                }
-            }
-        }
-
-        foreach((array)$pluginConfig['executorCallbackClasses'] as $class => $config){
-            if(\Pimcore\Tool::classExists($class)){
-                $o = new $class($config);
-                if($o instanceof \ProcessManager\Executor\Callback\AbstractCallback){
-                    $data['executorCallbackClasses'][$o->getName()]['name'] = $o->getName();
-                    $data['executorCallbackClasses'][$o->getName()]['class'] = '\\'.get_class($o);
-                    $data['executorCallbackClasses'][$o->getName()]['config'] = $o->getConfig();
-                    $data['executorCallbackClasses'][$o->getName()]['extJsClass'] = $o->getExtJsClass();
-                }
-            }
-        }
-
-        foreach((array)$pluginConfig['executorLoggerClasses'] as $class => $config){
-            if(\Pimcore\Tool::classExists($class)){
-                $o = new $class($config);
-                if($o instanceof \ProcessManager\Executor\Logger\AbstractLogger){
-                    $data['executorLoggerClasses'][$o->getName()]['name'] = $o->getName();
-                    $data['executorLoggerClasses'][$o->getName()]['class'] = '\\'.get_class($o);
-                    $data['executorLoggerClasses'][$o->getName()]['config'] = $o->getConfig();
-                    $data['executorLoggerClasses'][$o->getName()]['extJsClass'] = $o->getExtJsClass();
-                }
-            }
-        }
-
 
         $pimcoreCommands = [];
 
@@ -122,6 +93,14 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
                 $class->execute($monitoringItem,$action);
             }
         }
+    }
+
+    public function updatePluginAction(){
+        //just for testing
+
+        $method = 'updateVersion'. $this->getParam('version');
+
+        \ProcessManager\Updater::getInstance()->$method();
 
     }
 }

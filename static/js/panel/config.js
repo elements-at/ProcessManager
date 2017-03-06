@@ -147,7 +147,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
                         icon: "/pimcore/static6/img/flat-color-icons/settings.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
-                            var className = rec.get('extJsSettings').executorConfig.extJsConfigurationClass;
+                            var className = rec.get('extJsSettings').executorConfig.extJsClass;
                             var obj =  eval('new ' + className);
                             obj.setRecord(rec);
                             obj.show();
@@ -260,11 +260,11 @@ pimcore.plugin.processmanager.panel.config = Class.create({
             this.toolbarButtons = {};
 
             var i = 0;
-            for (var key in processmanagerPlugin.config.executorClass) {
-                if (processmanagerPlugin.config.executorClass.hasOwnProperty(key)) {
+            for (var key in processmanagerPlugin.config.executorClasses) {
+                if (processmanagerPlugin.config.executorClasses.hasOwnProperty(key)) {
                     var h = function(button){
-                        var obj =  eval('new ' + processmanagerPlugin.config.executorClass[this.executorType].extJsConfigurationClass);
-                        obj.setExecutorConfig(processmanagerPlugin.config.executorClass[this.executorType]);
+                        var obj =  eval('new ' + processmanagerPlugin.config.executorClasses[this.executorType].extJsClass);
+                        obj.setExecutorConfig(processmanagerPlugin.config.executorClasses[this.executorType]);
                         obj.show();
                     };
 

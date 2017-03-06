@@ -70,8 +70,8 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                 dataIndex: 'type'
             }
         );
-        gridColumns.push({header: t("name"), width: 200, sortable: true, dataIndex: 'name', filter: 'string'});
-        gridColumns.push({header: t("description"), width: 300, sortable: true, dataIndex: 'description', filter: 'string'});
+        gridColumns.push({header: t("name"), flex: 300, sortable: true, dataIndex: 'name', filter: 'string'});
+        gridColumns.push({header: t("description"), flex: 300, sortable: true, dataIndex: 'description', filter: 'string'});
 
         var dateRenderer =  function(d) {
             if (d !== undefined) {

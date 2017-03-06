@@ -11,7 +11,7 @@ namespace ProcessManager\Executor;
 class CliCommand extends AbstractExecutor
 {
     protected $name = 'cliCommand';
-    protected $extJsConfigurationClass = 'pimcore.plugin.processmanager.executor.class.command';
+    protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.command';
 
     /**
      * @param string[] $callbackSettings
