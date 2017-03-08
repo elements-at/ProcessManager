@@ -8,29 +8,7 @@ composer update pimcore-plugins/ProcessManager; php pimcore/cli/console.php proc
 ```
 
 ## Release notes
-### 1.0.34 
-Added restrictions/permissions for roles
-
-### 1.0.25
-Return a dummy Monitoring item if it doesn't exist and added a CLI Logger if "autocreate" was passed and a Monitoring Item has to be created. 
-
-### 1.0.24
-Added process-manager:update Command. Plugin updates can now be done with php pimcore/cli/console.php process-manager:update
-
-### 1.0.23 
-
-Added general Callback class (\ProcessManager\Executor\Callback\General) + automatically check executing user. 
-
-Callbacks can now be defined in the config as:
-
-```
-'\ProcessManager\Executor\Callback\General' => [
-            'extJsClass' => 'pimcore.plugin.tyrolitpim.processmanager.executor.callback.exportEasyCatalog',
-            'name' => 'exportEasyCatalog'
-    ]
-```
-
-
+Take a look at the tags :-)
 ## Introduction
 
 > The    ProcessManager allows you to manage (define,execute...) arbitrary processes/commands in the Pimcore backend. 
