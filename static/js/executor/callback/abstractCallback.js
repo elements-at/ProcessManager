@@ -63,11 +63,19 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
     },
 
     setFormData : function (data) {
+
+       // data.myDate = new Date(data.myDate*1000);
+
+
         this.formPanel.getForm().setValues(data);
         for(var i =0; i < this.specialFormFields.length; i++){
             var rec = this.specialFormFields[i];
             var method = 'setStorageValue' + Ext.util.Format.capitalize(rec.type);
-            this[method](rec.name,data);
+            if(typeof this[method] == 'function'){
+                this[method](rec.name,data);
+            }else{
+                alert('You have to implement the method: ' + method + '()');
+            }
         }
     },
 
@@ -110,7 +118,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                     var settings = this.getStorageValues();
                     var values = this.callbackSettingsForm.getValues();
 
-                    var merged = Ext.merge(settings, values);
+                    var merged = Ext.merge(values,settings);
 
                     var errors = this.formHasErrors(merged);
                     if(errors){
@@ -264,27 +272,13 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         return data;
     },
 
-    getStorageValueGrid : function (name) {
-        var elementData = [];
-        this['formElement' + name].getStore().each(function(rec) {
-                elementData.push(rec.data);
-            }
-        );
-        return elementData;
-    },
 
-    setStorageValueGrid : function (name,data) {
-        var d = data[name];
-        if(d){
-            for(var i = 0; i < d.length;i++){
-                this['formElement' + name].getStore().add(d[i]);
-            }
-        }
-    },
+
 
     doExecute : function () {
         var data = this.getStorageValues();
 
+        console.log(data);
         var errors = this.formHasErrors(data);
         if(errors){
             this.alertFormErrors(errors);
@@ -387,6 +381,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         this.window = new Ext.Window({
             id:'editWindow',
             autoScroll: true,
+
             height: this.settings.windowHeight,
             layout : "fit",
             title: this.settings.windowTitle,
@@ -417,6 +412,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 title: t('plugin_pm_callback_title') + ' (' + this.config.name + ')',
                 id: tabId,
                 border: false,
+
                 layout: "fit",
                 iconCls: "pm_icon_cli",
                 closable:true,

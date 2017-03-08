@@ -103,4 +103,18 @@ class ProcessManager_IndexController extends \Pimcore\Controller\Action\Admin
         \ProcessManager\Updater::getInstance()->$method();
 
     }
+
+    public function propertyListAction(){
+        $result = [];
+        $fieldName = $this->getParam('fieldName');
+
+        if($fieldName == 'myProperties'){
+            $result = [];
+            for($i = 1; $i < 50; $i++){
+                $result[] = ['id' => $i,'name' =>'Display text - ' . $fieldName.' - ' . $i];
+            }
+        }
+
+        $this->_helper->json(['success' => true,'data' => $result]);
+    }
 }

@@ -220,7 +220,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
 
                     if(i == 0){
                         this.toolbarButtons = new Ext.SplitButton({
-                            text: t('plugin_pm_button_add_' + key),
+                            text: t('plugin_pm_' + key),
                             iconCls: "pimcore_icon_add",
                             scale: "medium",
                             callbackType : key,
@@ -229,7 +229,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                         });
                     } else {
                         var item = {
-                            text: t('plugin_pm_button_add_' + key),
+                            text: t('plugin_pm_' + key),
                             iconCls: "pimcore_icon_add",
                             callbackType : key,
                             handler: h

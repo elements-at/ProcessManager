@@ -66,3 +66,14 @@
     height: auto;
     vertical-align: top;
 }
+
+.plugin_pm_property_selector_panel_source {
+    border-top: 1px solid #d0d0d0;
+    border-right: 1px solid #d0d0d0;
+}
+.plugin_pm_property_selector_panel_target {
+    border-top: 1px solid #d0d0d0;
+}
+.plugin_pm_property_selector_panel {
+    margin-bottom: 10px;
+}

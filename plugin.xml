@@ -58,6 +58,7 @@
 
 
                 <path>/plugins/ProcessManager/static/js/executor/callback/abstractCallback.js</path>
+                <path>/plugins/ProcessManager/static/js/executor/callback/example.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/callback/default.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/callback/executionNote.js</path>
                 <path>/plugins/ProcessManager/static/js/executor/callback/phing.js</path>
