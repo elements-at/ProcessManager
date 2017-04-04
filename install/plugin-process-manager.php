@@ -3,7 +3,8 @@ $systemConfig = \Pimcore\Config::getSystemConfig()->toArray();
 return [
     'general' => [
         "archive_treshold_logs" => 7, //keep monitoring items for x Days
-        'executeWithMaintenance' => true //do execute with maintenance (deactivate if you set up a separate cronjob)
+        'executeWithMaintenance' => true, //do execute with maintenance (deactivate if you set up a separate cronjob)
+        "processTimeoutMinutes" => 15
     ],
     'email' => [
         'recipients' => explode(';',(string)$systemConfig['applicationlog']['mail_notification']['mail_receiver']), //gets a reporting e-mail when a process is dead

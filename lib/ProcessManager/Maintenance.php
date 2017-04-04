@@ -36,17 +36,21 @@ class Maintenance {
         $list->setCondition('IFNULL(reportedDate,0) = 0 ');
         $items = $list->load();
         $reportItems = [];
+
+        $config = Plugin::getConfig();
+
         foreach($items as $item) {
             if ($item->isAlive()) {
                 $diff = time() - $item->getModificationDate();
-                if ($diff > (60 * 15)) {
+                $minutes = $config['general']['processTimeoutMinutes'] ?: 15;
+                if ($diff > (60 * $minutes)) {
                     $item->getLogger()->error('Process was checked by ProcessManager maintenance. Considered as hanging process - TimeDiff: ' . $diff . ' seconds.');
                     $reportItems[] = $item;
                 }
             } else {
                 if ($item->getStatus() == $item::STATUS_FINISHED) {
                     $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
-                    $item->setReportedDate(time())->save();
+                    $item->setReportedDate(time())->save(true);
                 } else {
                     $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus())->setStatus($item::STATUS_FAILED);
                     $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
