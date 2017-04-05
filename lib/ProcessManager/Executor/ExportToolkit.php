@@ -13,6 +13,15 @@ class ExportToolkit extends AbstractExecutor
     protected $name = 'exportToolkit';
     protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.exportToolkit';
 
+    public function __construct($config = []){
+        parent::__construct($config);
+
+        if(!$this->config['jobs']){
+            $list = \ExportToolkit_Configuration::getList();
+            $this->config['jobs'] = array_keys($list);
+        }
+    }
+
     /**
      * @param string[] $callbackSettings
      * @param null | \ProcessManager\MonitoringItem $monitoringItem

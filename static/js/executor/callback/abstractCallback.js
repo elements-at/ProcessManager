@@ -278,7 +278,6 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
     doExecute : function () {
         var data = this.getStorageValues();
 
-        console.log(data);
         var errors = this.formHasErrors(data);
         if(errors){
             this.alertFormErrors(errors);
