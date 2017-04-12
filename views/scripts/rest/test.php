@@ -17,13 +17,13 @@
 </head>
 <body>
 
-<? if($result = $this->result){?>
+<?php if($result = $this->result){?>
 
     <div class="result">
         <h2>Result:</h2>
-        <? p_r($result) ?>
+        <?php p_r($result) ?>
     </div>
-<?}?>
+<?php}?>
 <form action="" method="post">
     <table class="callbackTable">
         <tr>
@@ -31,10 +31,10 @@
             <td>
                 <select name="id">
                     <option value="">-- please choose --</option>
-                    <?
+                    <?php
                         foreach ($this->options as $key => $value){?>
-                           <option value="<?=$key?>" <? if($this->getParam('id') == $key){?> selected<?}?>><?=$value?></option>
-                        <?}
+                           <option value="<?=$key?>" <?php if($this->getParam('id') == $key){?> selected<?php}?>><?=$value?></option>
+                        <?php}
                     ?>
                 </select>
             </td>

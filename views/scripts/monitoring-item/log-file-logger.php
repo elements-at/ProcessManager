@@ -1,4 +1,4 @@
-<? if(!$this->getParam('ajax')){?>
+<?php if(!$this->getParam('ajax')){?>
 <html>
 <head>
     <title>Logs</title>
@@ -56,37 +56,37 @@
 <body>
 
 <div id="content">
-    <?}
+    <?php }
     if(!$this->monitoringItem->getPid()){?>
         <h1>Process Finished</h1>
-    <?}?>
+    <?php } ?>
 
-    <? if($this->getParam('ajax') && !$this->monitoringItem->getPid()){ ?>
+    <?php if($this->getParam('ajax') && !$this->monitoringItem->getPid()){ ?>
     <script type="text/javascript">
 
         $('#autorefresh').attr('checked',false);
     </script>
 
 
-    <?}?>
+    <?php } ?>
     <?=p_r($this->data)?>
-<? if(!$this->getParam('ajax')){?>
+<?php if(!$this->getParam('ajax')){?>
 </div>
 
 
 
 <form method="" class="reload">
-    <? if($this->monitoringItem->getPid()){?>
+    <?php if($this->monitoringItem->getPid()){?>
     <div class="reloadWrapper">
-        <input type="checkbox" value="refresh" name="refresh" id="autorefresh" <? if($this->monitoringItem->getPid()){?>checked="checked"<?}?>/> <label for="autorefresh"> Auto refresh |</label>
+        <input type="checkbox" value="refresh" name="refresh" id="autorefresh" <?php if($this->monitoringItem->getPid()){?>checked="checked"<?php}?>/> <label for="autorefresh"> Auto refresh |</label>
     </div>
-    <?}?>
+    <?php}?>
     <div class="loggerData">
         <b>LogLevel:</b> <?=$this->logLevel?> | <b>Log file:</b> <?=$this->logFile?>
     </div>
 </form>
 
-<? if($this->monitoringItem->getPid()){?>
+<?php if($this->monitoringItem->getPid()){?>
     <script type="text/javascript">
         var timer = null;
 
@@ -114,8 +114,8 @@
             });
         }
     </script>
-<?}?>
+<?php}?>
 
 </body>
 </html>
-<?}?>
+<?php}?>

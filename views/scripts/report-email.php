@@ -44,7 +44,7 @@
         <th>Last update</th>
         <th>Callback settings</th>
     </tr>
-    <?
+    <?php
     /**
      * @var $monitoringItem \ProcessManager\MonitoringItem
      */
@@ -53,7 +53,7 @@
             <td><?=$monitoringItem->getId()?></td>
             <td><?=$monitoringItem->getPid()?></td>
             <td><?=$monitoringItem->getName()?></td>
-            <td><?
+            <td><?php
                 $status = $monitoringItem->getStatus();
                 if($status == $monitoringItem::STATUS_FAILED){
                     echo '<span class="error">' . $status.'</span>';
@@ -65,13 +65,13 @@
             <td><?=$monitoringItem->getCommand()?></td>
             <td><?=date('Y-m-d H:i:s',$monitoringItem->getModificationDate())?></td>
             <td>
-                <?
+                <?php
                 if($values = $monitoringItem->getCallbackSettings()){
                     echo print_r($values,true);
                 }
                 ?></td>
         </tr>
-    <?}?>
+    <?php } ?>
 </table>
 
 </body>
