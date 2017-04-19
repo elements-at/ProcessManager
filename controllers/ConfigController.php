@@ -50,23 +50,24 @@ class ProcessManager_ConfigController extends \Pimcore\Controller\Action\Admin
         foreach($list->load() as $item){
             $tmp = $item->getObjectVars();
 
+
+            $tmp['command'] = $item->getCommand();
+            $tmp['type'] = $item->getExecutorClassObject()->getName();
+            $tmp['extJsSettings'] = $item->getExecutorClassObject()->getExtJsSettings();
+
+            $tmp['active'] = (int)$tmp['active'];
             try {
-
-                $tmp['command'] = $item->getCommand();
-                $tmp['type'] = $item->getExecutorClassObject()->getName();
-                $tmp['extJsSettings'] = $item->getExecutorClassObject()->getExtJsSettings();
-
-                $tmp['active'] = (int)$tmp['active'];
                 if($item->getCronJob()){
                     $nextRunTs = $item->getNextCronJobExecutionTimestamp();
                     if($nextRunTs){
                         $tmp['cronJob'] .= ' <br/>(Next run:'. date('Y-m-d H:i:s',$nextRunTs).')';
                     }
                 }
-                $data[] = $tmp;
             }catch(\Exception $e){
-
+                $tmp['cronJob'] = $e->getMessage();
             }
+            $data[] = $tmp;
+
 
         }
 
