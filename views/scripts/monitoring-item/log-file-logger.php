@@ -78,9 +78,9 @@
 <form method="" class="reload">
     <?php if($this->monitoringItem->getPid()){?>
     <div class="reloadWrapper">
-        <input type="checkbox" value="refresh" name="refresh" id="autorefresh" <?php if($this->monitoringItem->getPid()){?>checked="checked"<?php}?>/> <label for="autorefresh"> Auto refresh |</label>
+        <input type="checkbox" value="refresh" name="refresh" id="autorefresh" <?php if($this->monitoringItem->getPid()){?>checked="checked"<?php } ?>/> <label for="autorefresh"> Auto refresh |</label>
     </div>
-    <?php}?>
+    <?php } ?>
     <div class="loggerData">
         <b>LogLevel:</b> <?=$this->logLevel?> | <b>Log file:</b> <?=$this->logFile?>
     </div>
@@ -114,8 +114,8 @@
             });
         }
     </script>
-<?php}?>
+<?php } ?>
 
 </body>
 </html>
-<?php}?>
+<?php } ?>
