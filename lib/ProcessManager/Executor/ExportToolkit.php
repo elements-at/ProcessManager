@@ -17,8 +17,10 @@ class ExportToolkit extends AbstractExecutor
         parent::__construct($config);
 
         if(!$this->config['jobs']){
-            $list = \ExportToolkit_Configuration::getList();
-            $this->config['jobs'] = array_keys($list);
+            if(\Pimcore\Tool::classExists('ExportToolkit_Configuration')){
+                $list = \ExportToolkit_Configuration::getList();
+                $this->config['jobs'] = array_keys($list);
+            }
         }
     }
 
