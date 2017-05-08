@@ -120,9 +120,9 @@ class Maintenance {
         $this->monitoringItem->setCurrentStep(3)->setMessage('Clearing monitoring logs')->save();
         $logger = $this->monitoringItem->getLogger();
 
-        $treshold =  Plugin::getConfig()['general']['archive_treshold_logs'];
-        if($treshold){
-            $timestamp = Carbon::createFromTimestamp(time())->subDay(1)->getTimestamp();
+        $threshold =  Plugin::getConfig()['general']['archive_treshold_logs'];
+        if($threshold){
+            $timestamp = Carbon::createFromTimestamp(time())->subDay($threshold)->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
             $items = $list->load();
