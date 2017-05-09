@@ -1,0 +1,6 @@
+services:
+    processmanager.system_listener:
+        class: Elements\Bundle\ProcessManagerBundle\SystemEventsListener
+        tags:
+            - { name: kernel.event_subscriber }
+        arguments: ['@templating.engine.delegating']
