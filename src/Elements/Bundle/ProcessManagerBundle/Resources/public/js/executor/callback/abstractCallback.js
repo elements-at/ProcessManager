@@ -314,6 +314,13 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                     } else {
                         processmanagerPlugin.showProcessManager({activeTab: 1});
                     }
+
+                    var pm = pimcore.globalmanager.get("plugin_pm_cnf");
+
+                    var column = pm.monitoringItems.grid.columnManager.getColumns()[0];
+                    column.filter.setValue({eq : data.monitoringItemId});
+                    column.filter.setActive(true);
+                    pm.monitoringItems.grid.store.reload();
                 } else {
                     pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", data.message);
                 }
