@@ -254,6 +254,10 @@ ENGINE=InnoDB
 //        \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));
     }
 
+    public function updateVersion8(){
+        $db = \Pimcore\Db::get();
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." MODIFY `message` VARCHAR(1000) ");
+    }
 
     protected function copyConfig()
     {

@@ -37,6 +37,24 @@ class File extends AbstractLogger
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
             $logFile = $this->getLogFile($config, $monitoringItem);
 
+            if(php_sapi_name() === 'cli' && $config['maxFileSizeMB'] && is_readable($logFile)){
+                $logFileSize = round(filesize($logFile)/1024/1024);
+
+                /**
+                 * remove half of the data until the file size is within the range
+                 */
+                while($logFileSize > $config['maxFileSizeMB']){
+                    clearstatcache(); //clear php internal cache otherwise the size won't be correct
+
+                    $monitoringItem->getLogger()->notice('Log file size exceeded. Filesize: ' . $logFileSize.'MB. Max file size: ' . $config['maxFileSizeMB'] . '. Removing old data.');
+                    $data = explode("\n",file_get_contents($logFile));
+                    $data = array_slice($data,count($data)/2);
+                    file_put_contents($logFile,implode("\n",$data));
+                    $logFileSize = round(filesize($logFile)/1024/1024);
+                    $monitoringItem->getLogger()->notice('New file size: ' . $logFileSize . 'MB.');
+                    \Pimcore::collectGarbage();
+                }
+            }
 
             $this->streamHandler = new StreamHandler($logFile, $logLevel);
 

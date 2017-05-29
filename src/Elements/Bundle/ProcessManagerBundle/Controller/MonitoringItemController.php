@@ -245,7 +245,18 @@ class MonitoringItemController extends AdminController
 
             $data = file_get_contents($logFile);
 
-            $data = explode("\n", $data);
+            $fileSizeMb = round(filesize($logFile)/1024/1024);
+
+            if($fileSizeMb < 100){
+                $data = file_get_contents($logFile);
+                $data = explode("\n",$data);
+            } else {
+                $data = explode("\n",shell_exec('tail -n 1000 ' . $logFile));
+                $warning = '<span style="color:#ff131c">The log file is to large to view all contents (' . $fileSizeMb.'MB). The last 1000 lines are displayed. File: ' . $logFile . '</span>';
+                array_unshift($data,$warning);
+                array_push($data,$warning);
+            }
+
             foreach ($data as $i => $row) {
                 if ($row) {
                     if (strpos($row, '.WARNING')) {

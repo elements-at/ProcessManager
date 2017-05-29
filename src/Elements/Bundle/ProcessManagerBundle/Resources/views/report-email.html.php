@@ -48,7 +48,7 @@
     /**
      * @var $monitoringItem \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem
      */
-    foreach($this->reportItems as $monitoringItem){?>
+    foreach($this->reportItems as $i  =>  $monitoringItem){?>
         <tr>
             <td><?=$monitoringItem->getId()?></td>
             <td><?=$monitoringItem->getPid()?></td>
@@ -70,6 +70,16 @@
                     echo print_r($values,true);
                 }
                 ?></td>
+        </tr>
+    <?php
+        if($i > 100){
+            break;
+        }
+    } ?>
+    <?php
+    if(count($this->reportItems) > 100) { ?>
+        <tr>
+            <td colspan="8" class="note-important">Further <?=(count($this->reportItems)-100)?> items are considered as failed.</td>
         </tr>
     <?php } ?>
 </table>

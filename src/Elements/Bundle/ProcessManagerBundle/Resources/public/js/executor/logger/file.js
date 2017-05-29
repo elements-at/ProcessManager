@@ -17,15 +17,8 @@ pimcore.plugin.processmanager.executor.logger.file = Class.create(pimcore.plugin
             },
             items: [
                 this.getLogLevelField(),
-                //this.getTextField('accessKey'),
-                {
-                    xtype: "textfield",
-                    fieldLabel: t("plugin_pm_download_filepath"),
-                    name: "filepath",
-                    width: "100%",
-                    readOnly: false,
-                    value: this.getFieldValue('filepath')
-                },
+                this.getTextField('filepath'),
+                this.getNumberField('maxFileSizeMB'),
                 this.getCheckbox('simpleLogFormat'),
                 {
                     xtype: "hidden",
