@@ -8,8 +8,13 @@
             font-size: 14px;
         }
 
-        h1 {
+        h1{
             color: #a20008;
+        }
+        .note-important {
+            color: #ea0004;
+            font-weight: bold;
+            font-size: 30px;
         }
         .reportTable {
             border: 1px solid #000;
@@ -26,6 +31,8 @@
             border: 1px solid #000;
             padding: 5px 10px ;
         }
+
+
 
     </style>
 </head>
@@ -48,7 +55,7 @@
     /**
      * @var $monitoringItem \ProcessManager\MonitoringItem
      */
-    foreach($this->reportItems as $monitoringItem){?>
+    foreach($this->reportItems as $i  => $monitoringItem){?>
         <tr>
             <td><?=$monitoringItem->getId()?></td>
             <td><?=$monitoringItem->getPid()?></td>
@@ -61,7 +68,7 @@
                     echo $status;
                 }
                 ?></td>
-            <td><?=$monitoringItem->getMessage()?></td>
+            <td><?=substr($monitoringItem->getMessage(),0,500)?></td>
             <td><?=$monitoringItem->getCommand()?></td>
             <td><?=date('Y-m-d H:i:s',$monitoringItem->getModificationDate())?></td>
             <td>
@@ -70,6 +77,16 @@
                     echo print_r($values,true);
                 }
                 ?></td>
+        </tr>
+        <?php
+        if($i > 100){
+            break;
+        }
+    } ?>
+    <?php
+    if(count($this->reportItems) > 100) { ?>
+        <tr>
+            <td colspan="8" class="note-important">Further <?=(count($this->reportItems)-100)?> items are considered as failed.</td>
         </tr>
     <?php } ?>
 </table>

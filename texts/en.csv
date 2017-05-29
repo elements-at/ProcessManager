@@ -134,3 +134,5 @@
 "plugin_pm_myItems","Item selector"
 "plugin_pm_myProperties","Properties selector"
 "plugin_pm_myHref","My href"
+"plugin_pm_maxFileSizeMB","Max file Size (MB)"
+"plugin_pm_filepath","File path"

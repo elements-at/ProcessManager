@@ -9,7 +9,7 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
 {
     use ExecutionTrait;
 
-    const VERSION = 7;
+    const VERSION = 8;
 
     public static $maintenanceOptions = [
         'autoCreate' => true,
@@ -17,12 +17,15 @@ class Plugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterfa
         'loggers' => [
             [
                 "logLevel" => "DEBUG",
-                "class" => '\ProcessManager\Executor\Logger\Console'
+                "class" => '\ProcessManager\Executor\Logger\Console',
+                'simpleLogFormat' => true
             ],
             [
                 "logLevel" => "DEBUG",
-                "filepath" => '/website/var/log/process-manager-maintenance.log',
-                'class' => '\ProcessManager\Executor\Logger\File'
+                "filepath" => '/website/var/log/process-manager/maintenance.log',
+                'class' => '\ProcessManager\Executor\Logger\File',
+                'simpleLogFormat' => true,
+                'maxFileSizeMB' => 50
             ]
         ]
     ];

@@ -52,8 +52,9 @@ class Maintenance {
                     $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
                     $item->setReportedDate(time())->save(true);
                 } else {
-                    $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus())->setStatus($item::STATUS_FAILED);
+                    $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus(),false)->setStatus($item::STATUS_FAILED);
                     $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
+                    $this->monitoringItem->getLogger()->error('Monitoring item ' . $item->getId() . ' was checked by ProcessManager maintenance and considered as dead process');
                     $reportItems[] = $item;
                 }
             }
@@ -66,6 +67,7 @@ class Maintenance {
             $view = new \Pimcore\View();
             $view->reportItems = $reportItems;
             $html = $view->setBasePath(PIMCORE_DOCUMENT_ROOT.'/plugins/ProcessManager/views')->render('report-email.php');
+
             $mail->setBodyHtml($html);
 
             $recipients = $config['email']['recipients'];

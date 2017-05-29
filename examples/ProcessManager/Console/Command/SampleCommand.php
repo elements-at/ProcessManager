@@ -53,7 +53,7 @@ class SampleCommand extends AbstractCommand
              */
             $monitoringItem->setCurrentStep($i + 1)->setMessage('Processing Object of class ' . $class->getName())->save();
             sleep(5);
-            $listName = '\Pimcore\Model\Object\\' . $class->getName() . '\Listing';
+            $listName = '\Pimcore\Model\Object\\' . ucfirst($class->getName()) . '\Listing';
             $list = new $listName();
             $total = $list->getTotalCount();
             $perLoop = 50;

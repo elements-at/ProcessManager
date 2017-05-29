@@ -64,12 +64,12 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
             }
 
             $logFile = 0;
-           /* if(is_readable($item->getLogFile())){
-                $content = trim(file_get_contents($item->getLogFile()));
-                if($content){
-                    $logFile = 1;
-                }
-            }*/
+            /* if(is_readable($item->getLogFile())){
+                 $content = trim(file_get_contents($item->getLogFile()));
+                 if($content){
+                     $logFile = 1;
+                 }
+             }*/
             $tmp['action'] = '';
 
             if($actions = $item->getActions()) {
@@ -205,9 +205,18 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
 
         if(is_readable($logFile)){
 
-            $data = file_get_contents($logFile);
+            $fileSizeMb = round(filesize($logFile)/1024/1024);
 
-            $data = explode("\n",$data);
+            if($fileSizeMb < 100){
+                $data = file_get_contents($logFile);
+                $data = explode("\n",$data);
+            } else {
+                $data = explode("\n",shell_exec('tail -n 1000 ' . $logFile));
+                $warning = '<span style="color:#ff131c">The log file is to large to view all contents (' . $fileSizeMb.'MB). The last 1000 lines are displayed. File: ' . $logFile . '</span>';
+                array_unshift($data,$warning);
+                array_push($data,$warning);
+            }
+
             foreach($data as $i => $row){
                 if($row){
                     if(strpos($row,'.WARNING')){
