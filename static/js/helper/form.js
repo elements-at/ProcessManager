@@ -71,6 +71,45 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         };
     },
 
+    getLocaleSelectionMultiSelect : function (fieldName,config) {
+        config = defaultValue(config,{});
+        var locales = [];
+        var websiteLanguages = pimcore.settings.websiteLanguages;
+        var selectContent = "";
+        for (var i = 0; i < websiteLanguages.length; i++) {
+            selectContent = pimcore.available_languages[websiteLanguages[i]] + " [" + websiteLanguages[i] + "]";
+            locales.push({locale : websiteLanguages[i], name : selectContent});
+        }
+
+        var localestore = Ext.create('Ext.data.JsonStore', {
+            fields: ["locale","name"],
+            data: locales,
+            sorters: [{
+                property: 'name',
+                direction: 'ASC'
+            }]
+        });
+
+        var value = this.getFieldValue(fieldName);
+        if(value == ''){
+            value = null;
+        }
+        return Ext.create('Ext.ux.form.MultiSelect', {
+            name: fieldName,
+            triggerAction:"all",
+            editable:false,
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
+            fieldLabel: this.getFieldLabel(fieldName, config),
+            width:'100%',
+            height : defaultValue(config.height,100),
+            store: localestore,
+            displayField: "name",
+            valueField: "locale",
+            afterLabelTextTpl: this.getTooltip(config.tooltip),
+            value: value
+        });
+    },
+
     getSelectField : function(fieldName,config){
         config = defaultValue(config,{});
         return {
