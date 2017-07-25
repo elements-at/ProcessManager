@@ -22,14 +22,14 @@ return [
     ],
     "executorLoggerClasses" => [
         [
-            "class" => "\\ProcessManager\\Executor\\Logger\\File"
+            "class" => "\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Logger\\File"
 
         ],
         [
-            "class" => "\\ProcessManager\\Executor\\Logger\\Console"
+            "class" => "\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Logger\\Console"
         ],
         [
-            "class" => "\\ProcessManager\\Executor\\Logger\\Application"
+            "class" => "\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Logger\\Application"
         ]
     ],
     "executorActionClasses" => [
