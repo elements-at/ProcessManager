@@ -201,7 +201,6 @@ ENGINE=InnoDB
         foreach(['executorClasses','executorLoggerClasses','executorActionClasses','executorCallbackClasses'] as $classType){
             $tmp = [];
             foreach($config[$classType] as $key => $value){
-                $value['class'] = $key;
                 $tmp[] = $value;
             }
             $config[$classType] = $tmp;
