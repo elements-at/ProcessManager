@@ -294,8 +294,10 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             callbackSettings: Ext.encode(data)
         };
 
-        if (this.window) {
-            this.closeWindow();
+        if(this.window){
+            if(!this.callbackWindowKeepOpen){
+                this.closeWindow();
+            }
         }
 
         Ext.Ajax.request({
