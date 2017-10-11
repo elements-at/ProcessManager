@@ -230,10 +230,8 @@ class Configuration extends \Pimcore\Model\AbstractModel
      */
     public function setCronJob($cronJob)
     {
-        if($cronJob){
-            if(!\Cron\CronExpression::isValidExpression($cronJob)){
-                throw new \Exception('The cronjob expression "' . $cronJob.'" is not valid. Please provide a valid Cronjob expression');
-            }
+        if($cronJob && !\Cron\CronExpression::isValidExpression($cronJob)){
+            throw new \Exception('The cronjob expression "' . $cronJob.'" is not valid. Please provide a valid Cronjob expression');
         }
         $this->cronJob = $cronJob;
         return $this;
