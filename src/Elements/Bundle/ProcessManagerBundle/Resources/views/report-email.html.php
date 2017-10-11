@@ -42,7 +42,6 @@
         <th>Message</th>
         <th>Command</th>
         <th>Last update</th>
-        <th>Callback settings</th>
     </tr>
     <?php
     /**
@@ -64,12 +63,6 @@
             <td><?=$monitoringItem->getMessage()?></td>
             <td><?=$monitoringItem->getCommand()?></td>
             <td><?=date('Y-m-d H:i:s',$monitoringItem->getModificationDate())?></td>
-            <td>
-                <?php
-                if($values = $monitoringItem->getCallbackSettings()){
-                    echo print_r($values,true);
-                }
-                ?></td>
         </tr>
     <?php
         if($i > 100){
