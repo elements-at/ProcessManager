@@ -7,11 +7,13 @@ use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
+use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
 
 class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 {
 
     use ExecutionTrait;
+    use StateHelperTrait;
 
     const VERSION = 7;
 

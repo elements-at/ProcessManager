@@ -48,12 +48,14 @@ class SystemEventsListener implements EventSubscriberInterface
      */
     public function onConsoleError(ConsoleErrorEvent $e)
     {
+        if(!ElementsProcessManagerBundle::isInstalled()) {
+            return;
+        }
 
         if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
             $error = $e->getError();
-            $monitoringItem->setMessage('ERROR:'.$error.$monitoringItem->getMessage());
+            $monitoringItem->setMessage('ERROR:' . $error . $monitoringItem->getMessage());
             $monitoringItem->setPid(null)->setStatus($monitoringItem::STATUS_FAILED)->save();
-
         }
     }
 
@@ -62,6 +64,10 @@ class SystemEventsListener implements EventSubscriberInterface
      */
     public function onConsoleTerminate(ConsoleTerminateEvent $e)
     {
+        if(!ElementsProcessManagerBundle::isInstalled()) {
+            return;
+        }
+
         if ($e->getExitCode() == 0) {
             if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
                 if ($config = Configuration::getById($monitoringItem->getConfigurationId())) {
@@ -97,17 +103,18 @@ class SystemEventsListener implements EventSubscriberInterface
      */
     public function onMaintenance()
     {
-        $installer = new Installer();
-        if ($installer->isInstalled()) {
-            $config = ElementsProcessManagerBundle::getConfig();
-            if ($config['general']['executeWithMaintenance']) {
-                ElementsProcessManagerBundle::initProcessManager(
-                    null,
-                    ElementsProcessManagerBundle::$maintenanceOptions
-                );
-                $maintenance = new \Elements\Bundle\ProcessManagerBundle\Maintenance($this->renderingEngine);
-                $maintenance->execute();
-            }
+        if(!ElementsProcessManagerBundle::isInstalled()) {
+            return;
+        }
+
+        $config = ElementsProcessManagerBundle::getConfig();
+        if ($config['general']['executeWithMaintenance']) {
+            ElementsProcessManagerBundle::initProcessManager(
+                null,
+                ElementsProcessManagerBundle::$maintenanceOptions
+            );
+            $maintenance = new \Elements\Bundle\ProcessManagerBundle\Maintenance($this->renderingEngine);
+            $maintenance->execute();
         }
     }
 }
