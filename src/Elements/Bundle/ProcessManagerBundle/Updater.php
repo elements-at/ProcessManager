@@ -256,7 +256,7 @@ ENGINE=InnoDB
 
     public function updateVersion8(){
         $db = \Pimcore\Db::get();
-        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." MODIFY `message` VARCHAR(1000) ");
+        $db->query("ALTER TABLE " . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . " MODIFY `message` VARCHAR(1000) ");
     }
 
     protected function copyConfig()
