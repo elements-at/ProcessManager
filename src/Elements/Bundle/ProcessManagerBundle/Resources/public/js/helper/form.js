@@ -716,6 +716,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     setStorageValueGrid: function (name, data) {
         var d = data[name];
         if (d) {
+            this['formElement' + name].getStore().removeAll();
             for (var i = 0; i < d.length; i++) {
                 this['formElement' + name].getStore().add(d[i]);
             }
