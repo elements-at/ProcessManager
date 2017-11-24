@@ -75,6 +75,7 @@ WARNING - MONITORING ITEM NOT INITIALIZED - NO MESSAGES ARE LOGGED... Just an du
 #####################################################################\n\n
 ";
             self::$monitoringItem = new MonitoringItem();
+            self::$monitoringItem->setIsDummy(true);
         }
         return self::$monitoringItem;
     }
