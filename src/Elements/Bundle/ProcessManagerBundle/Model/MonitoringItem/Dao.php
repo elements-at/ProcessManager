@@ -29,6 +29,9 @@ class Dao extends AbstractDao
      */
     public function save($preventModificationDateUpdate = false)
     {
+        if($this->model->getIsDummy()){
+            return $this->model;
+        }
 
         $data = $this->getValidStorageValues();
         if (!$preventModificationDateUpdate) {

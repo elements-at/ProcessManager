@@ -92,6 +92,33 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public $totalSteps = 1;
 
     /**
+     * The dummy object won't be saved
+     * It is just created when no monitoring item id is passed
+     * so we dont have to check if the monitoring item is available
+     *
+     * @var bool
+     */
+    public $isDummy = false;
+
+    /**
+     * @return bool
+     */
+    public function getIsDummy()
+    {
+        return $this->isDummy;
+    }
+
+    /**
+     * @param bool $isDummy
+     * @return $this
+     */
+    public function setIsDummy($isDummy)
+    {
+        $this->isDummy = $isDummy;
+        return $this;
+    }
+
+    /**
      * @param integer $id
      * @return self
      */

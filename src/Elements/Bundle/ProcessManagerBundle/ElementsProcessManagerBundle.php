@@ -197,6 +197,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     {
         if ($createDummyObjectIfRequired && !self::$monitoringItem) {
             self::$monitoringItem = new MonitoringItem();
+            self::$monitoringItem->setIsDummy(true);
         }
         return self::$monitoringItem;
     }
