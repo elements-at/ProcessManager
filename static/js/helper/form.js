@@ -16,14 +16,14 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     getCheckbox: function (fieldName, config) {
         if (typeof this[fieldName] == 'undefined') {
             config = defaultValue(config,{});
-            this[fieldName] = new Ext.form.Checkbox({
+            this[fieldName] = new Ext.form.Checkbox(this.mergeConfigs({
                 fieldLabel: this.getFieldLabel(fieldName,config),
                 labelWidth: defaultValue(config.labelWidth,this.labelWidth),
                 xtype: "checkbox",
                 name: fieldName,
                 afterLabelTextTpl: this.getTooltip(config.tooltip),
                 checked: this.getFieldValue(fieldName)
-            });
+            },config));
         }
         return this[fieldName];
     },
@@ -36,7 +36,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         });
 
         var val = this.getFieldValue(fieldName);
-        return {
+        return this.mergeConfigs({
             xtype: 'datefield',
             fieldLabel: this.getFieldLabel(fieldName , config),
             labelWidth: defaultValue(config.labelWidth,this.labelWidth),
@@ -44,7 +44,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             submitFormat: 'U',
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: val
-        }
+        },config);
     },
 
     getLocaleSelection : function (fieldName,config) {
@@ -57,7 +57,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             localestore.push([websiteLanguages[i], selectContent]);
         }
 
-        return {
+        return this.mergeConfigs({
             xtype: "combo",
             name: fieldName,
             store: localestore,
@@ -68,7 +68,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             mode: "local",
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             fieldLabel: this.getFieldLabel(fieldName , config)
-        };
+        },config);
     },
 
     getLocaleSelectionMultiSelect : function (fieldName,config) {
@@ -94,7 +94,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         if(value == ''){
             value = null;
         }
-        return Ext.create('Ext.ux.form.MultiSelect', {
+        return Ext.create('Ext.ux.form.MultiSelect', this.mergeConfigs({
             name: fieldName,
             triggerAction:"all",
             editable:false,
@@ -107,12 +107,16 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             valueField: "locale",
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: value
-        });
+        },config));
+    },
+
+    mergeConfigs : function (defaultConfig,customConfig) {
+        return Object.assign(defaultConfig, customConfig);
     },
 
     getSelectField : function(fieldName,config){
         config = defaultValue(config,{});
-        return {
+        return this.mergeConfigs({
             xtype: "combo",
             name: fieldName,
             store: config.store,
@@ -124,7 +128,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             value : this.getFieldValue(fieldName),
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             fieldLabel: this.getFieldLabel(fieldName , config)
-        };
+        },config);
     },
 
     getLogLevelField : function(){
@@ -162,7 +166,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     getTextField: function (fieldName, config) {
         config = defaultValue(config,{});
 
-        return new Ext.form.TextField({
+        return new Ext.form.TextField(this.mergeConfigs({
             fieldLabel: this.getFieldLabel(fieldName , config),
             width: '100%',
             name: fieldName,
@@ -170,13 +174,13 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             readOnly: false,
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: this.getFieldValue(fieldName)
-        });
+        },config));
     },
 
     getNumberField: function (fieldName, config) {
         if (typeof this[fieldName] == 'undefined') {
             config = defaultValue(config,{});
-            this[fieldName] = new Ext.form.NumberField({
+            this[fieldName] = new Ext.form.NumberField(this.mergeConfigs({
                 fieldLabel: this.getFieldLabel(fieldName , config),
                 labelWidth: defaultValue(config.labelWidth,this.labelWidth),
                 name: fieldName,
@@ -184,14 +188,14 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                 afterLabelTextTpl: this.getTooltip(config.tooltip),
                 value : this.getFieldValue(fieldName),
                 cls : 'pm_number_select'
-            });
+            },config));
         }
         return this[fieldName];
     },
 
     getTextArea : function(fieldName ,config){
         config = defaultValue(config,{});
-        return new Ext.form.TextArea({
+        return new Ext.form.TextArea(this.mergeConfigs({
             fieldLabel: this.getFieldLabel(fieldName , config),
             labelWidth: defaultValue(config.labelWidth,this.labelWidth),
             width : '100%',
@@ -199,7 +203,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             readOnly: false,
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: this.getFieldValue(fieldName)
-        });
+        },config));
     },
 
     getRoleSelection: function (fieldName, config) {
@@ -218,7 +222,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         if(value == ''){
             value = null;
         }
-        this.roles = Ext.create('Ext.ux.form.MultiSelect', {
+        this.roles = Ext.create('Ext.ux.form.MultiSelect', this.mergeConfigs({
             name: fieldName,
             triggerAction:"all",
             editable:false,
@@ -231,7 +235,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             valueField: "id",
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: value
-        });
+        },config));
 
         return this.roles;
     },
