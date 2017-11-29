@@ -1,13 +1,13 @@
 pimcore.registerNS("pimcore.plugin.processmanager.helper.form");
 pimcore.plugin.processmanager.helper.form = Class.create({
 
-    specialFormFields: [],
-    mandatoryFields: [],
-    labelWidth: 120,
+    specialFormFields : [],
+    mandatoryFields : [],
+    labelWidth : 120,
 
-    getFieldValue: function (fieldName) {
+    getFieldValue : function(fieldName){
         var value = '';
-        if (this.rec) {
+        if(this.rec){
             value = this.rec.get('extJsSettings').values[fieldName];
         }
         return value;
@@ -15,40 +15,40 @@ pimcore.plugin.processmanager.helper.form = Class.create({
 
     getCheckbox: function (fieldName, config) {
         if (typeof this[fieldName] == 'undefined') {
-            config = defaultValue(config, {});
-            this[fieldName] = new Ext.form.Checkbox({
-                fieldLabel: this.getFieldLabel(fieldName, config),
-                labelWidth: defaultValue(config.labelWidth, this.labelWidth),
+            config = defaultValue(config,{});
+            this[fieldName] = new Ext.form.Checkbox(this.mergeConfigs({
+                fieldLabel: this.getFieldLabel(fieldName,config),
+                labelWidth: defaultValue(config.labelWidth,this.labelWidth),
                 xtype: "checkbox",
                 name: fieldName,
                 afterLabelTextTpl: this.getTooltip(config.tooltip),
                 checked: this.getFieldValue(fieldName)
-            });
+            },config));
         }
         return this[fieldName];
     },
 
-    getDateField: function (fieldName, config) {
-        config = defaultValue(config, {});
+    getDateField : function(fieldName, config) {
+        config = defaultValue(config,{});
         this.specialFormFields.push({
-            name: fieldName,
-            type: 'date'
+            name : fieldName,
+            type : 'date'
         });
 
         var val = this.getFieldValue(fieldName);
-        return {
+        return this.mergeConfigs({
             xtype: 'datefield',
-            fieldLabel: this.getFieldLabel(fieldName, config),
-            labelWidth: defaultValue(config.labelWidth, this.labelWidth),
+            fieldLabel: this.getFieldLabel(fieldName , config),
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
             name: fieldName,
             submitFormat: 'U',
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: val
-        }
+        },config);
     },
 
-    getLocaleSelection: function (fieldName, config) {
-        config = defaultValue(config, {});
+    getLocaleSelection : function (fieldName,config) {
+        config = defaultValue(config,{});
         var localestore = [];
         var websiteLanguages = pimcore.settings.websiteLanguages;
         var selectContent = "";
@@ -57,18 +57,18 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             localestore.push([websiteLanguages[i], selectContent]);
         }
 
-        return {
+        return this.mergeConfigs({
             xtype: "combo",
             name: fieldName,
             store: localestore,
-            labelWidth: defaultValue(config.labelWidth, this.labelWidth),
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
             editable: false,
             width: '100%',
             triggerAction: 'all',
             mode: "local",
             afterLabelTextTpl: this.getTooltip(config.tooltip),
-            fieldLabel: this.getFieldLabel(fieldName, config)
-        };
+            fieldLabel: this.getFieldLabel(fieldName , config)
+        },config);
     },
 
     getLocaleSelectionMultiSelect : function (fieldName,config) {
@@ -94,7 +94,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         if(value == ''){
             value = null;
         }
-        return Ext.create('Ext.ux.form.MultiSelect', {
+        return Ext.create('Ext.ux.form.MultiSelect', this.mergeConfigs({
             name: fieldName,
             triggerAction:"all",
             editable:false,
@@ -107,50 +107,54 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             valueField: "locale",
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: value
-        });
+        },config));
     },
 
-    getSelectField: function (fieldName, config) {
-        config = defaultValue(config, {});
-        return {
+    mergeConfigs : function (defaultConfig,customConfig) {
+        return Object.assign(defaultConfig, customConfig);
+    },
+
+    getSelectField : function(fieldName,config){
+        config = defaultValue(config,{});
+        return this.mergeConfigs({
             xtype: "combo",
             name: fieldName,
             store: config.store,
-            labelWidth: defaultValue(config.labelWidth, this.labelWidth),
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
             editable: false,
             width: '100%',
             triggerAction: 'all',
             mode: "local",
-            value: this.getFieldValue(fieldName),
+            value : this.getFieldValue(fieldName),
             afterLabelTextTpl: this.getTooltip(config.tooltip),
-            fieldLabel: this.getFieldLabel(fieldName, config)
-        };
+            fieldLabel: this.getFieldLabel(fieldName , config)
+        },config);
     },
 
-    getLogLevelField: function () {
-        return this.getSelectField('logLevel', {
-            store: [
-                ['DEBUG', 'DEBUG'],
-                ['INFO', 'INFO'],
-                ['NOTICE', 'NOTICE'],
-                ['WARNING', 'WARNING'],
-                ['ERROR', 'ERROR'],
-                ['CRITICAL', 'CRITICAL'],
-                ['ALERT', 'ALERT'],
-                ['EMERGENCY', 'EMERGENCY']
+    getLogLevelField : function(){
+        return this.getSelectField('logLevel',{
+            store : [
+                ['DEBUG','DEBUG'],
+                ['INFO','INFO'],
+                ['NOTICE','NOTICE'],
+                ['WARNING','WARNING'],
+                ['ERROR','ERROR'],
+                ['CRITICAL','CRITICAL'],
+                ['ALERT','ALERT'],
+                ['EMERGENCY','EMERGENCY']
             ],
-            mandatory: true
+            mandatory : true
         });
     },
 
-    getTooltip: function (text) {
+    getTooltip : function (text) {
         return text ? '<img src="/pimcore/static6/img/flat-color-icons/info.svg" width="17" height="17" class="pm_tooltip_icon" data-qtip="' + text + '"></img>' : '';
     },
 
-    getFieldLabel: function (fieldName, config) {
-        config = defaultValue(config, {});
+    getFieldLabel : function (fieldName, config) {
+        config = defaultValue(config,{});
         var fieldLabel = t('plugin_pm_' + fieldName);
-        if (config.mandatory) {
+        if(config.mandatory){
             this.mandatoryFields.push(fieldName);
             fieldLabel += ' <span style="color:#f00;">*</span>';
         }
@@ -158,97 +162,98 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     },
 
 
-    getTextField: function (fieldName, config) {
-        config = defaultValue(config, {});
 
-        return new Ext.form.TextField({
-            fieldLabel: this.getFieldLabel(fieldName, config),
+    getTextField: function (fieldName, config) {
+        config = defaultValue(config,{});
+
+        return new Ext.form.TextField(this.mergeConfigs({
+            fieldLabel: this.getFieldLabel(fieldName , config),
             width: '100%',
             name: fieldName,
-            labelWidth: defaultValue(config.labelWidth, this.labelWidth),
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
             readOnly: false,
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: this.getFieldValue(fieldName)
-        });
+        },config));
     },
 
     getNumberField: function (fieldName, config) {
         if (typeof this[fieldName] == 'undefined') {
-            config = defaultValue(config, {});
-            this[fieldName] = new Ext.form.NumberField({
-                fieldLabel: this.getFieldLabel(fieldName, config),
-                labelWidth: defaultValue(config.labelWidth, this.labelWidth),
+            config = defaultValue(config,{});
+            this[fieldName] = new Ext.form.NumberField(this.mergeConfigs({
+                fieldLabel: this.getFieldLabel(fieldName , config),
+                labelWidth: defaultValue(config.labelWidth,this.labelWidth),
                 name: fieldName,
                 minValue: 0,
                 afterLabelTextTpl: this.getTooltip(config.tooltip),
-                value: this.getFieldValue(fieldName),
-                cls: 'pm_number_select'
-            });
+                value : this.getFieldValue(fieldName),
+                cls : 'pm_number_select'
+            },config));
         }
         return this[fieldName];
     },
 
-    getTextArea: function (fieldName, config) {
-        config = defaultValue(config, {});
-        return new Ext.form.TextArea({
-            fieldLabel: this.getFieldLabel(fieldName, config),
-            labelWidth: defaultValue(config.labelWidth, this.labelWidth),
-            width: '100%',
+    getTextArea : function(fieldName ,config){
+        config = defaultValue(config,{});
+        return new Ext.form.TextArea(this.mergeConfigs({
+            fieldLabel: this.getFieldLabel(fieldName , config),
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
+            width : '100%',
             name: fieldName,
             readOnly: false,
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: this.getFieldValue(fieldName)
-        });
+        },config));
     },
 
     getRoleSelection: function (fieldName, config) {
-        config = defaultValue(config, {});
+        config = defaultValue(config,{});
         var roles = processmanagerPlugin.config.roles;
         roles.unshift({
-            'id': 0,
-            'name': t('plugin_pm_role_admin')
+            'id' : 0,
+            'name' : t('plugin_pm_role_admin')
         });
         var rolesStore = Ext.create('Ext.data.JsonStore', {
-            fields: ["id", "name"],
+            fields: ["id","name"],
             data: roles
         });
 
         var value = this.getFieldValue(fieldName);
-        if (value == '') {
+        if(value == ''){
             value = null;
         }
-        this.roles = Ext.create('Ext.ux.form.MultiSelect', {
+        this.roles = Ext.create('Ext.ux.form.MultiSelect', this.mergeConfigs({
             name: fieldName,
-            triggerAction: "all",
-            editable: false,
-            labelWidth: defaultValue(config.labelWidth, this.labelWidth),
+            triggerAction:"all",
+            editable:false,
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
             fieldLabel: this.getFieldLabel(fieldName, config),
-            width: '100%',
-            height: defaultValue(config.height, 100),
+            width:'100%',
+            height : defaultValue(config.height,100),
             store: rolesStore,
             displayField: "name",
             valueField: "id",
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: value
-        });
+        },config));
 
         return this.roles;
     },
 
-    getHref: function (fieldName, config) {
-        config = defaultValue(config, {});
+    getHref : function (fieldName, config) {
+        config = defaultValue(config,{});
         this.specialFormFields.push({
-            name: fieldName,
-            type: 'href'
+            name : fieldName,
+            type : 'href'
         });
 
         var href = {
-            fieldLabel: this.getFieldLabel(fieldName, config),
+            fieldLabel: this.getFieldLabel(fieldName,config),
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             name: fieldName,
             cls: "object_field",
-            fieldCls: 'pimcore_droptarget_input',
-            labelWidth: defaultValue(config.labelWidth, this.labelWidth)
+            fieldCls : 'pimcore_droptarget_input',
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth)
         };
 
         if (this.data) {
@@ -257,9 +262,9 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             }
         }
 
-        if (config.width) {
+        if(config.width) {
             href.width = config.width;
-        } else {
+        }else{
             href.flex = true;
         }
         var itemSelectorConfig = this.getItemSelectorConfig(config);
@@ -271,16 +276,16 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             this['formElement' + fieldName].setValue('');
         };
 
-        var doOpenElement = function () {
+        var doOpenElement = function (){
             var data = this['formElement' + fieldName].itemData;
-            if (data && data.id) {
+            if(data && data.id) {
                 pimcore.helpers.openElement(data.id, data.type);
             }
         };
 
         var doSearch = function () {
             pimcore.helpers.itemselector(false, function (item) {
-                if (this.itemSelectorDndAllowed(item, itemSelectorConfig)) {
+                if(this.itemSelectorDndAllowed(item,itemSelectorConfig)){
                     var itemData = {
                         id: item.id,
                         path: item.fullpath,
@@ -289,7 +294,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                     this['formElement' + fieldName].itemData = itemData;
                     this['formElement' + fieldName].setValue(itemData.path);
                 }
-            }.bind(this), itemSelectorConfig);
+            }.bind(this),itemSelectorConfig);
         };
 
 
@@ -301,16 +306,16 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             new Ext.dd.DropZone(el.getEl(), {
                 reference: this,
                 ddGroup: "element",
-                getTargetFromEvent: function (e) {
+                getTargetFromEvent: function(e) {
                     return true;
                 },
                 onNodeOver: function (overHtmlNode, ddSource, e, data) {
-                    return this.itemSelectorDndAllowed(data.records[0].data, itemSelectorConfig) ? Ext.dd.DropZone.prototype.dropAllowed : Ext.dd.DropZone.prototype.dropNotAllowed;
+                    return this.itemSelectorDndAllowed(data.records[0].data,itemSelectorConfig) ? Ext.dd.DropZone.prototype.dropAllowed : Ext.dd.DropZone.prototype.dropNotAllowed;
                 }.bind(this),
 
                 onNodeDrop: function (target, dd, e, r) {
                     var data = r.records[0].data;
-                    if (this.itemSelectorDndAllowed(data, itemSelectorConfig)) {
+                    if(this.itemSelectorDndAllowed(data,itemSelectorConfig)){
                         var itemData = {
                             id: data.id,
                             path: data.path,
@@ -354,6 +359,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         }.bind(this));
 
 
+
         var composite = Ext.create('Ext.form.FieldContainer', {
             layout: 'hbox',
             items: [
@@ -388,7 +394,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     },
 
 
-    getItemSelectorConfig: function (config) {
+    getItemSelectorConfig : function (config) {
         //create default restritions
         var possibleClassRestrictions = [];
         var classStore = pimcore.globalmanager.get("object_types_store");
@@ -397,9 +403,9 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         });
 
         var restrictionDefaults = {
-            type: ["document", "asset", "object"],
+            type: ["document","asset","object"],
             subtype: {
-                document: ["page", "snippet", "folder", "link", "hardlink", "email"], //email added by ckogler
+                document: ["page", "snippet","folder","link","hardlink","email"], //email added by ckogler
                 asset: ["folder", "image", "text", "audio", "video", "document", "archive", "unknown"],
                 object: ["object", "folder", "variant"]
             },
@@ -407,41 +413,41 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                 classes: possibleClassRestrictions // put here all classes from global class store ...
             }
         };
-        return Ext.applyIf(defaultValue(config.itemSelectorConfig, {}), restrictionDefaults);
+        return Ext.applyIf(defaultValue(config.itemSelectorConfig,{}), restrictionDefaults);
     },
 
-    itemSelectorDndAllowed: function (data, itemSelectorConfig) {
+    itemSelectorDndAllowed : function (data,itemSelectorConfig) {
         var type = data.elementType || data.type;
 
-        if (itemSelectorConfig.type) {
-            if (itemSelectorConfig.type.indexOf(type) == -1) {
+        if(itemSelectorConfig.type){
+            if(itemSelectorConfig.type.indexOf(type) == -1){
                 return false;
             }
         }
 
-        if (type == 'object' && itemSelectorConfig.specific.classes) {
-            if (data.type == 'folder' && !itemSelectorConfig.allowObjectFolder) {
+        if(type == 'object' && itemSelectorConfig.specific.classes) {
+            if(data.type == 'folder' && !itemSelectorConfig.allowObjectFolder){
                 return false;
             }
 
-            if (data.className) {
-                if (itemSelectorConfig.specific.classes.indexOf(data.className) !== -1) {
+            if(data.className){
+                if(itemSelectorConfig.specific.classes.indexOf(data.className) !== -1){
                     return true;
-                } else {
+                }else{
                     return false;
                 }
             }
             return true;
-        } else {
+        }else{
             return true;
         }
     },
 
-    getItemSelector: function (fieldName, config) {
-        config = defaultValue(config, {});
+    getItemSelector : function (fieldName,config) {
+        config = defaultValue(config,{});
         this.specialFormFields.push({
-            name: fieldName,
-            type: 'grid'
+            name : fieldName,
+            type : 'grid'
         });
 
         var itemSelectorConfig = this.getItemSelectorConfig(config);
@@ -457,7 +463,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                 height: 16,
                 cls: "pimcore_icon_droptarget"
             },
-            this.getFieldLabel(fieldName, config),
+            this.getFieldLabel(fieldName , config),
             "->",
             {
                 xtype: "button",
@@ -477,7 +483,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                             for (var i = 0; i < items.length; i++) {
                                 var item = items[i];
 
-                                if (this.itemSelectorDndAllowed(item, itemSelectorConfig)) {
+                                if(this.itemSelectorDndAllowed(item,itemSelectorConfig)){
                                     this['formElement' + fieldName].getStore().add({
                                         id: item.id,
                                         path: item.fullpath,
@@ -486,13 +492,13 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                                 }
                             }
                         }
-                    }.bind(this), itemSelectorConfig);
+                    }.bind(this),itemSelectorConfig);
                 }.bind(this)
             }
         ];
 
-        if (config.buttons) {
-            for (var i = 0; i < config.buttons.length; i++) {
+        if(config.buttons){
+            for(var i = 0; i < config.buttons.length; i++){
                 buttons.push(config.buttons[i]);
             }
         }
@@ -501,7 +507,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             store: store,
             authHeight: true,
             minHeight: 50,
-            maxHeight: 200,
+            maxHeight : 200,
             style: "margin: 15px 0",
             selModel: Ext.create("Ext.selection.RowModel"),
             columns: {
@@ -537,12 +543,12 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                 }.bind(this),
 
                 onNodeOver: function (overHtmlNode, ddSource, e, data) {
-                    return this.itemSelectorDndAllowed(data.records[0].data, itemSelectorConfig) ? Ext.dd.DropZone.prototype.dropAllowed : Ext.dd.DropZone.prototype.dropNotAllowed;
+                    return this.itemSelectorDndAllowed(data.records[0].data,itemSelectorConfig) ? Ext.dd.DropZone.prototype.dropAllowed : Ext.dd.DropZone.prototype.dropNotAllowed;
                 }.bind(this),
 
                 onNodeDrop: function (target, dd, e, r) {
                     var data = r.records[0].data;
-                    if (this.itemSelectorDndAllowed(data, itemSelectorConfig)) {
+                    if(this.itemSelectorDndAllowed(data,itemSelectorConfig)){
                         this['formElement' + fieldName].getStore().add({
                             id: data.id,
                             path: data.path,
@@ -559,17 +565,17 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         return this['formElement' + fieldName];
     },
 
-    getPropertySelector: function (fieldName, config) {
-        config = defaultValue(config, {});
+    getPropertySelector : function (fieldName,config) {
+        config = defaultValue(config,{});
 
         this.specialFormFields.push({
-            name: fieldName,
-            type: 'propertySelector'
+            name : fieldName,
+            type : 'propertySelector'
         });
 
-        var url = config.storeUrl || '/admin/elementsprocessmanager/index/property-list';
+        var url = config.storeUrl || '/plugin/ProcessManager/index/property-list';
 
-        if (url.indexOf('?') == -1) {
+        if(url.indexOf('?') == -1){
             url += '?';
         }
         url += 'fieldName=' + fieldName;
@@ -584,11 +590,11 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                 }
             }
             /*,
-             fields: ["id","name","description","settings","type"]*/
+            fields: ["id","name","description","settings","type"]*/
         });
         store.load();
 
-        var columns = defaultValue(config.columns, [
+        var columns = defaultValue(config.columns,[
             {
                 text: t("plugin_pm_property_selector_propertyname"),
                 sortable: true,
@@ -601,12 +607,12 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         var groupName1 = 'pm_drag_group_property_selector_' + fieldName;
         var groupName2 = 'pm_drop_group_property_selector_' + fieldName;
 
-        var minHeight = defaultValue(config.minHeight, 150);
-        var maxHeight = defaultValue(config.maxHeight, 250);
+        var minHeight = defaultValue(config.minHeight,150);
+        var maxHeight = defaultValue(config.maxHeight,250);
 
         var sourcePanel = Ext.create("Ext.grid.Panel", {
             title: t("plugin_pm_property_selector_source_property"),
-            cls: 'plugin_pm_property_selector_panel_source',
+            cls : 'plugin_pm_property_selector_panel_source',
             minHeight: minHeight,
             maxHeight: maxHeight,
             multiSelect: true,
@@ -627,7 +633,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
 
         var targetPanel = Ext.create("Ext.grid.Panel", {
             title: t("plugin_pm_property_selector_target_property"),
-            cls: 'plugin_pm_property_selector_panel_target',
+            cls : 'plugin_pm_property_selector_panel_target',
             minHeight: minHeight,
             maxHeight: maxHeight,
             flex: 1,
@@ -645,38 +651,38 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         });
 
         this['formElement' + fieldName] = Ext.create("Ext.panel.Panel", {
-            title: this.getFieldLabel(fieldName, config),
+            title: this.getFieldLabel(fieldName,config),
             flex: 1,
-            width: defaultValue(config.panelWidth, '100%'),
+            width : defaultValue(config.panelWidth,'100%'),
             layout: {
                 type: "hbox",
                 align: "stretch"
             },
             border: true,
             items: [sourcePanel, targetPanel],
-            cls: 'plugin_pm_property_selector_panel'
+            cls : 'plugin_pm_property_selector_panel'
         });
 
         return this['formElement' + fieldName];
     },
 
-    formHasErrors: function (data) {
+    formHasErrors : function (data) {
         var missingFields = [];
-        for (var i = 0; i < this.mandatoryFields.length; i++) {
+        for(var i = 0; i < this.mandatoryFields.length; i++){
             var validationMethod = 'formElementIsValid' + this.mandatoryFields[i].ucFirst();
 
-            if (typeof this[validationMethod] == 'function') {
-                if (!this[validationMethod](data[this.mandatoryFields[i]])) {
+            if(typeof this[validationMethod] == 'function'){
+                if(!this[validationMethod](data[this.mandatoryFields[i]])){
                     missingFields.push(this.mandatoryFields[i]);
                 }
-            } else {
+            }else{
                 var val = data[this.mandatoryFields[i]];
-                if (Array.isArray(val)) {
-                    if (!val.length) {
+                if(Array.isArray(val)){
+                    if(!val.length){
                         missingFields.push(this.mandatoryFields[i]);
                     }
-                } else {
-                    if (!val) {
+                }else{
+                    if(!val){
                         missingFields.push(this.mandatoryFields[i]);
                     }
                 }
@@ -686,70 +692,70 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         return missingFields.length == 0 ? false : missingFields;
     },
 
-    alertFormErrors: function (fields) {
-        for (var i = 0; i < fields.length; i++) {
+    alertFormErrors :function (fields) {
+        for(var i = 0; i < fields.length; i++){
             fields[i] = ' "' + this.getFieldLabel(fields[i]) + '"';
         }
         Ext.MessageBox.alert(t('plugin_pm_error_form_validation'), t('plugin_pm_error_form_fields') + '<br/><b>' + fields.join(', ') + '</b>');
     },
 
-    getStorageValueDate: function (name) {
+    getStorageValueDate : function (name) {
         return this.formPanel.getForm().findField(name).getSubmitValue();
     },
 
-    setStorageValueDate: function (name, data) {
+    setStorageValueDate : function (name,data) {
         var timestamp = data[name];
-        if (timestamp) {
-            this.formPanel.getForm().findField(name).setValue(new Date(timestamp * 1000));
+        if(timestamp){
+            this.formPanel.getForm().findField(name).setValue(new Date(timestamp*1000));
         }
     },
 
-    getStorageValueGrid: function (name) {
+    getStorageValueGrid : function (name) {
         var elementData = [];
-        this['formElement' + name].getStore().each(function (rec) {
+        this['formElement' + name].getStore().each(function(rec) {
                 elementData.push(rec.data);
             }
         );
         return elementData;
     },
 
-    setStorageValueGrid: function (name, data) {
+    setStorageValueGrid : function (name,data) {
         var d = data[name];
-        if (d) {
+        if(d){
             this['formElement' + name].getStore().removeAll();
-            for (var i = 0; i < d.length; i++) {
+            for(var i = 0; i < d.length;i++){
                 this['formElement' + name].getStore().add(d[i]);
             }
         }
     },
 
-    getStorageValuePropertySelector: function (name) {
+    getStorageValuePropertySelector : function (name) {
         var elementData = [];
         var targetPanel = this['formElement' + name].items.items[1];
-        targetPanel.getStore().each(function (rec) {
+        targetPanel.getStore().each(function(rec) {
                 elementData.push(rec.data);
             }
         );
         return elementData;
     },
 
-    setStorageValuePropertySelector: function (name, data) {
+    setStorageValuePropertySelector : function (name,data) {
         var d = data[name];
-        if (d) {
+        if(d){
             var targetPanel = this['formElement' + name].items.items[1];
-            for (var i = 0; i < d.length; i++) {
+            for(var i = 0; i < d.length;i++){
                 targetPanel.getStore().add(d[i]);
             }
         }
     },
 
-    getStorageValueHref: function (name, data) {
+    getStorageValueHref : function (name,data) {
         return this['formElement' + name].itemData;
     },
 
-    setStorageValueHref: function (name, data) {
+    setStorageValueHref : function (name,data) {
         var itemData = data[name];
-        if (itemData) {
+        if(itemData){
             this['formElement' + name].itemData = itemData;
             this['formElement' + name].setValue(itemData.path);
         }
