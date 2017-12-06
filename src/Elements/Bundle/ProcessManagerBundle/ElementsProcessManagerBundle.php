@@ -196,6 +196,12 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     public static function getMonitoringItem($createDummyObjectIfRequired = true)
     {
         if ($createDummyObjectIfRequired && !self::$monitoringItem) {
+            if(php_sapi_name() == 'cli') {
+                echo "\n\n#####################################################################
+WARNING - MONITORING ITEM NOT INITIALIZED - NO MESSAGES ARE LOGGED... Just an dummy object is registered
+#####################################################################\n\n
+";
+            }
             self::$monitoringItem = new MonitoringItem();
             self::$monitoringItem->setIsDummy(true);
         }
