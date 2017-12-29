@@ -34,9 +34,9 @@ class CallbackSettingsController extends AdminController
                 ->setDescription($values['description'])
                 ->setType($request->get('type'))
                 ->setSettings($request->get('settings'))->save();
-            return $this->json(['success' => true, 'id' => $setting->getId()]);
+            return $this->adminJson(['success' => true, 'id' => $setting->getId()]);
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -50,9 +50,9 @@ class CallbackSettingsController extends AdminController
         try {
             $setting = CallbackSetting::getById($request->get('id'));
             $setting->delete();
-            return $this->json(['success' => true]);
+            return $this->adminJson(['success' => true]);
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -67,12 +67,12 @@ class CallbackSettingsController extends AdminController
             $setting = CallbackSetting::getById($request->get('id'));
             if ($setting) {
                 $setting->setId(null)->setName('Copy - ' . $setting->getName())->save();
-                return $this->json(['success' => true]);
+                return $this->adminJson(['success' => true]);
             } else {
                 throw new \Exception("CallbackSetting whith the id '" . $request->get('id') . "' doesn't exist.");
             }
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -102,6 +102,6 @@ class CallbackSettingsController extends AdminController
             $data[] = $tmp;
         }
 
-        return $this->json(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
+        return $this->adminJson(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
     }
 }

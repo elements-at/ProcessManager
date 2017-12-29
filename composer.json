@@ -2,7 +2,7 @@
   "name": "elements/process-manager-bundle",
   "type": "pimcore-bundle",
   "require": {
-    "pimcore/core-version": ">=5.0.0-alpha.1",
+    "pimcore/core-version": "~5.1.0",
     "mtdowling/cron-expression": "^1.1.0"
   },
   "autoload": {

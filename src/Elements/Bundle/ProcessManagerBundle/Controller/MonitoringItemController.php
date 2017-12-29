@@ -34,7 +34,7 @@ class MonitoringItemController extends AdminController
         $list->setOrder('DESC');
         $list->setOrderKey('id');
         $list->setLimit($request->get('limit', 25));
-        $list->setUser($this->getUser());
+        $list->setUser($this->getAdminUser());
 
         $list->setOffset($request->get("start"));
 
@@ -160,7 +160,7 @@ class MonitoringItemController extends AdminController
             $data[] = $tmp;
         }
 
-        return $this->json(['success' => true, 'total' => $total, 'data' => $data]);
+        return $this->adminJson(['success' => true, 'total' => $total, 'data' => $data]);
     }
 
     /**
@@ -200,9 +200,9 @@ class MonitoringItemController extends AdminController
             $result = $monitoringItem->getObjectVars();
             $result['logLevel'] = strtolower($config['logLevel']);
 
-            return $this->json(['success' => true, 'data' => $result]);
+            return $this->adminJson(['success' => true, 'data' => $result]);
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -300,10 +300,10 @@ class MonitoringItemController extends AdminController
         if ($entry) {
             $entry->delete();
 
-            return $this->json(['success' => true]);
+            return $this->adminJson(['success' => true]);
         }
 
-        return $this->json(['success' => false, 'message' => "Couldn't delete entry"]);
+        return $this->adminJson(['success' => false, 'message' => "Couldn't delete entry"]);
     }
 
     /**
@@ -327,9 +327,9 @@ class MonitoringItemController extends AdminController
                 $item->delete();
             }
 
-            return $this->json(['success' => true]);
+            return $this->adminJson(['success' => true]);
         } else {
-            return $this->json(
+            return $this->adminJson(
                 [
                     'success' => false,
                     'message' => 'No statuses -> didn\'t deleted logs. Please select at least one status',
@@ -355,9 +355,9 @@ class MonitoringItemController extends AdminController
                 \Pimcore\Tool\Console::exec('kill -9 '.$pid);
             }
 
-            return $this->json(['success' => true]);
+            return $this->adminJson(['success' => true]);
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
 
     }
@@ -374,9 +374,9 @@ class MonitoringItemController extends AdminController
             $monitoringItem->deleteLogFile()->resetState()->save();
             \Pimcore\Tool\Console::execInBackground($monitoringItem->getCommand(), $monitoringItem->getLogFile());
 
-            return $this->json(['success' => true]);
+            return $this->adminJson(['success' => true]);
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 }

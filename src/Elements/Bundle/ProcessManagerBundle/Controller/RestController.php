@@ -26,15 +26,15 @@ class RestController extends AbstractRestController
     {
 
         if (!$this->checkPermission('plugin_pm_permission_execute') || !$this->checkPermission('plugin_pm_permission_view')) {
-            return $this->json(['success' => false, 'The current user is not allowed to execute or view the processes.']);
+            return $this->adminJson(['success' => false, 'The current user is not allowed to execute or view the processes.']);
         }
 
         if (!$request->get('id') && !$request->get('name')) {
-            return $this->json(['success' => false, 'Please provide a "name" or "id" parameter/value.']);
+            return $this->adminJson(['success' => false, 'Please provide a "name" or "id" parameter/value.']);
         }
 
         $list = new Configuration\Listing();
-        $list->setUser($this->getUser());
+        $list->setUser($this->getAdminUser());
         if ($id = $request->get('id')) {
             $list->setCondition('id = ?', [$id]);
         } elseif ($name = $request->get('name')) {
@@ -42,7 +42,7 @@ class RestController extends AbstractRestController
         }
         $config = $list->load()[0];
         if (!$config) {
-            return $this->json(['success' => false, 'message' => "Couldn't find a process to execute."]);
+            return $this->adminJson(['success' => false, 'message' => "Couldn't find a process to execute."]);
         }
 
         $callbackSettings = [];
@@ -57,13 +57,13 @@ class RestController extends AbstractRestController
             }
 
             if ($val && !$callbackSettings) {
-                return $this->json(['success' => false, 'message' => "Couldn't decode the callbackSettigs. Please make sure that you passed a valid JSON or XML."]);
+                return $this->adminJson(['success' => false, 'message' => "Couldn't decode the callbackSettigs. Please make sure that you passed a valid JSON or XML."]);
             }
         }
 
-        $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getUser()->getId());
+        $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getAdminUser()->getId());
         unset($result['executedCommand']);
-        return $this->json($result);
+        return $this->adminJson($result);
     }
 
     /**
@@ -74,20 +74,20 @@ class RestController extends AbstractRestController
     public function monitoringItemStateAction(Request $request)
     {
         $list = new MonitoringItem\Listing();
-        $list->setUser($this->getUser());
+        $list->setUser($this->getAdminUser());
 
         if (!$this->checkPermission('plugin_pm_permission_execute') || !$this->checkPermission('plugin_pm_permission_view')) {
-            return $this->json(['success' => false, 'The current user is not allowed to execute or view the processes.']);
+            return $this->adminJson(['success' => false, 'The current user is not allowed to execute or view the processes.']);
         }
 
         $list->setCondition(' id = ?', [$request->get('id')]);
 
         $monitoringItem = $list->load()[0];
         if (!$monitoringItem) {
-            return $this->json(['success' => false, 'message' => 'The monitoring Item was not found.']);
+            return $this->adminJson(['success' => false, 'message' => 'The monitoring Item was not found.']);
         }
-        $monitoringItem->getLogger()->notice('Checked by rest webservice User ID: ' . $this->getUser()->getId());
-        return $this->json(['success' => true, 'data' => $monitoringItem->getForWebserviceExport()]);
+        $monitoringItem->getLogger()->notice('Checked by rest webservice User ID: ' . $this->getAdminUser()->getId());
+        return $this->adminJson(['success' => true, 'data' => $monitoringItem->getForWebserviceExport()]);
     }
 
     /**

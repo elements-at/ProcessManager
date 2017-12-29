@@ -85,7 +85,7 @@ class IndexController extends AdminController
         $shortCutMenu = [];
 
         $list = new Configuration\Listing();
-        $list->setUser($this->getUser());
+        $list->setUser($this->getAdminUser());
         $list->setOrderKey('name');
         foreach ($list->load() as $config) {
             $group = $config->getGroup() ?: 'default';
@@ -98,7 +98,7 @@ class IndexController extends AdminController
         $data['shortCutMenu'] = $shortCutMenu ?: false;
 
 
-        return $this->json($data);
+        return $this->adminJson($data);
 
     }
 
@@ -158,6 +158,6 @@ class IndexController extends AdminController
             }
         }
 
-        return $this->json(['success' => true, 'data' => $result]);
+        return $this->adminJson(['success' => true, 'data' => $result]);
     }
 }

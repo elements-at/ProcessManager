@@ -25,7 +25,7 @@ class ConfigController extends AdminController
 
         try {
             $list = new Configuration\Listing();
-            $list->setUser($this->getUser())->setCondition('id = ?', [$request->get('id')]);
+            $list->setUser($this->getAdminUser())->setCondition('id = ?', [$request->get('id')]);
             $config = $list->load()[0];
 
             $values = $config->getObjectVars();
@@ -42,7 +42,7 @@ class ConfigController extends AdminController
                 'message' => $e->getMessage()
             ];
         }
-        return $this->json($result);
+        return $this->adminJson($result);
     }
 
     /**
@@ -60,7 +60,7 @@ class ConfigController extends AdminController
         $list->setLimit($request->get('limit', 25));
         $list->setOffset($request->get("start"));
 
-        $list->setUser($this->getUser());
+        $list->setUser($this->getAdminUser());
 
         if ($filterCondition = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'))) {
             $list->setCondition($filterCondition);
@@ -91,7 +91,7 @@ class ConfigController extends AdminController
 
         }
 
-        return $this->json(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
+        return $this->adminJson(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
     }
 
     /**
@@ -137,9 +137,9 @@ class ConfigController extends AdminController
         try {
             $configuration->save();
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
-        return $this->json(['success' => true, 'id' => $configuration->getId()]);
+        return $this->adminJson(['success' => true, 'id' => $configuration->getId()]);
     }
 
     /**
@@ -155,7 +155,7 @@ class ConfigController extends AdminController
         if ($config instanceof Configuration) {
             $config->delete();
         }
-        return $this->json(['success' => true]);
+        return $this->adminJson(['success' => true]);
     }
 
     /**
@@ -168,9 +168,9 @@ class ConfigController extends AdminController
         try {
             $config = Configuration::getById($request->get('id'));
             $config->setActive((int)$request->get('value'))->save();
-            return $this->json(['success' => true]);
+            return $this->adminJson(['success' => true]);
         } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -183,7 +183,7 @@ class ConfigController extends AdminController
     {
         $this->checkPermission('plugin_pm_permission_execute');
         $callbackSettings = $request->get('callbackSettings') ? json_decode($request->get('callbackSettings'), true) : [];
-        $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getUser()->getId());
-        return $this->json($result);
+        $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getAdminUser()->getId());
+        return $this->adminJson($result);
     }
 }
