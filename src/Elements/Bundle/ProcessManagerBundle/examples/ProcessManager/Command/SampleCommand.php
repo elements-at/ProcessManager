@@ -30,7 +30,7 @@ class SampleCommand extends AbstractCommand
         $this->initProcessManager($input->getOption('monitoring-item-id'));
         \Pimcore\Tool\Console::checkExecutingUser();
 
-        $classList = new \Pimcore\Model\Object\ClassDefinition\Listing();
+        $classList = new \Pimcore\Model\DataObject\ClassDefinition\Listing();
         $classes = $classList->load();
 
         $monitoringItem = $this->getMonitoringItem();
@@ -40,14 +40,14 @@ class SampleCommand extends AbstractCommand
         $data = [];
         foreach ($classes as $i => $class) {
             /**
-             * @var $list \Pimcore\Model\Object\Listing
-             * @var $class \Pimcore\Model\Object\ClassDefinition
-             * @var $o \Pimcore\Model\Object\AbstractObject
+             * @var $list \Pimcore\Model\DataObject\Listing
+             * @var $class \Pimcore\Model\DataObject\ClassDefinition
+             * @var $o \Pimcore\Model\DataObject\AbstractObject
              */
             $monitoringItem->setCurrentStep($i + 1)->setMessage('Processing Object of class '.$class->getName())->save(
             );
             sleep(5);
-            $listName = '\Pimcore\Model\Object\\'.ucfirst($class->getName()).'\Listing';
+            $listName = '\Pimcore\Model\DataObject\\'.ucfirst($class->getName()).'\Listing';
             $list = new $listName();
             $total = $list->getTotalCount();
             $perLoop = 50;
