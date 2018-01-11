@@ -9,7 +9,7 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Logger\Application;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\File;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
-use Pimcore\Model\Object\AbstractObject;
+use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Templating\Model\ViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
