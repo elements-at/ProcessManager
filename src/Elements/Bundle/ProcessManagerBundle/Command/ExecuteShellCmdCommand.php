@@ -7,7 +7,7 @@ use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use \Pimcore\Model\Object;
+use \Pimcore\Model\DataObject;
 
 
 class ExecuteShellCmdCommand extends AbstractCommand
