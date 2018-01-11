@@ -11,7 +11,7 @@ class SampleClassMethod
 
     public function execute()
     {
-        $classList = new \Pimcore\Model\Object\ClassDefinition\Listing();
+        $classList = new \Pimcore\Model\DataObject\ClassDefinition\Listing();
         $classes = $classList->load();
 
         $monitoringItem = ElementsProcessManagerBundle::getMonitoringItem();
@@ -20,13 +20,13 @@ class SampleClassMethod
         $data = [];
         foreach ($classes as $i => $class) {
             /**
-             * @var $list \Pimcore\Model\Object\Listing
-             * @var $class \Pimcore\Model\Object\ClassDefinition
-             * @var $o \Pimcore\Model\Object\AbstractObject
+             * @var $list \Pimcore\Model\DataObject\Listing
+             * @var $class \Pimcore\Model\DataObject\ClassDefinition
+             * @var $o \Pimcore\Model\DataObject\AbstractObject
              */
             $monitoringItem->setCurrentStep($i + 1)->setMessage('Processing Object of class '.$class->getName())->save(
             );
-            $listName = '\Pimcore\Model\Object\\'.$class->getName().'\Listing';
+            $listName = '\Pimcore\Model\DataObject\\'.$class->getName().'\Listing';
             $list = new $listName();
 
             # $list->setCondition('o_className = "Material" ');
