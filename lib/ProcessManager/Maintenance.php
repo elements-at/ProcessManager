@@ -152,7 +152,7 @@ class Maintenance {
         $list = new MonitoringItem\Listing();
         $list->setCondition('name ="ProcessManager maintenance" AND status="finished"');
         $list->setOrderKey('id')->setOrder('DESC');
-        $list->setOffset(5);
+        $list->setOffset(1);
         foreach($list->load() as $item){
             $logger->debug("Deleting monitoring Item: " . $item->getId());
             $item->delete();
