@@ -136,3 +136,6 @@
 "plugin_pm_myHref","My href"
 "plugin_pm_maxFileSizeMB","Max file Size (MB)"
 "plugin_pm_filepath","File path"
+"plugin_pm_hideMonitoringItem","Hide monitoring items"
+"plugin_pm_show_hidden_monitoring_items","Show hidden monitoring items"
+"plugin_pm_metaData","Meta data"

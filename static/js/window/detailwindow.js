@@ -15,27 +15,27 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
     getClassName: function (){
         return "pimcore.plugin.processmanager.window.detailwindow";
     },
-    
-	initialize: function (data) {
-		this.data = data;
-		this.getInputWindow();
+
+    initialize: function (data) {
+        this.data = data;
+        this.getInputWindow();
         this.detailWindow.show();
-	},    
+    },
 
 
     getInputWindow: function () {
-        
+
         if(!this.detailWindow) {
             this.detailWindow = new Ext.Window({
-				width: '80%',
-				height: '80%',
+                width: '80%',
+                height: '80%',
                 title: t('plugin_pm_monitoring_item_detail_window'),
-				closeAction:'close',
-				plain: true,
-				maximized: false,
-				autoScroll: true,
-				modal: true,
-				buttons: [
+                closeAction:'close',
+                plain: true,
+                maximized: false,
+                autoScroll: true,
+                modal: true,
+                buttons: [
                     {
                         text: t('close'),
                         iconCls: "pimcore_icon_cancel",
@@ -44,18 +44,18 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
                             this.detailWindow.hide();
                             this.detailWindow.destroy();
                         }.bind(this)
-                    }					
+                    }
                 ]
-			});
-			
-			this.createPanel();
+            });
+
+            this.createPanel();
         }
         return this.detailWindow;
     },
-	
 
-	createPanel: function() {
-		var items = [];
+
+    createPanel: function() {
+        var items = [];
         items.push({
             xtype: "textfield",
             fieldLabel: t("name"),
@@ -96,6 +96,16 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
 
         items.push({
             xtype: "textarea",
+            fieldLabel: t('plugin_pm_metaData'),
+            name: "metaData",
+            readOnly: true,
+            value: this.data.metaData ? JSON.stringify(Ext.decode(this.data.metaData), null, '\t') : '',
+            width : "100%",
+            height: 250
+        });
+
+        items.push({
+            xtype: "textarea",
             fieldLabel: t('plugin_pm_logger_data'),
             name: "loggers",
             readOnly: true,
@@ -122,14 +132,21 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
             value: this.data.executedByUser,
             width : "100%"
         });
-
-		items.push({
-			xtype: "numberfield",
-			fieldLabel: "ID",
-			name: "id",
+        items.push({
+            xtype: "textfield",
+            fieldLabel: t("plugin_pm_group"),
+            name: "group",
             readOnly: true,
-			value: this.data.id
-		});
+            value: this.data.group,
+            width : "100%"
+        });
+        items.push({
+            xtype: "numberfield",
+            fieldLabel: "ID",
+            name: "id",
+            readOnly: true,
+            value: this.data.id
+        });
 
         items.push({
             xtype: "numberfield",
@@ -204,15 +221,15 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
 
         var panel = new Ext.form.FormPanel({
             border: false,
-			frame:false,
-		    bodyStyle: 'padding:10px',
+            frame:false,
+            bodyStyle: 'padding:10px',
             items: items,
-			labelWidth: 130,
-			collapsible: false,
+            labelWidth: 130,
+            collapsible: false,
             autoScroll: true
         });
-		
-		this.detailWindow.add(panel);
-	}
+
+        this.detailWindow.add(panel);
+    }
 
 });

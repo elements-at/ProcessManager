@@ -76,7 +76,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
      */
     public $currentWorkload;
 
-
     /**
      * @var int
      */
@@ -95,6 +94,76 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
      * @var bool
      */
     public $isDummy = false;
+
+    /**
+     * @var bool
+     */
+    public $published = true;
+
+    /**
+     * @var string
+     */
+    public $group = '';
+
+    /**
+     * @var string
+     */
+    public $metaData = '';
+
+    /**
+     * @return string
+     */
+    public function getMetaData()
+    {
+        return $this->metaData;
+    }
+
+    /**
+     * @param string $metaData
+     * @return $this
+     */
+    public function setMetaData($metaData)
+    {
+        $this->metaData = $metaData;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPublished()
+    {
+        return $this->published;
+    }
+
+    /**
+     * @param bool $published
+     * @return $this
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param string $group
+     * @return $this
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+        return $this;
+    }
+
 
     /**
      * @return bool
@@ -594,22 +663,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel {
                     }
                 }
             }
-
-
-
-         #
-
-            /*$this->logger = new Logger('process-manager-logger');
-            $this->logger->pushHandler(new StreamHandler($this->getLogFile(), Logger::DEBUG));
-            if(php_sapi_name() === 'cli'){
-                $this->logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
-            }*/
-
-         #   $this->logger->addWriter(new StreamHandler($this->getLogFile(), Logger::DEBUG));
-          #  $this->logger->addWriter(new \Pimcore\Log\Handler\ApplicationLoggerDb());
-          #  if(php_sapi_name() === 'cli'){
-          #      $this->logger->addWriter(new StreamHandler('php://stdout', Logger::DEBUG));
-          #  }
         }
         return $this->logger;
     }

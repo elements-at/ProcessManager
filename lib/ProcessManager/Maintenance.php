@@ -40,22 +40,26 @@ class Maintenance {
         $config = Plugin::getConfig();
 
         foreach($items as $item) {
-            if ($item->isAlive()) {
-                $diff = time() - $item->getModificationDate();
-                $minutes = $config['general']['processTimeoutMinutes'] ?: 15;
-                if ($diff > (60 * $minutes)) {
-                    $item->getLogger()->error('Process was checked by ProcessManager maintenance. Considered as hanging process - TimeDiff: ' . $diff . ' seconds.');
-                    $reportItems[] = $item;
-                }
-            } else {
-                if ($item->getStatus() == $item::STATUS_FINISHED) {
-                    $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
-                    $item->setReportedDate(time())->save(true);
+            if(!$item->getCommand()){ //manually created - do not check
+                $item->setReportedDate(1)->save(true);
+            }else{
+                if ($item->isAlive()) {
+                    $diff = time() - $item->getModificationDate();
+                    $minutes = $config['general']['processTimeoutMinutes'] ?: 15;
+                    if ($diff > (60 * $minutes)) {
+                        $item->getLogger()->error('Process was checked by ProcessManager maintenance. Considered as hanging process - TimeDiff: ' . $diff . ' seconds.');
+                        $reportItems[] = $item;
+                    }
                 } else {
-                    $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus(),false)->setStatus($item::STATUS_FAILED);
-                    $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
-                    $this->monitoringItem->getLogger()->error('Monitoring item ' . $item->getId() . ' was checked by ProcessManager maintenance and considered as dead process');
-                    $reportItems[] = $item;
+                    if ($item->getStatus() == $item::STATUS_FINISHED) {
+                        $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
+                        $item->setReportedDate(time())->save(true);
+                    } else {
+                        $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus(),false)->setStatus($item::STATUS_FAILED);
+                        $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
+                        $this->monitoringItem->getLogger()->error('Monitoring item ' . $item->getId() . ' was checked by ProcessManager maintenance and considered as dead process');
+                        $reportItems[] = $item;
+                    }
                 }
             }
         }
@@ -75,7 +79,14 @@ class Maintenance {
             if(!empty($recipients)){
                 $mail->addCc($recipients);
             }
-            $mail->send();
+            try {
+                $mail->send();
+            }catch (\Exception $e){
+                $logger = \Pimcore\Log\ApplicationLogger::getInstance("ProcessManager", true); // returns a PSR-3 compatible logger
+                $message = "Can't send E-Mail: " . $e->getMessage();
+                $logger->emergency($message);
+                \Pimcore\Logger::emergency($message);
+            }
         }
         /**
          * @var $item MonitoringItem

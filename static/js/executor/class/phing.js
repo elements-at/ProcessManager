@@ -5,6 +5,7 @@ pimcore.plugin.processmanager.executor.phing = Class.create(pimcore.plugin.proce
         var items = this.getDefaultItems();
 
         items.push(this.getNumberField("keepVersions"));
+        items.push(this.getCheckbox("hideMonitoringItem"));
         return items;
     }
 

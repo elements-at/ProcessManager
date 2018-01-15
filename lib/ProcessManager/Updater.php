@@ -214,6 +214,14 @@ ENGINE=InnoDB
         @unlink(\PIMCORE_LOG_DIRECTORY. ' /process-manager-maintenance.log');
     }
 
+    public function updateVersion9(){
+        $db = \Pimcore\Db::get();
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD `metaData` LONGTEXT ");
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD `published` TINYINT NOT NULL DEFAULT 1");
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD `group` VARCHAR(50)");
+        \Pimcore\Cache::clearTags(["system", "resource"]);
+    }
+
     protected function copyConfig(){
         $configFile = PIMCORE_DOCUMENT_ROOT.'/plugins/ProcessManager/install/plugin-process-manager.php';
         if(!is_dir(PIMCORE_CUSTOM_CONFIGURATION_DIRECTORY)){

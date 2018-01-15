@@ -39,6 +39,23 @@ class ProcessManager_MonitoringItemController extends \Pimcore\Controller\Action
             $list->setCondition($filterCondition);
         }
 
+        $condition = $list->getCondition();
+
+        if(!$this->getParam('showHidden') || $this->getParam('showHidden') == 'false'){
+            $filterConditionArray = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($this->getParam('filter'),['id', 'o_id','pid'],false,$callbacks);
+
+            if($filterConditionArray && $filterConditionArray['id']){
+
+            }else{
+                if($condition){
+                    $condition .= ' AND published=1';
+                }else{
+                    $condition .= ' published=1';
+                }
+            }
+            $list->setCondition($condition);
+        }
+
         $total = $list->getTotalCount();
 
 
