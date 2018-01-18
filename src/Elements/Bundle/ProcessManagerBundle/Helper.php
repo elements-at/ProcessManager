@@ -48,7 +48,7 @@ class Helper
                 $monitoringItem->getLogger()->info('Execution Command: ' . $command . ' in Background');
             }
 
-            $pid = \Pimcore\Tool\Console::execInBackground($command, '/tmp/processmanager.log');
+            $pid = \Pimcore\Tool\Console::execInBackground($command);
             $monitoringItem->setPid($pid)->save();
             return ['success' => true, 'executedCommand' => $command, 'monitoringItemId' => $item->getId()];
         } catch (\Exception $e) {
