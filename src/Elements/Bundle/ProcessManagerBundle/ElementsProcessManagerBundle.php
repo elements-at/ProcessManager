@@ -28,7 +28,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             ],
             [
                 "logLevel" => "DEBUG",
-                "filepath" => '/website/var/log/process-manager-maintenance.log',
+                "filepath" => '/var/logs/process-manager-maintenance.log',
                 'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\File',
                 'simpleLogFormat' => true,
                 'maxFileSizeMB' => 50
