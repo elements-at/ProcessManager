@@ -8,12 +8,25 @@ use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Templating\EngineInterface;
 
 class MaintenanceCommand extends AbstractCommand
 {
     use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 
+    /**
+     * @var EngineInterface
+     */
+    private $templatingEngine;
+
     protected $loggerInitialized = null;
+
+    public function __construct(EngineInterface $templatingEngine)
+    {
+        parent::__construct();
+
+        $this->templatingEngine = $templatingEngine;
+    }
 
     protected function configure()
     {
@@ -34,9 +47,8 @@ class MaintenanceCommand extends AbstractCommand
         $this->doUniqueExecutionCheck(null, ['command' => $this->getCommand($options)]);
 
         \Pimcore\Tool\Console::checkExecutingUser();
-        $container = $this->getApplication()->getKernel()->getContainer();
-        $renderingEngine = $container->get('templating.engine.delegating');
-        $maintenance = new Maintenance($renderingEngine);
+
+        $maintenance = new Maintenance($this->templatingEngine);
         $maintenance->execute();
     }
 }
