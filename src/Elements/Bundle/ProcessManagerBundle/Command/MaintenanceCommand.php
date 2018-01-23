@@ -9,11 +9,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 class MaintenanceCommand extends AbstractCommand
 {
-
     use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+
+    protected $loggerInitialized = null;
 
     protected function configure()
     {
@@ -27,9 +27,6 @@ class MaintenanceCommand extends AbstractCommand
             );
     }
 
-    protected $loggerInitialized = null;
-
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $options = ElementsProcessManagerBundle::$maintenanceOptions;
@@ -42,7 +39,4 @@ class MaintenanceCommand extends AbstractCommand
         $maintenance = new Maintenance($renderingEngine);
         $maintenance->execute();
     }
-
-
 }
-
