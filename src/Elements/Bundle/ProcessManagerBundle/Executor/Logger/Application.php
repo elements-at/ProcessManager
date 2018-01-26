@@ -31,7 +31,7 @@ class Application extends AbstractLogger
             }
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
 
-            return new \Pimcore\Log\Handler\ApplicationLoggerDb($logLevel);
+            return new \Pimcore\Log\Handler\ApplicationLoggerDb(\Pimcore\Db::get(),$logLevel);
         }
 
         return $this->streamHandler;
