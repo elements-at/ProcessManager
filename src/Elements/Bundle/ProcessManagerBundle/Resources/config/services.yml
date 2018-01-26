@@ -1,6 +1,11 @@
 services:
-    processmanager.system_listener:
-        class: Elements\Bundle\ProcessManagerBundle\SystemEventsListener
-        tags:
-            - { name: kernel.event_subscriber }
-        arguments: ['@templating.engine.delegating']
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    # auto-register all commands as services
+    Elements\Bundle\ProcessManagerBundle\Command\:
+        resource: '../../Command'
+
+    Elements\Bundle\ProcessManagerBundle\SystemEventsListener: ~
