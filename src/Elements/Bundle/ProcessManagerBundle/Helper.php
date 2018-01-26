@@ -33,6 +33,18 @@ class Helper
             $monitoringItem->setExecutedByUser($userId);
             $monitoringItem->setActions($executor->getActions());
             $monitoringItem->setLoggers($executor->getLoggers());
+
+            if($executorSettings = $config->getExecutorSettings()){
+                $executorData = json_decode($config->getExecutorSettings(),true);
+
+                if($executorData['values']){
+                    if($executorData['values']['hideMonitoringItem'] == 'on'){
+                        $monitoringItem->setPublished(false);
+                    }
+                    $monitoringItem->setGroup($executorData['values']['group']);
+                }
+            }
+
             $item = $monitoringItem->save();
 
             $command = $executor->getCommand($callbackSettings, $monitoringItem);

@@ -27,6 +27,7 @@ pimcore.plugin.processmanager.executor.class.exportToolkit = Class.create(pimcor
         items.push(this.getCronjobField());
         items.push(this.getCronjobDescription());
         items.push(this.getNumberField("keepVersions"));
+        items.push(this.getCheckbox("hideMonitoringItem"));
         return items;
     }
 

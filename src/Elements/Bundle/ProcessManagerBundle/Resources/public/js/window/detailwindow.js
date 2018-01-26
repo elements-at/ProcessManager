@@ -84,6 +84,16 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
 
         items.push({
             xtype: "textarea",
+            fieldLabel: t('plugin_pm_metaData'),
+            name: "metaData",
+            readOnly: true,
+            value: this.data.metaData ? JSON.stringify(Ext.decode(this.data.metaData), null, '\t') : '',
+            width : "100%",
+            height: 250
+        });
+
+        items.push({
+            xtype: "textarea",
             fieldLabel: t('plugin_pm_logger_data'),
             name: "loggers",
             readOnly: true,
@@ -108,6 +118,15 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
             name: "executedByUser",
             readOnly: true,
             value: this.data.executedByUser,
+            width : "100%"
+        });
+
+        items.push({
+            xtype: "textfield",
+            fieldLabel: t("plugin_pm_group"),
+            name: "group",
+            readOnly: true,
+            value: this.data.group,
             width : "100%"
         });
 

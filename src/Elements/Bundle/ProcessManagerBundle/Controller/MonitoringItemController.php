@@ -64,6 +64,23 @@ class MonitoringItemController extends AdminController
             $list->setCondition($filterCondition);
         }
 
+        $condition = $list->getCondition();
+
+        if(!$request->get('showHidden') || $request->get('showHidden') == 'false'){
+            $filterConditionArray = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'),['id', 'o_id','pid'],false,$callbacks);
+
+            if($filterConditionArray && $filterConditionArray['id']){
+
+            }else{
+                if($condition){
+                    $condition .= ' AND published=1';
+                }else{
+                    $condition .= ' published=1';
+                }
+            }
+            $list->setCondition($condition);
+        }
+
         $total = $list->getTotalCount();
 
 

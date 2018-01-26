@@ -101,6 +101,75 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public $isDummy = false;
 
     /**
+     * @var bool
+     */
+    public $published = true;
+
+    /**
+     * @var string
+     */
+    public $group = '';
+
+    /**
+     * @var string
+     */
+    public $metaData = '';
+
+    /**
+     * @return string
+     */
+    public function getMetaData()
+    {
+        return $this->metaData;
+    }
+
+    /**
+     * @param string $metaData
+     * @return $this
+     */
+    public function setMetaData($metaData)
+    {
+        $this->metaData = $metaData;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPublished()
+    {
+        return $this->published;
+    }
+
+    /**
+     * @param bool $published
+     * @return $this
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param string $group
+     * @return $this
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function getIsDummy()

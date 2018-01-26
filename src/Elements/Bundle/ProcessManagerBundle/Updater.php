@@ -259,6 +259,14 @@ ENGINE=InnoDB
         $db->query("ALTER TABLE " . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . " MODIFY `message` VARCHAR(1000) ");
     }
 
+    public function updateVersion9(){
+        $db = \Pimcore\Db::get();
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD `metaData` LONGTEXT ");
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD `published` TINYINT NOT NULL DEFAULT 1");
+        $db->query("ALTER TABLE ".Plugin::TABLE_NAME_MONITORING_ITEM." ADD `group` VARCHAR(50)");
+        \Pimcore\Cache::clearTags(["system", "resource"]);
+    }
+
     protected function copyConfig()
     {
         $configFile = dirname(__FILE__).'/install/plugin-process-manager.php';

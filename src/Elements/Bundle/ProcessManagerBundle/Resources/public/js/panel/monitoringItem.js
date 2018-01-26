@@ -90,6 +90,22 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             }
         });
 
+        this.showHiddenMonitoringItems = new Ext.form.Checkbox({
+            stateful: true,
+            stateId: 'plugin_pm_show_hidden_monitoring_items',
+            stateEvents: ['click'],
+            checked : false,
+            boxLabel: t('plugin_pm_show_hidden_monitoring_items'),
+            listeners: {
+                "change": function (field, checked) {
+                    // this.grid.filters.clearFilters();
+                    this.store.getProxy().setExtraParam("showHidden", checked);
+                    this.store.reload();
+                }.bind(this)
+            }
+        });
+
+
         this.pagingtoolbar = this.getPagingToolbar(this.store,
             {
                 pageSize: itemsPerPage
@@ -181,6 +197,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             dataIndex: 'executedByUser',
             filter: 'string'
         });
+        gridColumns.push({header: t("group"), width: 100, sortable: false, dataIndex: 'group', filter: 'string'});
         gridColumns.push({header: t("status"), width: 100, sortable: true, dataIndex: 'status', filter: 'string'});
         gridColumns.push({header: t("steps"), width: 50, sortable: false, dataIndex: 'steps'});
         gridColumns.push({header: t("plugin_pm_monitor_duration"), width: 100, dataIndex: 'duration'});
@@ -206,6 +223,17 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             dataIndex: 'callbackSettings',
             width: 400,
             hidden: true,
+            renderer: function (v) {
+                return v;
+            }
+        });
+
+        gridColumns.push({
+            header: t('plugin_pm_metaData'),
+            sortable : false,
+            dataIndex: 'metaData',
+            width : 400,
+            hidden : true,
             renderer: function (v) {
                 return v;
             }
@@ -279,7 +307,10 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             handler: this.clearMonitoringItems.bind(this)
         });
         tbar.push(clearMonitoringItems);
+        tbar.push("->");
 
+
+        tbar.push(this.showHiddenMonitoringItems);
         var gridConfig = {
             frame: false,
             id: 'plugin_pmmonitoring_item_list_panel',

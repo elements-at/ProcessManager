@@ -15,7 +15,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     use ExecutionTrait;
     use StateHelperTrait;
 
-    const VERSION = 7;
+    const VERSION = 9;
 
     public static $maintenanceOptions = [
         'autoCreate' => true,

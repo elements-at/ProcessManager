@@ -9,6 +9,7 @@ pimcore.plugin.processmanager.executor.class.classMethod = Class.create(pimcore.
         items.push(this.getCronjobField());
         items.push(this.getCronjobDescription());
         items.push(this.getNumberField("keepVersions"));
+        items.push(this.getCheckbox("hideMonitoringItem"));
         return items;
     }
 });
