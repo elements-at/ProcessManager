@@ -144,13 +144,60 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
             xtype: "combo",
             editable: false,
             name: "callback",
+            labelWidth: this.labelWidth,
             value: this.getFieldValue('callback'),
             store: store,
             mode: "local",
             width : "100%",
-            triggerAction: "all"
+            triggerAction: "all",
+            onChange : function (newVal, oldVal) {
+                var parts = newVal.split("\.");
+                this.predefinedCallbackStore.load({
+                    params : {
+                        type: parts[parts.length-1]
+                    }
+                });
+                this.formPanel.getForm().findField("defaultPreDefinedConfig").setValue(null);
+                this.formPanel.getForm().findField("defaultPreDefinedConfig").setHidden(!newVal);
+            }.bind(this)
         }
         return this.callback;
+    },
+
+    getCallbackPredefinedConfig : function () {
+
+        var callbackType = '';
+
+        if(this.getFieldValue('callback')){
+            var val = this.getFieldValue('callback');
+            var parts = val.split("\.");
+            callbackType = parts[parts.length-1];
+        }
+
+        /* mandant */
+        this.predefinedCallbackStore = new Ext.data.Store({
+            autoLoad : true,
+            proxy: {
+                url: '/plugin/ProcessManager/callback-settings/list',
+                type: 'ajax',
+                reader: {
+                    type: 'json',
+                    root: "data"
+                },
+                extraParams : {
+                    type : callbackType
+                }
+            }
+        });
+
+        this.defaultPreDefinedConfig = this.getSelectField("defaultPreDefinedConfig", {
+            store: this.predefinedCallbackStore,
+            hidden : !callbackType,
+            displayField : "name",
+            valueField :  "id"
+        });
+
+        return this.defaultPreDefinedConfig;
     },
 
     getCronjobField : function(){
@@ -369,6 +416,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
 
         if(processmanagerPlugin.config.executorCallbackClasses){
             items.push(this.getCallbackSelect());
+            items.push(this.getCallbackPredefinedConfig());
         }
         return items;
     }

@@ -350,6 +350,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
 
     getConfigSelection : function () {
         var configStore = new Ext.data.Store({
+            autoLoad : true,
             proxy: {
                 url: '/plugin/ProcessManager/callback-settings/list?type=' + this.name,
                 type: 'ajax',
@@ -361,26 +362,31 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             fields: ["id","name","description","settings","type"]
         });
 
-        return  {
-            fieldLabel: t('plugin_pm_predefined_callback_settings'),
-            name: 'docType',
-            labelWidth: 120,
-            xtype: "combo",
-            displayField:'name',
-            valueField: "id",
-            store: configStore,
-            editable: false,
-            width : 400,
-            triggerAction: 'all',
-            value: '',
-            listeners: {
-                "select": function(a,record){
-                    var data = record.getData();
-                    Ext.getCmp(this.getIdKey("plugin_pm_executor_callback_form_")).getForm().reset();
-                    this.applyCallbackSettings(data.extJsSettings);
-                }.bind(this)
-            }
-        };
+
+
+        if(!this.predefinedConfig){
+            this.predefinedConfig = new Ext.form.ComboBox({
+                fieldLabel: t('plugin_pm_predefined_callback_settings'),
+                name: 'docType',
+                labelWidth: 120,
+                xtype: "combo",
+                displayField:'name',
+                valueField: "id",
+                store: configStore,
+                editable: false,
+                width : 400,
+                triggerAction: 'all',
+                value: '',
+                listeners: {
+                    "select": function(a,record){
+                        var data = record.getData();
+                        Ext.getCmp(this.getIdKey("plugin_pm_executor_callback_form_")).getForm().reset();
+                        this.applyCallbackSettings(data.extJsSettings);
+                    }.bind(this)
+                }
+            });
+        }
+        return this.predefinedConfig;
     },
 
     openConfigWindow : function () {

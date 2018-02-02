@@ -62,8 +62,12 @@ class ProcessManager_CallbackSettingsController extends \Pimcore\Controller\Acti
         if($filterCondition = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($this->getParam('filter'))){
             $list->setCondition($filterCondition);
         }
-        if($type = $this->getParam('type')){
-            $list->setCondition(' `type` = ?',[$type]);
+        if($id = $this->getParam('id')){
+            $list->setCondition(' `id` = ?',[$id]);
+        }else{
+            if($type = $this->getParam('type')){
+                $list->setCondition(' `type` = ?',[$type]);
+            }
         }
 
         foreach($list->load() as $item){

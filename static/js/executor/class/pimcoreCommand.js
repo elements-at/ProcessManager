@@ -26,6 +26,7 @@ pimcore.plugin.processmanager.executor.class.pimcoreCommand = Class.create(pimco
             xtype: "combo",
             editable: false,
             name: "command",
+            labelWidth: this.labelWidth,
             value: this.getFieldValue('command'),
             store: store,
             mode: "local",
