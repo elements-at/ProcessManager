@@ -253,6 +253,21 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         //call openConfigWindow/openConfigTab if form items are defined
         if(typeof this['getFormItems'] == 'function'){
             this['openConfig' + this.callbackWindowType.ucFirst()]();
+
+            if(this.config){
+                var preDefinedConfigId = this.config.executorSettings.values.defaultPreDefinedConfig;
+                if(preDefinedConfigId){
+                    Ext.Ajax.request({
+                        url: '/plugin/ProcessManager/callback-settings/list?type=' + this.name + '&id=' + preDefinedConfigId,
+                        success: function (transport) {
+                            var res = Ext.decode(transport.responseText);
+                            Ext.getCmp(this.getIdKey("plugin_pm_executor_callback_form_")).getForm().reset();
+                            this.applyCallbackSettings(res.data[0].extJsSettings);
+                        }.bind(this)
+                    });
+                    this.predefinedConfig.setValue(preDefinedConfigId);
+                }
+            }
         }else{
             this.doExecute();
         }
