@@ -4,6 +4,7 @@ namespace Elements\Bundle\ProcessManagerBundle;
 
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
+use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Carbon\Carbon;
 use Symfony\Component\Templating\EngineInterface;
 
@@ -124,7 +125,23 @@ class Maintenance {
             $logger->debug($message);
             $diff = $nextRunTs-$currentTs;
             if($diff < 0){
-                $result = Helper::executeJob($config->getId(),[],0);
+
+                $params = [];
+                //add default callback settings if defined
+                if($settings = $config->getExecutorSettings()){
+                    $settings = json_decode($settings,true);
+                    $preDefinedConfigId = $settings['values']['defaultPreDefinedConfig'];
+                    if($preDefinedConfigId){
+                        $callbackSetting = CallbackSetting::getById($preDefinedConfigId);
+                        if($callbackSetting){
+                            if($v = $callbackSetting->getSettings()){
+                                $params = json_decode($v,true);
+                            }
+                        }
+                    }
+                }
+
+                $result = Helper::executeJob($config->getId(),$params,0);
                 if($result['success']){
                     $logger->debug('Execution job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff.' Command: '. $result['executedCommand']);
                     $config->setLastCronJobExecution(time())->save();

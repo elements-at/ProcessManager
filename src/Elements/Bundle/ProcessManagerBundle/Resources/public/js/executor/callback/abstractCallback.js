@@ -254,6 +254,22 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         //call openConfigWindow/openConfigTab if form items are defined
         if (typeof this['getFormItems'] == 'function') {
             this['openConfig' + this.callbackWindowType.ucFirst()]();
+
+            if(this.config){
+                var preDefinedConfigId = this.config.executorSettings.values.defaultPreDefinedConfig;
+                if(preDefinedConfigId){
+                    Ext.Ajax.request({
+                        url: '/plugin/ProcessManager/callback-settings/list?type=' + this.name + '&id=' + preDefinedConfigId,
+                        success: function (transport) {
+                            var res = Ext.decode(transport.responseText);
+                            Ext.getCmp(this.getIdKey("plugin_pm_executor_callback_form_")).getForm().reset();
+                            this.applyCallbackSettings(res.data[0].extJsSettings);
+                        }.bind(this)
+                    });
+                    this.predefinedConfig.setValue(preDefinedConfigId);
+                }
+            }
+
         } else {
             this.doExecute();
         }
@@ -348,39 +364,45 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         return this.formPanel;
     },
 
-    getConfigSelection: function () {
+    getConfigSelection : function () {
         var configStore = new Ext.data.Store({
+            autoLoad : true,
             proxy: {
-                url: '/admin/elementsprocessmanager/callback-settings/list?type=' + this.name,
+                url: '/plugin/ProcessManager/callback-settings/list?type=' + this.name,
                 type: 'ajax',
                 reader: {
                     type: 'json',
                     rootProperty: "data"
                 }
             },
-            fields: ["id", "name", "description", "settings", "type"]
+            fields: ["id","name","description","settings","type"]
         });
 
-        return {
-            fieldLabel: t('plugin_pm_predefined_callback_settings'),
-            name: 'docType',
-            labelWidth: 120,
-            xtype: "combo",
-            displayField: 'name',
-            valueField: "id",
-            store: configStore,
-            editable: false,
-            width: 400,
-            triggerAction: 'all',
-            value: '',
-            listeners: {
-                "select": function (a, record) {
-                    var data = record.getData();
-                    Ext.getCmp(this.getIdKey("plugin_pm_executor_callback_form_")).getForm().reset();
-                    this.applyCallbackSettings(data.extJsSettings);
-                }.bind(this)
-            }
-        };
+
+
+        if(!this.predefinedConfig){
+            this.predefinedConfig = new Ext.form.ComboBox({
+                fieldLabel: t('plugin_pm_predefined_callback_settings'),
+                name: 'docType',
+                labelWidth: 120,
+                xtype: "combo",
+                displayField:'name',
+                valueField: "id",
+                store: configStore,
+                editable: false,
+                width : 400,
+                triggerAction: 'all',
+                value: '',
+                listeners: {
+                    "select": function(a,record){
+                        var data = record.getData();
+                        Ext.getCmp(this.getIdKey("plugin_pm_executor_callback_form_")).getForm().reset();
+                        this.applyCallbackSettings(data.extJsSettings);
+                    }.bind(this)
+                }
+            });
+        }
+        return this.predefinedConfig;
     },
 
     openConfigWindow: function () {

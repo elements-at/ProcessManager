@@ -92,8 +92,13 @@ class CallbackSettingsController extends AdminController
         if ($filterCondition = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'))) {
             $list->setCondition($filterCondition);
         }
-        if ($type = $request->get('type')) {
-            $list->setCondition(' `type` = ?', [$type]);
+
+        if($id = $request->get('id')){
+            $list->setCondition(' `id` = ?',[$id]);
+        }else{
+            if($type = $request->get('type')){
+                $list->setCondition(' `type` = ?',[$type]);
+            }
         }
 
         foreach ($list->load() as $item) {
