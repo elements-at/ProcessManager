@@ -111,7 +111,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     },
 
     mergeConfigs : function (defaultConfig,customConfig) {
-        return Object.assign(defaultConfig, customConfig);
+        return $.extend(defaultConfig, customConfig);
     },
 
     getSelectField : function(fieldName,config){
