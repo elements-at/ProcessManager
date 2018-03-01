@@ -177,7 +177,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         this.predefinedCallbackStore = new Ext.data.Store({
             autoLoad : true,
             proxy: {
-                url: '/plugin/ProcessManager/callback-settings/list',
+                url: '/admin/elementsprocessmanager/callback-settings/list',
                 type: 'ajax',
                 reader: {
                     type: 'json',

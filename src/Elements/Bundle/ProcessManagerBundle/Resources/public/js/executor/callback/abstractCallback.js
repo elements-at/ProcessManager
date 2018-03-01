@@ -259,7 +259,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 var preDefinedConfigId = this.config.executorSettings.values.defaultPreDefinedConfig;
                 if(preDefinedConfigId){
                     Ext.Ajax.request({
-                        url: '/plugin/ProcessManager/callback-settings/list?type=' + this.name + '&id=' + preDefinedConfigId,
+                        url: '/admin/elementsprocessmanager/callback-settings/list?type=' + this.name + '&id=' + preDefinedConfigId,
                         success: function (transport) {
                             var res = Ext.decode(transport.responseText);
                             Ext.getCmp(this.getIdKey("plugin_pm_executor_callback_form_")).getForm().reset();
@@ -368,7 +368,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
         var configStore = new Ext.data.Store({
             autoLoad : true,
             proxy: {
-                url: '/plugin/ProcessManager/callback-settings/list?type=' + this.name,
+                url: '/admin/elementsprocessmanager/callback-settings/list?type=' + this.name,
                 type: 'ajax',
                 reader: {
                     type: 'json',

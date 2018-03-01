@@ -573,7 +573,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             type : 'propertySelector'
         });
 
-        var url = config.storeUrl || '/plugin/ProcessManager/index/property-list';
+        var url = config.storeUrl || '/admin/elementsprocessmanager/index/property-list';
 
         if(url.indexOf('?') == -1){
             url += '?';
