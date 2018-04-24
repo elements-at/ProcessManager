@@ -2,6 +2,7 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor;
 
+use Elements\Bundle\ExportToolkitBundle\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 class ExportToolkit extends AbstractExecutor
@@ -14,9 +15,14 @@ class ExportToolkit extends AbstractExecutor
         parent::__construct($config);
 
         if (!$this->config['jobs']) {
-            if (\Pimcore\Tool::classExists('ExportToolkit_Configuration')) {
-                $list = \ExportToolkit_Configuration::getList();
-                $this->config['jobs'] = array_keys($list);
+            if (\Pimcore\Tool::classExists('Elements\\Bundle\\ExportToolkitBundle\\Configuration')) {
+                $list = Configuration::getList();
+                $result = [];
+                /** @var  $config Configuration */
+                foreach ($list as $config) {
+                    $result[] = $config->getName();
+                }
+                $this->config['jobs'] = $result;
             }
         }
     }
