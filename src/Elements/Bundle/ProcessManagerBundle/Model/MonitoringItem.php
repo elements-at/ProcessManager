@@ -1,11 +1,24 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Model;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 /**
  * Class MonitoringItem
@@ -15,7 +28,6 @@ use Monolog\Handler\StreamHandler;
  */
 class MonitoringItem extends \Pimcore\Model\AbstractModel
 {
-
     const STATUS_UNKNOWN = 'unknown';
 
     const STATUS_FINISHED = 'finished';
@@ -27,7 +39,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     const STATUS_INITIALIZING = 'initializing';
 
     /**
-     * @var integer
+     * @var int
      */
     public $id;
 
@@ -80,7 +92,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public $currentWorkload;
 
-
     /**
      * @var int
      */
@@ -125,11 +136,13 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param string $metaData
+     *
      * @return $this
      */
     public function setMetaData($metaData)
     {
         $this->metaData = $metaData;
+
         return $this;
     }
 
@@ -143,11 +156,13 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param bool $published
+     *
      * @return $this
      */
     public function setPublished($published)
     {
         $this->published = $published;
+
         return $this;
     }
 
@@ -161,11 +176,13 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param string $group
+     *
      * @return $this
      */
     public function setGroup($group)
     {
         $this->group = $group;
+
         return $this;
     }
 
@@ -179,16 +196,19 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param bool $isDummy
+     *
      * @return $this
      */
     public function setIsDummy($isDummy)
     {
         $this->isDummy = $isDummy;
+
         return $this;
     }
 
     /**
-     * @param integer $id
+     * @param int $id
+     *
      * @return self
      */
     public static function getById($id)
@@ -207,7 +227,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
                 } else {
                     $this->setValue($key, $value);
                 }
-
             }
         }
 
@@ -229,6 +248,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param array $actions
+     *
      * @return $this
      */
     public function setActions($actions)
@@ -237,7 +257,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
         return $this;
     }
-
 
     /**
      * @return int
@@ -249,6 +268,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $totalWorkload
+     *
      * @return $this
      */
     public function setTotalWorkload($totalWorkload)
@@ -268,6 +288,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $currentWorkload
+     *
      * @return $this
      */
     public function setCurrentWorkload($currentWorkload)
@@ -276,7 +297,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
         return $this;
     }
-
 
     /**
      * @return Configuration
@@ -300,6 +320,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $currentStep
+     *
      * @return $this
      */
     public function setCurrentStep($currentStep)
@@ -319,6 +340,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $totalSteps
+     *
      * @return $this
      */
     public function setTotalSteps($totalSteps)
@@ -329,7 +351,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param integer $id
+     * @param int $id
+     *
      * @return $this
      */
     public function setId($id)
@@ -340,16 +363,16 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
         return $this->id;
     }
 
-
     /**
      * @param $name
+     *
      * @return $this
      */
     public function setName($name)
@@ -366,6 +389,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $message
+     *
      * @return $this
      */
     public function setMessage($message, $logLevel = \Monolog\Logger::NOTICE)
@@ -388,6 +412,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param $status
+     *
      * @return $this
      */
     public function setStatus($status)
@@ -407,6 +432,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $command
+     *
      * @return $this
      */
     public function setCommand($command)
@@ -470,6 +496,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      * convenience function to set the process message
      *
      * @param string $itemType
+     *
      * @return $this
      */
     public function setDefaultProcessMessage($itemType = 'item')
@@ -532,6 +559,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $configurationId
+     *
      * @return $this
      */
     public function setConfigurationId($configurationId)
@@ -551,6 +579,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $pid
+     *
      * @return $this
      */
     public function setPid($pid)
@@ -591,7 +620,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
         return $this;
     }
-
 
     public function setCompleted()
     {
@@ -638,6 +666,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param array $callbackSettings
+     *
      * @return $this
      */
     public function setCallbackSettings($callbackSettings)
@@ -646,7 +675,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
         return $this;
     }
-
 
     /**
      * Shorthand to get the values
@@ -662,7 +690,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $data = [];
         foreach (['id', 'pid', 'name', 'command', 'creationDate', 'modificationDate', 'callbackSettings'] as $field) {
-            $data[$field] = $this->{"get".ucfirst($field)}();
+            $data[$field] = $this->{'get'.ucfirst($field)}();
         }
 
         return $data;
@@ -678,6 +706,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $reportedDate
+     *
      * @return $this
      */
     public function setReportedDate($reportedDate)
@@ -712,20 +741,17 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
                 }
             }
 
-
-            #
-
             /*$this->logger = new Logger('process-manager-logger');
             $this->logger->pushHandler(new StreamHandler($this->getLogFile(), Logger::DEBUG));
             if(php_sapi_name() === 'cli'){
                 $this->logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
             }*/
 
-            #   $this->logger->addWriter(new StreamHandler($this->getLogFile(), Logger::DEBUG));
-            #  $this->logger->addWriter(new \Pimcore\Log\Handler\ApplicationLoggerDb());
-            #  if(php_sapi_name() === 'cli'){
-            #      $this->logger->addWriter(new StreamHandler('php://stdout', Logger::DEBUG));
-            #  }
+            //   $this->logger->addWriter(new StreamHandler($this->getLogFile(), Logger::DEBUG));
+            //  $this->logger->addWriter(new \Pimcore\Log\Handler\ApplicationLoggerDb());
+            //  if(php_sapi_name() === 'cli'){
+            //      $this->logger->addWriter(new StreamHandler('php://stdout', Logger::DEBUG));
+            //  }
         }
 
         return $this->logger;
@@ -741,6 +767,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $executedByUser
+     *
      * @return $this
      */
     public function setExecutedByUser($executedByUser)
@@ -755,7 +782,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public function getLoggers()
     {
-
         $loggers = $this->loggers;
         if (is_string($loggers)) {
             $loggers = json_decode($loggers, true);
@@ -766,6 +792,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param array $loggers
+     *
      * @return $this
      */
     public function setLoggers($loggers)
@@ -798,5 +825,4 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
         return null;
     }
-
 }

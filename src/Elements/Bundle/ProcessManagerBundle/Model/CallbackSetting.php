@@ -1,9 +1,19 @@
 <?php
 
-namespace Elements\Bundle\ProcessManagerBundle\Model;
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+namespace Elements\Bundle\ProcessManagerBundle\Model;
 
 /**
  * Class MonitoringItem
@@ -13,7 +23,6 @@ use Monolog\Handler\StreamHandler;
  */
 class CallbackSetting extends \Pimcore\Model\AbstractModel
 {
-
     /**
      * @var int
      */
@@ -59,6 +68,7 @@ class CallbackSetting extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $id
+     *
      * @return $this
      */
     public function setId($id)
@@ -78,6 +88,7 @@ class CallbackSetting extends \Pimcore\Model\AbstractModel
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
@@ -97,6 +108,7 @@ class CallbackSetting extends \Pimcore\Model\AbstractModel
 
     /**
      * @param string $description
+     *
      * @return $this
      */
     public function setDescription($description)
@@ -116,6 +128,7 @@ class CallbackSetting extends \Pimcore\Model\AbstractModel
 
     /**
      * @param string $settings
+     *
      * @return $this
      */
     public function setSettings($settings)
@@ -125,9 +138,9 @@ class CallbackSetting extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-
     /**
-     * @param integer $id
+     * @param int $id
+     *
      * @return self
      */
     public static function getById($id)
@@ -147,6 +160,7 @@ class CallbackSetting extends \Pimcore\Model\AbstractModel
 
     /**
      * @param string $type
+     *
      * @return $this
      */
     public function setType($type)

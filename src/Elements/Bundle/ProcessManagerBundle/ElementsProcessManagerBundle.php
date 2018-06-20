@@ -1,7 +1,19 @@
 <?php
 
-namespace Elements\Bundle\ProcessManagerBundle;
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
 
+namespace Elements\Bundle\ProcessManagerBundle;
 
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
@@ -11,7 +23,6 @@ use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
 
 class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 {
-
     use ExecutionTrait;
     use StateHelperTrait;
 
@@ -22,13 +33,13 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         'name' => 'ProcessManager maintenance',
         'loggers' => [
             [
-                "logLevel" => "DEBUG",
-                "class" => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console',
+                'logLevel' => 'DEBUG',
+                'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console',
                 'simpleLogFormat' => true
             ],
             [
-                "logLevel" => "DEBUG",
-                "filepath" => '/var/logs/process-manager-maintenance.log',
+                'logLevel' => 'DEBUG',
+                'filepath' => '/var/logs/process-manager-maintenance.log',
                 'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\File',
                 'simpleLogFormat' => true,
                 'maxFileSizeMB' => 50
@@ -45,7 +56,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     const TABLE_NAME_CONFIGURATION = 'plugin_process_manager_configuration';
     const TABLE_NAME_MONITORING_ITEM = 'plugin_process_manager_monitoring_item';
     const TABLE_NAME_CALLBACK_SETTING = 'plugin_process_manager_callback_setting';
-
 
     /**
      * @return array
@@ -67,7 +77,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             '/bundles/elementsprocessmanager/js/window/detailwindow.js',
             '/bundles/elementsprocessmanager/js/helper/form.js',
 
-
             '/bundles/elementsprocessmanager/js/panel/config.js',
             '/bundles/elementsprocessmanager/js/panel/general.js',
             '/bundles/elementsprocessmanager/js/panel/monitoringItem.js',
@@ -83,12 +92,10 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             '/bundles/elementsprocessmanager/js/executor/action/abstractAction.js',
             '/bundles/elementsprocessmanager/js/executor/action/download.js',
 
-
             '/bundles/elementsprocessmanager/js/executor/logger/abstractLogger.js',
             '/bundles/elementsprocessmanager/js/executor/logger/file.js',
             '/bundles/elementsprocessmanager/js/executor/logger/console.js',
             '/bundles/elementsprocessmanager/js/executor/logger/application.js',
-
 
             '/bundles/elementsprocessmanager/js/executor/callback/abstractCallback.js',
             '/bundles/elementsprocessmanager/js/executor/callback/example.js',
@@ -106,7 +113,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     public function getInstaller()
     {
         return new Installer();
-
     }
 
     public static function shutdownHandler($arguments)
@@ -114,8 +120,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         /**
          * @var $monitoringItem MonitoringItem
          */
-        if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
-
+        if ($monitoringItem = self::getMonitoringItem()) {
             $error = error_get_last();
             var_dump($error);
 
@@ -138,8 +143,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
                 }
                 $monitoringItem->setCompleted();
                 $monitoringItem->setPid(null)->save();
-
-
             } else {
                 $monitoringItem->setMessage('ERROR:' . print_r($error, true) . $monitoringItem->getMessage());
                 $monitoringItem->setPid(null)->setStatus($monitoringItem::STATUS_FAILED)->save();
@@ -161,9 +164,10 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     public static function getConfig()
     {
         if (is_null(self::$_config)) {
-            $configFile = \Pimcore\Config::locateConfigFile("plugin-process-manager.php");;
+            $configFile = \Pimcore\Config::locateConfigFile('plugin-process-manager.php');
             self::$_config = include $configFile;
         }
+
         return self::$_config;
     }
 
@@ -173,12 +177,13 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         if (!is_dir($dir)) {
             \Pimcore\File::mkdir($dir);
         }
+
         return $dir;
     }
 
     public function getDescription()
     {
-        return "Process Manager";
+        return 'Process Manager';
     }
 
     /**
@@ -191,6 +196,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 
     /**
      * @param bool $createDummyObjectIfRequired
+     *
      * @return MonitoringItem
      */
     public static function getMonitoringItem($createDummyObjectIfRequired = true)
@@ -199,9 +205,9 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             self::$monitoringItem = new MonitoringItem();
             self::$monitoringItem->setIsDummy(true);
         }
+
         return self::$monitoringItem;
     }
-
 
     public static function getPluginWebsitePath()
     {
@@ -209,6 +215,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
         }
+
         return $path;
     }
 
@@ -218,6 +225,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         if (!is_dir($dir)) {
             \Pimcore\File::mkdir($dir);
         }
+
         return $dir . 'version.txt';
     }
 }

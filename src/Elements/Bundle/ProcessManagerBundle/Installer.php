@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle;
 
 use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
@@ -17,11 +30,12 @@ class Installer extends AbstractInstaller
         } catch (\Exception $e) {
             Logger::error($e);
         }
+
         return !empty($config) && is_readable(ElementsProcessManagerBundle::getVersionFile());
     }
 
-
-    public function needsReloadAfterInstall(){
+    public function needsReloadAfterInstall()
+    {
         return true;
     }
 
@@ -31,7 +45,6 @@ class Installer extends AbstractInstaller
     public function canBeInstalled()
     {
         return !$this->isInstalled();
-
     }
 
     /**
@@ -41,5 +54,4 @@ class Installer extends AbstractInstaller
     {
         Updater::getInstance()->execute();
     }
-
 }

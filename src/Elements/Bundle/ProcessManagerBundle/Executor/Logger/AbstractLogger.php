@@ -1,14 +1,25 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 abstract class AbstractLogger
 {
-
     const LOG_FORMAT_SIMPLE = "[%datetime%] %channel%.%level_name%: %message% \n";
     public $extJsClass = '';
 
@@ -26,6 +37,7 @@ abstract class AbstractLogger
 
     /**
      * @param string $extJsClass
+     *
      * @return $this
      */
     public function setExtJsClass($extJsClass)
@@ -45,6 +57,7 @@ abstract class AbstractLogger
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
@@ -64,6 +77,7 @@ abstract class AbstractLogger
 
     /**
      * @param array $config
+     *
      * @return $this
      */
     public function setConfig($config)
@@ -73,10 +87,10 @@ abstract class AbstractLogger
         return $this;
     }
 
-
     /**
      * @param $monitoringItem MonitoringItem
      * @param $actionData
+     *
      * @return string
      */
     abstract public function getGridLoggerHtml($monitoringItem, $actionData);
@@ -84,8 +98,8 @@ abstract class AbstractLogger
     /**
      * @param array $config
      * @param MonitoringItem $monitoringItem
+     *
      * @return StreamHandler
      */
     abstract public function createStreamHandler($config, $monitoringItem);
-
 }

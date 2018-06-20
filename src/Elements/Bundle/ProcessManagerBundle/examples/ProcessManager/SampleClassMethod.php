@@ -1,13 +1,23 @@
 <?php
 
-namespace Elements\Bundle\ProcessManagerBundle;
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
 
+namespace Elements\Bundle\ProcessManagerBundle;
 
 class SampleClassMethod
 {
-
     use ExecutionTraitClass;
-
 
     public function execute()
     {
@@ -29,7 +39,7 @@ class SampleClassMethod
             $listName = '\Pimcore\Model\DataObject\\'.$class->getName().'\Listing';
             $list = new $listName();
 
-            # $list->setCondition('o_className = "Material" ');
+            // $list->setCondition('o_className = "Material" ');
             $total = $list->getTotalCount();
             $perLoop = 50;
 

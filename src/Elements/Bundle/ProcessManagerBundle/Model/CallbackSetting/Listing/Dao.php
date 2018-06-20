@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting\Listing;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
@@ -8,7 +21,6 @@ use Pimcore\Model;
 
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-
     protected function getTableName()
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING;
@@ -16,7 +28,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
 
     public function load()
     {
-        $sql = "SELECT id FROM ".$this->getTableName().$this->getCondition().$this->getOrder().$this->getOffsetLimit();
+        $sql = 'SELECT id FROM '.$this->getTableName().$this->getCondition().$this->getOrder().$this->getOffsetLimit();
         $ids = $this->db->fetchCol($sql, $this->model->getConditionVariables());
 
         $items = [];
@@ -30,7 +42,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
     public function getTotalCount()
     {
         return (int)$this->db->fetchOne(
-            "SELECT COUNT(*) as amount FROM ".$this->getTableName()." ".$this->getCondition(),
+            'SELECT COUNT(*) as amount FROM '.$this->getTableName().' '.$this->getCondition(),
             $this->model->getConditionVariables()
         );
     }

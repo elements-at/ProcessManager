@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
 use Elements\Bundle\ProcessManagerBundle\Helper;
@@ -16,15 +29,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class RestController extends AbstractRestController
 {
-
     /**
      * @Route("/execute")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function executeAction(Request $request)
     {
-
         if (!$this->checkPermission('plugin_pm_permission_execute') || !$this->checkPermission('plugin_pm_permission_view')) {
             return $this->adminJson(['success' => false, 'The current user is not allowed to execute or view the processes.']);
         }
@@ -63,12 +76,15 @@ class RestController extends AbstractRestController
 
         $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getAdminUser()->getId());
         unset($result['executedCommand']);
+
         return $this->adminJson($result);
     }
 
     /**
      * @Route("/monitoring-item-state")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function monitoringItemStateAction(Request $request)
@@ -87,17 +103,19 @@ class RestController extends AbstractRestController
             return $this->adminJson(['success' => false, 'message' => 'The monitoring Item was not found.']);
         }
         $monitoringItem->getLogger()->notice('Checked by rest webservice User ID: ' . $this->getAdminUser()->getId());
+
         return $this->adminJson(['success' => true, 'data' => $monitoringItem->getForWebserviceExport()]);
     }
 
     /**
      * @Route("/test")
+     *
      * @param Request $request
+     *
      * @return ViewModel
      */
     public function testAction(Request $request)
     {
-
         $this->testJson = '
             {
                 "firstName" : "christian",
@@ -107,12 +125,9 @@ class RestController extends AbstractRestController
 
         $this->testXML = '';
 
-        $viewData = array();
-
+        $viewData = [];
 
         if ($this->getRequest()->isPost()) {
-
-
             $url = \Pimcore\Tool::getHostUrl() . '/webservice/elementsprocessmanager/rest/execute?id=' . $request->get('id') . '&apikey=' . $request->get('apikey');
             $client = \Pimcore\Tool::getHttpClient();
             $client->setUri($url);
@@ -123,7 +138,7 @@ class RestController extends AbstractRestController
             ];
             $client->setParameterPost($params);
             $result = $client->request($client::POST)->getBody();
-            $viewData["result"] = $result;
+            $viewData['result'] = $result;
         }
 
         $configs = new Configuration\Listing();
@@ -132,9 +147,8 @@ class RestController extends AbstractRestController
         foreach ($configs->load() as $config) {
             $options[$config->getId()] = $config->getId() . ' - ' . $config->getName();
         }
-        $viewData["options"] = $options;
+        $viewData['options'] = $options;
+
         return new ViewModel($viewData);
-
     }
-
 }

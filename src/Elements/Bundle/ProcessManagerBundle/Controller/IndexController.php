@@ -1,9 +1,22 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
-use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
+use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Updater;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
@@ -17,17 +30,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class IndexController extends AdminController
 {
-
     /**
      * @Route("/get-plugin-config")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function getPluginConfigAction(Request $request)
     {
         $this->checkPermission('plugin_pm_permission_view');
         $data = [];
-
 
         $pluginConfig = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getConfig();
 
@@ -81,7 +94,6 @@ class IndexController extends AdminController
             ];
         }
 
-
         $shortCutMenu = [];
 
         $list = new Configuration\Listing();
@@ -97,19 +109,18 @@ class IndexController extends AdminController
         }
         $data['shortCutMenu'] = $shortCutMenu ?: false;
 
-
         return $this->adminJson($data);
-
     }
 
     /**
      * @Route("/download")
+     *
      * @param Request $request
+     *
      * @return Response
      */
     public function downloadAction(Request $request)
     {
-
         $monitoringItem = MonitoringItem::getById($request->get('id'));
         $actions = $monitoringItem->getActions();
         foreach ($actions as $action) {
@@ -120,6 +131,7 @@ class IndexController extends AdminController
                  */
                 $class = new $className();
                 $result = $class->execute($monitoringItem, $action);
+
                 return $result;
             }
         }
@@ -127,7 +139,9 @@ class IndexController extends AdminController
 
     /**
      * @Route("/update-plugin")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function updatePluginAction(Request $request)
@@ -138,12 +152,13 @@ class IndexController extends AdminController
 
         Updater::getInstance()->$method();
         die();
-
     }
 
     /**
      * @Route("/property-list")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function propertyListAction(Request $request)

@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
@@ -9,7 +22,6 @@ use Pimcore\Model;
 
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-
     public static function getTableName()
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION;
@@ -26,28 +38,29 @@ class Dao extends Model\Listing\Dao\AbstractDao
         foreach ($ids as $id) {
             $items[] = Configuration::getById($id);
         }
+
         return $items;
     }
 
     public function getTotalCount()
     {
-        return (int)$this->db->fetchOne("SELECT COUNT(*) as amount FROM " . $this->getTableName() . " " . $this->getCondition(), $this->model->getConditionVariables());
+        return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . $this->getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
     }
 
     public function loadIdList()
     {
         $condition = $this->getCondition();
-        if($user = $this->model->getUser()){
-            if($ids = Helper::getAllowedConfigIdsByUser($user)){
-                if($condition) {
+        if ($user = $this->model->getUser()) {
+            if ($ids = Helper::getAllowedConfigIdsByUser($user)) {
+                if ($condition) {
                     $condition .= ' AND ';
-                }else{
+                } else {
                     $condition .= ' WHERE ';
                 }
-                $condition .= ' id IN(' . implode(',',$ids).')';
+                $condition .= ' id IN(' . implode(',', $ids).')';
             }
         }
 
-        return $this->db->fetchCol("SELECT id FROM " . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $this->model->getConditionVariables());
+        return $this->db->fetchCol('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $this->model->getConditionVariables());
     }
 }

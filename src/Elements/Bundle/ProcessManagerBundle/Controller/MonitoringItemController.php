@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
@@ -20,10 +33,11 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class MonitoringItemController extends AdminController
 {
-
     /**
      * @Route("/list")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function listAction(Request $request)
@@ -36,7 +50,7 @@ class MonitoringItemController extends AdminController
         $list->setLimit($request->get('limit', 25));
         $list->setUser($this->getAdminUser());
 
-        $list->setOffset($request->get("start"));
+        $list->setOffset($request->get('start'));
 
         $allParams = array_merge($request->request->all(), $request->query->all());
         $sortingSettings = \Pimcore\Admin\Helper\QueryParams::extractSortingSettings($allParams);
@@ -45,11 +59,10 @@ class MonitoringItemController extends AdminController
             $list->setOrder($sortingSettings['order']);
         }
 
-
         $callbacks = [
             'executedByUser' => function ($f) {
                 $db = \Pimcore\Db::get();
-                $ids = $db->fetchCol("SELECT id FROM users where name LIKE ".$db->quote("%".$f->value."%")) ?: [0];
+                $ids = $db->fetchCol('SELECT id FROM users where name LIKE '.$db->quote('%'.$f->value.'%')) ?: [0];
 
                 return ' executedByUser IN( '.implode(',', $ids).') ';
             },
@@ -66,15 +79,14 @@ class MonitoringItemController extends AdminController
 
         $condition = $list->getCondition();
 
-        if(!$request->get('showHidden') || $request->get('showHidden') == 'false'){
-            $filterConditionArray = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'),['id', 'o_id','pid'],false,$callbacks);
+        if (!$request->get('showHidden') || $request->get('showHidden') == 'false') {
+            $filterConditionArray = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'), ['id', 'o_id', 'pid'], false, $callbacks);
 
-            if($filterConditionArray && $filterConditionArray['id']){
-
-            }else{
-                if($condition){
+            if ($filterConditionArray && $filterConditionArray['id']) {
+            } else {
+                if ($condition) {
                     $condition .= ' AND published=1';
-                }else{
+                } else {
                     $condition .= ' published=1';
                 }
             }
@@ -82,7 +94,6 @@ class MonitoringItemController extends AdminController
         }
 
         $total = $list->getTotalCount();
-
 
         foreach ($list->load() as $item) {
             $tmp = $item->getObjectVars();
@@ -92,7 +103,6 @@ class MonitoringItemController extends AdminController
             }
             $tmp['duration'] = $item->getDuration() ?: '-';
             $tmp['progress'] = 0;
-
 
             if ($tmp['executedByUser']) {
                 $user = \Pimcore\Model\User::getById($tmp['executedByUser']);
@@ -160,7 +170,6 @@ class MonitoringItemController extends AdminController
                             }
                         }
                     }
-
                 }
             }
             $tmp['isAlive'] = $item->isAlive();
@@ -173,7 +182,7 @@ class MonitoringItemController extends AdminController
 
             $tmp['callbackSettingsString'] = json_encode($item->getCallbackSettings());
             $tmp['callbackSettings'] = $item->getCallbackSettingsForGrid();
-            #$tmp['callbackSettings'] = '<table><tr><td><th>Key</th><th>Value</th></td></tr><tr><td>name:</td><td>testaa</td></tr></table>';
+            //$tmp['callbackSettings'] = '<table><tr><td><th>Key</th><th>Value</th></td></tr><tr><td>name:</td><td>testaa</td></tr></table>';
             $data[] = $tmp;
         }
 
@@ -182,7 +191,9 @@ class MonitoringItemController extends AdminController
 
     /**
      * @Route("/log-application-logger")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function logApplicationLoggerAction(Request $request)
@@ -202,7 +213,6 @@ class MonitoringItemController extends AdminController
                      */
                     $class = new $config['class'];
                     if (\Pimcore\Tool::classExists(get_class($class))) {
-
                         if ($i == $loggerIndex) {
                             $logger = $class;
                             if (!$config['logLevel']) {
@@ -226,12 +236,14 @@ class MonitoringItemController extends AdminController
     /**
      * @Route("/log-file-logger")
      * @TemplatePhp()
+     *
      * @param Request $request
+     *
      * @return ViewModel
      */
     public function logFileLoggerAction(Request $request)
     {
-        $viewData = array();
+        $viewData = [];
         $monitoringItem = MonitoringItem::getById($request->get('id'));
 
         $loggerIndex = $request->get('loggerIndex');
@@ -243,7 +255,6 @@ class MonitoringItemController extends AdminController
                  */
                 $class = new $config['class'];
                 if (\Pimcore\Tool::classExists(get_class($class))) {
-
                     if ($i == $loggerIndex) {
                         $logger = $class;
                         $logFile = $logger->getLogFile($config, $monitoringItem);
@@ -255,23 +266,22 @@ class MonitoringItemController extends AdminController
                 }
             }
         }
-        $viewData["logLevel"] = $config['logLevel'];
-        $viewData["logFile"] = $logFile;
+        $viewData['logLevel'] = $config['logLevel'];
+        $viewData['logFile'] = $logFile;
 
         if (is_readable($logFile)) {
-
             $data = file_get_contents($logFile);
 
-            $fileSizeMb = round(filesize($logFile)/1024/1024);
+            $fileSizeMb = round(filesize($logFile) / 1024 / 1024);
 
-            if($fileSizeMb < 100){
+            if ($fileSizeMb < 100) {
                 $data = file_get_contents($logFile);
-                $data = explode("\n",$data);
+                $data = explode("\n", $data);
             } else {
-                $data = explode("\n",shell_exec('tail -n 1000 ' . $logFile));
+                $data = explode("\n", shell_exec('tail -n 1000 ' . $logFile));
                 $warning = '<span style="color:#ff131c">The log file is to large to view all contents (' . $fileSizeMb.'MB). The last 1000 lines are displayed. File: ' . $logFile . '</span>';
-                array_unshift($data,$warning);
-                array_push($data,$warning);
+                array_unshift($data, $warning);
+                array_push($data, $warning);
             }
 
             foreach ($data as $i => $row) {
@@ -297,18 +307,19 @@ class MonitoringItemController extends AdminController
         }
         $data = implode("\n", $data);
 
-        $viewData["data"] = $data;
-        $viewData["monitoringItem"] = $monitoringItem;
+        $viewData['data'] = $data;
+        $viewData['monitoringItem'] = $monitoringItem;
 
         $viewModel = new ViewModel($viewData);
 
         return $viewModel;
-
     }
 
     /**
      * @Route("/delete")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function deleteAction(Request $request)
@@ -325,7 +336,9 @@ class MonitoringItemController extends AdminController
 
     /**
      * @Route("/delete-batch")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function deleteBatchAction(Request $request)
@@ -357,7 +370,9 @@ class MonitoringItemController extends AdminController
 
     /**
      * @Route("/cancel")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function cancelAction(Request $request)
@@ -376,12 +391,13 @@ class MonitoringItemController extends AdminController
         } catch (\Exception $e) {
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
-
     }
 
     /**
      * @Route("/restart")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function restartAction(Request $request)

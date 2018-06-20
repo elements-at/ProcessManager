@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
@@ -17,12 +30,13 @@ class ConfigController extends AdminController
 {
     /**
      * @Route("/get-by-id")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function getByIdAction(Request $request)
     {
-
         try {
             $list = new Configuration\Listing();
             $list->setUser($this->getAdminUser())->setCondition('id = ?', [$request->get('id')]);
@@ -42,12 +56,15 @@ class ConfigController extends AdminController
                 'message' => $e->getMessage()
             ];
         }
+
         return $this->adminJson($result);
     }
 
     /**
      * @Route("/list")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function listAction(Request $request)
@@ -58,7 +75,7 @@ class ConfigController extends AdminController
         $list->setOrder('DESC');
         $list->setOrderKey('id');
         $list->setLimit($request->get('limit', 25));
-        $list->setOffset($request->get("start"));
+        $list->setOffset($request->get('start'));
 
         $list->setUser($this->getAdminUser());
 
@@ -68,7 +85,6 @@ class ConfigController extends AdminController
 
         foreach ($list->load() as $item) {
             $tmp = $item->getObjectVars();
-
 
             $tmp['command'] = $item->getCommand();
             $executorClassObject = $item->getExecutorClassObject();
@@ -87,8 +103,6 @@ class ConfigController extends AdminController
                 $tmp['cronJob'] = $e->getMessage();
             }
             $data[] = $tmp;
-
-
         }
 
         return $this->adminJson(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
@@ -96,7 +110,9 @@ class ConfigController extends AdminController
 
     /**
      * @Route("/save")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function saveAction(Request $request)
@@ -104,7 +120,6 @@ class ConfigController extends AdminController
         $this->checkPermission('plugin_pm_permission_configure');
 
         $data = json_decode($request->get('data'), true);
-
 
         $values = $data['values'];
         $executorConfig = $data['executorConfig'];
@@ -119,7 +134,7 @@ class ConfigController extends AdminController
         $executorClass->setActions($data['actions']);
         $executorClass->setLoggers($data['loggers']);
 
-        # $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);
+        // $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);
         if (!$request->get('id')) {
             $configuration = new Configuration();
             $configuration->setActive(true);
@@ -127,7 +142,7 @@ class ConfigController extends AdminController
             $configuration = Configuration::getById($request->get('id'));
         }
         foreach ($values as $key => $v) {
-            $setter = "set" . ucfirst($key);
+            $setter = 'set' . ucfirst($key);
             if (method_exists($configuration, $setter)) {
                 $configuration->$setter(trim($v));
             }
@@ -139,12 +154,15 @@ class ConfigController extends AdminController
         } catch (\Exception $e) {
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
+
         return $this->adminJson(['success' => true, 'id' => $configuration->getId()]);
     }
 
     /**
      * @Route("/delete")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function deleteAction(Request $request)
@@ -155,19 +173,23 @@ class ConfigController extends AdminController
         if ($config instanceof Configuration) {
             $config->delete();
         }
+
         return $this->adminJson(['success' => true]);
     }
 
     /**
      * @Route("/activate-disable")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
-    public function activateDisableAction(Request$request)
+    public function activateDisableAction(Request $request)
     {
         try {
             $config = Configuration::getById($request->get('id'));
             $config->setActive((int)$request->get('value'))->save();
+
             return $this->adminJson(['success' => true]);
         } catch (\Exception $e) {
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
@@ -176,14 +198,17 @@ class ConfigController extends AdminController
 
     /**
      * @Route("/execute")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
-    public function executeAction(Request$request)
+    public function executeAction(Request $request)
     {
         $this->checkPermission('plugin_pm_permission_execute');
         $callbackSettings = $request->get('callbackSettings') ? json_decode($request->get('callbackSettings'), true) : [];
         $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getAdminUser()->getId());
+
         return $this->adminJson($result);
     }
 }

@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle;
 
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
@@ -7,8 +20,6 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 class Helper
 {
-
-
     public static function executeJob($configId, $callbackSettings = [], $userId = 0)
     {
         try {
@@ -18,12 +29,10 @@ class Helper
             if ($executor->getValues()['uniqueExecution']) {
                 $running = $config->getRunningProcesses();
                 if (!empty($running)) {
-
                     $msg = "Can't start the process because " . count($running) . ' process is running (ID: ' . $running[0]->getId() . '). Please wait until this processes is finished.';
                     throw new \Exception($msg);
                 }
             }
-
 
             $monitoringItem = new MonitoringItem();
             $monitoringItem->setName($config->getName());
@@ -34,11 +43,11 @@ class Helper
             $monitoringItem->setActions($executor->getActions());
             $monitoringItem->setLoggers($executor->getLoggers());
 
-            if($executorSettings = $config->getExecutorSettings()){
-                $executorData = json_decode($config->getExecutorSettings(),true);
+            if ($executorSettings = $config->getExecutorSettings()) {
+                $executorData = json_decode($config->getExecutorSettings(), true);
 
-                if($executorData['values']){
-                    if($executorData['values']['hideMonitoringItem'] == 'on'){
+                if ($executorData['values']) {
+                    if ($executorData['values']['hideMonitoringItem'] == 'on') {
                         $monitoringItem->setPublished(false);
                     }
                     $monitoringItem->setGroup($executorData['values']['group']);
@@ -62,6 +71,7 @@ class Helper
 
             $pid = \Pimcore\Tool\Console::execInBackground($command);
             $monitoringItem->setPid($pid)->save();
+
             return ['success' => true, 'executedCommand' => $command, 'monitoringItemId' => $item->getId()];
         } catch (\Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
@@ -80,7 +90,8 @@ class Helper
                 $c[] = 'restrictToRoles LIKE "%,' . $r . ',%" ';
             }
             $c = ' (restrictToRoles = "" OR (' . implode(' OR ', $c) . ')) ';
-            $ids = \Pimcore\Db::get()->fetchCol("SELECT id FROM " . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
+            $ids = \Pimcore\Db::get()->fetchCol('SELECT id FROM ' . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
+
             return $ids;
         }
     }

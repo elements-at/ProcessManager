@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Model;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
@@ -50,6 +63,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $name
+     *
      * @return $this
      */
     public function setName($name)
@@ -107,9 +121,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
         $this->modificationDate = $modificationDate;
     }
 
-
     /**
      * @param $id
+     *
      * @return Configuration
      */
     public static function getById($id)
@@ -131,6 +145,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $executorSettings
+     *
      * @return $this
      */
     public function setExecutorSettings($executorSettings)
@@ -139,7 +154,6 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
         return $this;
     }
-
 
     /**
      * @return mixed
@@ -151,6 +165,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $executorClass
+     *
      * @return $this
      */
     public function setExecutorClass($executorClass)
@@ -217,6 +232,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param string $group
+     *
      * @return $this
      */
     public function setGroup($group)
@@ -236,11 +252,12 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $cronJob
+     *
      * @return $this
      */
     public function setCronJob($cronJob)
     {
-        if($cronJob && !\Cron\CronExpression::isValidExpression($cronJob)){
+        if ($cronJob && !\Cron\CronExpression::isValidExpression($cronJob)) {
             throw new \Exception('The cronjob expression "' . $cronJob.'" is not valid. Please provide a valid Cronjob expression');
         }
 
@@ -259,6 +276,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $lastCronJobExecution
+     *
      * @return $this
      */
     public function setLastCronJobExecution($lastCronJobExecution)
@@ -298,6 +316,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $active
+     *
      * @return $this
      */
     public function setActive($active)
@@ -317,6 +336,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $keepVersions
+     *
      * @return $this
      */
     public function setKeepVersions($keepVersions)
@@ -329,14 +349,16 @@ class Configuration extends \Pimcore\Model\AbstractModel
     /**
      * @param $method
      * @param $arguments
+     *
      * @return Configuration|Configuration[]
+     *
      * @throws \Exception
      */
     public static function __callStatic($method, $arguments)
     {
 
         // check for custom static getters like Object::getByMyfield()
-        $propertyName = lcfirst(preg_replace("/^getBy/i", "", $method));
+        $propertyName = lcfirst(preg_replace('/^getBy/i', '', $method));
         $list = new Configuration\Listing();
         $list->setCondition($propertyName.' = ?', [$arguments[0]]);
 
@@ -362,6 +384,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     /**
      * @param mixed $restrictToRoles
+     *
      * @return $this
      */
     public function setRestrictToRoles($restrictToRoles)
@@ -369,16 +392,14 @@ class Configuration extends \Pimcore\Model\AbstractModel
         if (is_array($restrictToRoles)) {
             $restrictToRoles = implode(',', $restrictToRoles);
         }
-        if (is_string($restrictToRoles) && $restrictToRoles != "" && $restrictToRoles[0] != ",") {
-            $restrictToRoles = ",".$restrictToRoles;
+        if (is_string($restrictToRoles) && $restrictToRoles != '' && $restrictToRoles[0] != ',') {
+            $restrictToRoles = ','.$restrictToRoles;
         }
-        if (substr($restrictToRoles, -1, 1) != "," && $restrictToRoles != "") {
+        if (substr($restrictToRoles, -1, 1) != ',' && $restrictToRoles != '') {
             $restrictToRoles .= ',';
         }
         $this->restrictToRoles = $restrictToRoles;
 
         return $this;
     }
-
-
 }

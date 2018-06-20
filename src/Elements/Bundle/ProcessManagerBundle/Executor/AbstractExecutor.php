@@ -1,7 +1,19 @@
 <?php
 
-namespace Elements\Bundle\ProcessManagerBundle\Executor;
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
 
+namespace Elements\Bundle\ProcessManagerBundle\Executor;
 
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
@@ -9,7 +21,6 @@ use Pimcore\Tool\Console;
 
 abstract class AbstractExecutor implements \JsonSerializable
 {
-
     protected $name = '';
 
     protected $extJsClass = '';
@@ -42,12 +53,14 @@ abstract class AbstractExecutor implements \JsonSerializable
     }
 
     /**
-     * @param boolean $isShellCommand
+     * @param bool $isShellCommand
+     *
      * @return $this
      */
     public function setIsShellCommand($isShellCommand)
     {
         $this->isShellCommand = $isShellCommand;
+
         return $this;
     }
 
@@ -59,16 +72,19 @@ abstract class AbstractExecutor implements \JsonSerializable
         if (!$this->name) {
             $this->name = lcfirst(array_pop(explode('\\', get_class($this))));
         }
+
         return $this->name;
     }
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -82,11 +98,13 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     /**
      * @param Configuration $config
+     *
      * @return $this
      */
     public function setConfig($config)
     {
         $this->config = $config;
+
         return $this;
     }
 
@@ -100,11 +118,13 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     /**
      * @param string $extJsClass
+     *
      * @return $this
      */
     public function setExtJsClass($extJsClass)
     {
         $this->extJsClass = $extJsClass;
+
         return $this;
     }
 
@@ -118,17 +138,18 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     /**
      * @param array $values
+     *
      * @return $this
      */
     public function setValues($values)
     {
         $this->values = $values;
+
         return $this;
     }
 
     public function getExtJsSettings()
     {
-
         $executorConfig = [
             'extJsClass' => $this->getExtJsClass(),
             'name' => $this->getName(),
@@ -153,6 +174,7 @@ abstract class AbstractExecutor implements \JsonSerializable
             $data['loggers'][$i]['extJsClass'] = $x->getExtJsClass();
             $data['loggers'][$i]['config'] = $x->getConfig();
         }
+
         return $data;
     }
 
@@ -166,20 +188,22 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     /**
      * @param array $actions
+     *
      * @return $this
      */
     public function setActions($actions)
     {
         $this->actions = $actions;
+
         return $this;
     }
-
 
     /**
      *
      * Tests
      *
      * @param MonitoringItem $monitoringItem
+     *
      * @return string
      *
      */
@@ -188,21 +212,22 @@ abstract class AbstractExecutor implements \JsonSerializable
         return Console::getPhpCli() . ' ' . realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' process-manager:execute-shell-cmd --monitoring-item-id=' . $monitoringItem->getId();
     }
 
-
     /**
      * returns the command which should be executed
      *
      * the CallbackSettings are only passed at execution time
+     *
      * @param string[] $callbackSettings
      * @param null | MonitoringItem $monitoringItem
+     *
      * @return mixed
      */
-    abstract function getCommand($callbackSettings = [], $monitoringItem = null);
-
+    abstract public function getCommand($callbackSettings = [], $monitoringItem = null);
 
     public function jsonSerialize()
     {
         $values = array_merge(['class' => get_class($this)], get_object_vars($this));
+
         return $values;
     }
 
@@ -216,14 +241,15 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     /**
      * @param array $loggers
+     *
      * @return $this
      */
     public function setLoggers($loggers)
     {
         $this->loggers = $loggers;
+
         return $this;
     }
-
 
     public function getStorageValue()
     {
@@ -232,22 +258,25 @@ abstract class AbstractExecutor implements \JsonSerializable
             'actions' => (array)$this->getActions(),
             'loggers' => (array)$this->getLoggers()
         ];
+
         return json_encode($data);
     }
 
     protected function setData($values)
     {
         foreach ($values as $key => $value) {
-            $setter = "set" . ucfirst($key);
+            $setter = 'set' . ucfirst($key);
             if (method_exists($this, $setter)) {
                 $this->$setter($value);
             }
         }
+
         return $this;
     }
 
     /**
      * @param Configuration $configuration
+     *
      * @return Configuration
      */
     public function setDataFromResource(Configuration $configuration)
@@ -257,7 +286,7 @@ abstract class AbstractExecutor implements \JsonSerializable
             $this->setData(json_decode($settings, true));
         }
         $this->setConfig($configuration);
+
         return $configuration;
     }
-
 }

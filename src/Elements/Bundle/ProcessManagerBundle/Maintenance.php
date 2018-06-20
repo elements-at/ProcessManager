@@ -1,16 +1,28 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle;
 
+use Carbon\Carbon;
+use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
-use Carbon\Carbon;
 use Symfony\Component\Templating\EngineInterface;
 
-class Maintenance {
-
-
+class Maintenance
+{
     /**
      * @var MonitoringItem
      */
@@ -18,13 +30,13 @@ class Maintenance {
 
     protected $renderingEngine;
 
-
-    public function __construct(EngineInterface $renderingEngine )
+    public function __construct(EngineInterface $renderingEngine)
     {
         $this->renderingEngine = $renderingEngine;
     }
 
-    public function execute(){
+    public function execute()
+    {
         $this->monitoringItem = ElementsProcessManagerBundle::getMonitoringItem();
         $this->monitoringItem->setTotalSteps(3)->save();
         $this->checkProcesses();
@@ -32,7 +44,8 @@ class Maintenance {
         $this->clearMonitoringLogs();
     }
 
-    public function checkProcesses(){
+    public function checkProcesses()
+    {
         $this->monitoringItem->setCurrentStep(1)->setStatus('Checking processes')->save();
 
         $this->monitoringItem->getLogger()->debug('Checking processes');
@@ -44,10 +57,10 @@ class Maintenance {
 
         $config = ElementsProcessManagerBundle::getConfig();
 
-        foreach($items as $item) {
-            if(!$item->getCommand()){ //manually created - do not check
+        foreach ($items as $item) {
+            if (!$item->getCommand()) { //manually created - do not check
                 $item->setReportedDate(1)->save(true);
-            }else{
+            } else {
                 if ($item->isAlive()) {
                     $diff = time() - $item->getModificationDate();
                     $minutes = $config['general']['processTimeoutMinutes'] ?: 15;
@@ -60,24 +73,23 @@ class Maintenance {
                         $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
                         $item->setReportedDate(time())->save(true);
                     } else {
-                        $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus(),false)->setStatus($item::STATUS_FAILED);
+                        $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus(), false)->setStatus($item::STATUS_FAILED);
                         $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
                         $this->monitoringItem->getLogger()->error('Monitoring item ' . $item->getId() . ' was checked by ProcessManager maintenance and considered as dead process');
                         $reportItems[] = $item;
                     }
                 }
             }
-
         }
 
-        if($reportItems){
+        if ($reportItems) {
             $config = ElementsProcessManagerBundle::getConfig();
             $mail = new \Pimcore\Mail();
             $mail->setSubject('ProcessManager - failed processes (' . \Pimcore\Tool::getHostUrl().')');
 
-            $html = $this->renderingEngine->render('ElementsProcessManagerBundle::report-email.html.php', array(
-                "reportItems" => $reportItems
-            ));
+            $html = $this->renderingEngine->render('ElementsProcessManagerBundle::report-email.html.php', [
+                'reportItems' => $reportItems
+            ]);
 
             $mail->setBodyHtml($html);
 
@@ -91,8 +103,8 @@ class Maintenance {
                 }
                 try {
                     $mail->send();
-                }catch(\Exception $e){
-                    $logger = \Pimcore\Log\ApplicationLogger::getInstance("ProcessManager", true); // returns a PSR-3 compatible logger
+                } catch (\Exception $e) {
+                    $logger = \Pimcore\Log\ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
                     $message = "Can't send E-Mail: " . $e->getMessage();
                     $logger->emergency($message);
                     \Pimcore\Logger::emergency($message);
@@ -102,13 +114,14 @@ class Maintenance {
         /**
          * @var $item MonitoringItem
          */
-        foreach($reportItems as $item){
+        foreach ($reportItems as $item) {
             $item->setReportedDate(time())->save();
         }
         $this->monitoringItem->setStatus('Processes checked')->save();
     }
 
-    public function executeCronJobs(){
+    public function executeCronJobs()
+    {
         $this->monitoringItem->setCurrentStep(2)->setMessage('Checking cronjobs')->save();
 
         $logger = $this->monitoringItem->getLogger();
@@ -116,39 +129,38 @@ class Maintenance {
         $list->setCondition('cronjob != "" AND active=1 ');
         $configs = $list->load();
         $logger->notice('Checking ' . count($configs).' Jobs');
-        foreach($configs as $config){
+        foreach ($configs as $config) {
             $currentTs = time();
             $nextRunTs = $config->getNextCronJobExecutionTimestamp();
 
-            $message = 'Checking Job: ' . $config->getName().' (ID: '.$config->getId().') Last execution: ' . date('Y-m-d H:i:s',$config->getLastCronJobExecution());
-            $message .= ' Next execution: ' . date('Y-m-d H:i:s',$nextRunTs);
+            $message = 'Checking Job: ' . $config->getName().' (ID: '.$config->getId().') Last execution: ' . date('Y-m-d H:i:s', $config->getLastCronJobExecution());
+            $message .= ' Next execution: ' . date('Y-m-d H:i:s', $nextRunTs);
             $logger->debug($message);
-            $diff = $nextRunTs-$currentTs;
-            if($diff < 0){
-
+            $diff = $nextRunTs - $currentTs;
+            if ($diff < 0) {
                 $params = [];
                 //add default callback settings if defined
-                if($settings = $config->getExecutorSettings()){
-                    $settings = json_decode($settings,true);
+                if ($settings = $config->getExecutorSettings()) {
+                    $settings = json_decode($settings, true);
                     $preDefinedConfigId = $settings['values']['defaultPreDefinedConfig'];
-                    if($preDefinedConfigId){
+                    if ($preDefinedConfigId) {
                         $callbackSetting = CallbackSetting::getById($preDefinedConfigId);
-                        if($callbackSetting){
-                            if($v = $callbackSetting->getSettings()){
-                                $params = json_decode($v,true);
+                        if ($callbackSetting) {
+                            if ($v = $callbackSetting->getSettings()) {
+                                $params = json_decode($v, true);
                             }
                         }
                     }
                 }
 
-                $result = Helper::executeJob($config->getId(),$params,0);
-                if($result['success']){
+                $result = Helper::executeJob($config->getId(), $params, 0);
+                if ($result['success']) {
                     $logger->debug('Execution job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff.' Command: '. $result['executedCommand']);
                     $config->setLastCronJobExecution(time())->save();
-                }else{
-                    $logger->emergency("Can't start the Cronjob. Data: " . print_r($result,true));
+                } else {
+                    $logger->emergency("Can't start the Cronjob. Data: " . print_r($result, true));
                 }
-            }else{
+            } else {
                 $logger->debug('Skipping job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff);
             }
         }
@@ -156,35 +168,36 @@ class Maintenance {
         $this->monitoringItem->setMessage('Cronjobs executed')->setCompleted();
     }
 
-    protected function clearMonitoringLogs(){
+    protected function clearMonitoringLogs()
+    {
         $this->monitoringItem->setCurrentStep(3)->setMessage('Clearing monitoring logs')->save();
         $logger = $this->monitoringItem->getLogger();
 
-        $treshold =  ElementsProcessManagerBundle::getConfig()['general']['archive_treshold_logs'];
-        if($treshold){
+        $treshold = ElementsProcessManagerBundle::getConfig()['general']['archive_treshold_logs'];
+        if ($treshold) {
             $timestamp = Carbon::createFromTimestamp(time())->subDay(1)->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
             $items = $list->load();
             $logger->debug('Deleting ' . count($items).' monitoring items.');
-            foreach($items as $item){
+            foreach ($items as $item) {
                 $logger->debug('Deleting item. Name: "' . $item->getName().'" ID: '.$item->getId() .' monitoring items.');
                 $item->delete();
             }
-        }else{
+        } else {
             $logger->notice('No treshold defined -> nothing to do.');
         }
 
-        $logger->debug("Start clearing ProcessManager maintenance items");
+        $logger->debug('Start clearing ProcessManager maintenance items');
         $list = new MonitoringItem\Listing();
         $list->setCondition('name ="ProcessManager maintenance" AND status="finished"');
         $list->setOrderKey('id')->setOrder('DESC');
         $list->setOffset(5);
-        foreach($list->load() as $item){
-            $logger->debug("Deleting monitoring Item: " . $item->getId());
+        foreach ($list->load() as $item) {
+            $logger->debug('Deleting monitoring Item: ' . $item->getId());
             $item->delete();
         }
-        $logger->debug("Clearing ProcessManager items finished");
+        $logger->debug('Clearing ProcessManager items finished');
 
         $this->monitoringItem->setMessage('Clearing monitoring done')->setCompleted();
     }

@@ -1,10 +1,23 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
+use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 /**
@@ -25,11 +38,12 @@ class Dao extends AbstractDao
 
     /**
      * @param bool $preventModificationDateUpdate
+     *
      * @return $this ->model
      */
     public function save($preventModificationDateUpdate = false)
     {
-        if($this->model->getIsDummy()){
+        if ($this->model->getIsDummy()) {
             return $this->model;
         }
 
@@ -43,7 +57,7 @@ class Dao extends AbstractDao
             $this->db->insert($this->getTableName(), $data);
             $this->model->setId($this->db->lastInsertId($this->getTableName()));
         } else {
-            $this->db->update($this->getTableName(), $data, array("id" => $this->model->getId()));
+            $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
         }
 
         return $this->getById($this->model->getId());
@@ -61,7 +75,7 @@ class Dao extends AbstractDao
                     $class->preMonitoringItemDeletion($this->model, $action);
                 }
             }
-            $this->db->query("DELETE FROM ".$this->getTableName().' where id='.$this->model->getId());
+            $this->db->query('DELETE FROM '.$this->getTableName().' where id='.$this->model->getId());
             if ($logFile = $this->model->getLogFile()) {
                 @unlink($logFile);
             }

@@ -1,10 +1,22 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Callback;
 
 abstract class AbstractCallback
 {
-
     public $extJsClass = '';
 
     public $name = '';
@@ -13,14 +25,15 @@ abstract class AbstractCallback
 
     /**
      * AbstractCallback constructor.
+     *
      * @param null | array $config
      */
     public function __construct($config)
     {
-        if(is_array($config)){
-            foreach($config as $key => $value){
-                $setter = "set".ucfirst($key);
-                if(method_exists($this,$setter)){
+        if (is_array($config)) {
+            foreach ($config as $key => $value) {
+                $setter = 'set'.ucfirst($key);
+                if (method_exists($this, $setter)) {
                     $this->$setter($value);
                 }
             }
@@ -69,12 +82,13 @@ abstract class AbstractCallback
 
     /**
      * @param array $config
+     *
      * @return $this
      */
     public function setConfig($config)
     {
         $this->config = $config;
+
         return $this;
     }
-
 }

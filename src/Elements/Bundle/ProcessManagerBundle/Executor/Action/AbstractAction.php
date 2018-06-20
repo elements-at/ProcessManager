@@ -1,12 +1,24 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Action;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 abstract class AbstractAction
 {
-
     public $extJsClass = '';
 
     public $name = '';
@@ -23,6 +35,7 @@ abstract class AbstractAction
 
     /**
      * @param string $extJsClass
+     *
      * @return $this
      */
     public function setExtJsClass($extJsClass)
@@ -31,7 +44,6 @@ abstract class AbstractAction
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -43,6 +55,7 @@ abstract class AbstractAction
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
@@ -62,6 +75,7 @@ abstract class AbstractAction
 
     /**
      * @param array $config
+     *
      * @return $this
      */
     public function setConfig($config)
@@ -71,20 +85,20 @@ abstract class AbstractAction
         return $this;
     }
 
-
     /**
      * @param $monitoringItem MonitoringItem
      * @param $actionData
+     *
      * @return string
      */
     abstract public function getGridActionHtml($monitoringItem, $actionData);
-
 
     /**
      * Perfoms the action
      *
      * @param $monitoringItem MonitoringItem
      * @param $actionData array
+     *
      * @return mixed
      */
     abstract public function execute($monitoringItem, $actionData);
@@ -96,5 +110,4 @@ abstract class AbstractAction
     public function preMonitoringItemDeletion($monitoringItem, $actionData)
     {
     }
-
 }

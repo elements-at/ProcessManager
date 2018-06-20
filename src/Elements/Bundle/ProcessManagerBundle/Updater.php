@@ -1,12 +1,24 @@
 <?php
 
+/**
+ * Elements.at
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
 
 class Updater
 {
-
     protected static $_instance;
 
     public function __construct()
@@ -31,7 +43,6 @@ class Updater
 
     public function execute()
     {
-
         $monitoringItem = ElementsProcessManagerBundle::getMonitoringItem(php_sapi_name() === 'cli' ? true : false);
 
         $lastVersion = 0;
@@ -83,7 +94,7 @@ class Updater
     {
         $db = \Pimcore\Db::get();
         $db->query(
-            "CREATE TABLE IF NOT EXISTS `".ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING."` (
+            'CREATE TABLE IF NOT EXISTS `'.ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING."` (
 	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 	`modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -97,7 +108,6 @@ COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 "
         );
-
     }
 
     protected function updateVersion3()
@@ -105,25 +115,24 @@ ENGINE=InnoDB
         $db = \Pimcore\Db::get();
         try {
             $db->query(
-                "ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM." ADD COLUMN actions TEXT"
+                'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM.' ADD COLUMN actions TEXT'
             );
         } catch (\Exception $e) {
         }
-        \Pimcore\Cache::clearTags(["system", "resource"]);
+        \Pimcore\Cache::clearTags(['system', 'resource']);
     }
 
     protected function getTableColumns($table)
     {
         $db = \Pimcore\Db::get();
-        $existingColumnsRaw = $db->fetchAll("SHOW COLUMNS FROM ".$table);
-        $existingColumns = array();
+        $existingColumnsRaw = $db->fetchAll('SHOW COLUMNS FROM '.$table);
+        $existingColumns = [];
         foreach ($existingColumnsRaw as $raw) {
-            $existingColumns[$raw["Field"]] = $raw;
+            $existingColumns[$raw['Field']] = $raw;
         }
 
         return $existingColumns;
     }
-
 
     protected function updateVersion4()
     {
@@ -132,7 +141,7 @@ ENGINE=InnoDB
         $configColumns = $this->getTableColumns(ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION);
         if (!in_array('executorSettings', array_keys($configColumns))) {
             $db->query(
-                "ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION." ADD COLUMN `executorSettings` TEXT"
+                'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION.' ADD COLUMN `executorSettings` TEXT'
             );
         }
 
@@ -142,18 +151,17 @@ ENGINE=InnoDB
 
         if (!in_array('loggers', $monitoringItemColumns)) {
             $db->query(
-                "ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM." ADD COLUMN `loggers` TEXT "
+                'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM.' ADD COLUMN `loggers` TEXT '
             );
         }
 
         if (in_array('processManagerConfig', $monitoringItemColumns)) {
             $db->query(
-                "ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM." DROP COLUMN `processManagerConfig`"
+                'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM.' DROP COLUMN `processManagerConfig`'
             );
         }
 
-        \Pimcore\Cache::clearTags(["system", "resource"]);
-
+        \Pimcore\Cache::clearTags(['system', 'resource']);
 
         $entries = $db->fetchAll('SELECT * FROM '.ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION);
         foreach ($entries as $entry) {
@@ -188,17 +196,16 @@ ENGINE=InnoDB
                 $db->update(
                     ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION,
                     $entry,
-                    array("id" => $entry['id'])
+                    ['id' => $entry['id']]
                 );
             }
         }
         $db->query(
-            "ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION." CHANGE COLUMN `executorClass` executorClass VARCHAR(500) not null"
+            'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION.' CHANGE COLUMN `executorClass` executorClass VARCHAR(500) not null'
         );
-        $db->query("DELETE FROM ".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM);
+        $db->query('DELETE FROM '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM);
 
-
-        $configFile = \Pimcore\Config::locateConfigFile("plugin-process-manager.php");
+        $configFile = \Pimcore\Config::locateConfigFile('plugin-process-manager.php');
         $config = ElementsProcessManagerBundle::getConfig();
         $config['executorLoggerClasses'] = [
             '\ProcessManager\Executor\Logger\File' => [],
@@ -214,19 +221,18 @@ ENGINE=InnoDB
         $metadataColumns = $this->getTableColumns(ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION);
         if (!in_array('restrictToRoles', $metadataColumns)) {
             $db->query(
-                "ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION." ADD COLUMN `restrictToRoles` VARCHAR(100) not null default ''"
+                'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION." ADD COLUMN `restrictToRoles` VARCHAR(100) not null default ''"
             );
         }
-        \Pimcore\Cache::clearTags(["system", "resource"]);
+        \Pimcore\Cache::clearTags(['system', 'resource']);
     }
-
 
     protected function updateVersion6()
     {
         $db = \Pimcore\Db::get();
         try {
             $db->query(
-                "ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION." ADD UNIQUE INDEX `name` (`name`)"
+                'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION.' ADD UNIQUE INDEX `name` (`name`)'
             );
         } catch (\Exception $e) {
             echo "Can't add Unique key to column 'name' in '".ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION."'. Please add them manually!";
@@ -254,17 +260,19 @@ ENGINE=InnoDB
 //        \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));
     }
 
-    public function updateVersion8(){
+    public function updateVersion8()
+    {
         $db = \Pimcore\Db::get();
-        $db->query("ALTER TABLE " . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . " MODIFY `message` VARCHAR(1000) ");
+        $db->query('ALTER TABLE ' . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . ' MODIFY `message` VARCHAR(1000) ');
     }
 
-    public function updateVersion9(){
+    public function updateVersion9()
+    {
         $db = \Pimcore\Db::get();
-        $db->query("ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM." ADD `metaData` LONGTEXT ");
-        $db->query("ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM." ADD `published` TINYINT NOT NULL DEFAULT 1");
-        $db->query("ALTER TABLE ".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM." ADD `group` VARCHAR(50)");
-        \Pimcore\Cache::clearTags(["system", "resource"]);
+        $db->query('ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM.' ADD `metaData` LONGTEXT ');
+        $db->query('ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM.' ADD `published` TINYINT NOT NULL DEFAULT 1');
+        $db->query('ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM.' ADD `group` VARCHAR(50)');
+        \Pimcore\Cache::clearTags(['system', 'resource']);
     }
 
     protected function copyConfig()
@@ -279,12 +287,11 @@ ENGINE=InnoDB
         copy($configFile, $destFile);
     }
 
-
     protected function createTables()
     {
         $db = \Pimcore\Db::get();
         $db->query(
-            "CREATE TABLE IF NOT EXISTS  `".ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION."` (
+            'CREATE TABLE IF NOT EXISTS  `'.ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION."` (
 	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 	`modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -303,9 +310,8 @@ ENGINE=InnoDB;
 "
         );
 
-
         $db->query(
-            "CREATE TABLE IF NOT EXISTS  `".ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM."` (
+            'CREATE TABLE IF NOT EXISTS  `'.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM."` (
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`creationDate` INT(11) UNSIGNED NOT NULL DEFAULT '0',
 	`modificationDate` INT(11) UNSIGNED NOT NULL DEFAULT '0',
@@ -332,18 +338,16 @@ COLLATE='utf8_general_ci'
 ENGINE=InnoDB;
 "
         );
-
     }
 
     protected function createPermissions()
     {
-        foreach (array(
+        foreach ([
                      'plugin_pm_permission_view',
                      'plugin_pm_permission_configure',
                      'plugin_pm_permission_execute',
-                 ) as $permissionKey) {
+                 ] as $permissionKey) {
             \Pimcore\Model\User\Permission\Definition::create($permissionKey);
         }
     }
-
 }
