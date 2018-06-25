@@ -1,15 +1,5 @@
 # ProcessManager
 
-## Update notes
-
-To update the plugin please use the following command
-```
-composer update elements/process-manager-bundle; bin/console process-manager:update
-```
-
-## Release notes
-Take a look at the tags :-)
-
 ## Introduction
 
 > The ProcessManager allows you to manage (define,execute...) arbitrary processes/commands in the Pimcore backend. 
@@ -20,6 +10,15 @@ are available and the processes are monitored (you get an email if a process die
 
 [For detailed information take a look at the documentation pages](./doc/01_ProcessManager.md)
 
+## Update notes
+
+To update the plugin please use the following command
+```
+composer update elements/process-manager-bundle; bin/console process-manager:update
+```
+
+## Release notes
+Take a look at the tags :-)
 
 ## Migration from Pimcore 4 to Pimcore 5
 
