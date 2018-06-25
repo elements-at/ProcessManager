@@ -1,7 +1,7 @@
 {
   "name": "elements/process-manager-bundle",
   "type": "pimcore-bundle",
-  "description": "The ProcessManager allows you to manage (define,execute...) arbitrary processes/commands in the Pimcore backend.",
+  "description": "The Process Manager allows you to manage (define,execute...) arbitrary processes/commands in the Pimcore backend.",
   "require": {
     "pimcore/core-version": ">=5.1.0 <5.3",
     "mtdowling/cron-expression": "^1.1.0"
