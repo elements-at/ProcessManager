@@ -64,7 +64,6 @@ class Download extends AbstractAction
             $response = new BinaryFileResponse($file);
             $response->headers->set('Content-Type', finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file), true);
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($file));
-            $response->deleteFileAfterSend(true);
 
             return $response;
         } else {
