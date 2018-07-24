@@ -128,7 +128,7 @@ if (!$this->getParam('ajax')) { ?>
 
         function startRefresh() {
             timer = setTimeout(startRefresh, 1000);
-            $.post(location.href + '&ajax=1', function (data) {
+            $.get(location.href + '&ajax=1', function (data) {
                 $('#content').html(data);
                 $(window).scrollTop($(document).height());
             });
