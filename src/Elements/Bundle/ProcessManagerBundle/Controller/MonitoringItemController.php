@@ -381,7 +381,7 @@ class MonitoringItemController extends AdminController
         try {
             $pid = $monitoringItem->getPid();
             if ($pid) {
-                $message = 'Process with PID "'.$pid.'" killed by Backend User: '.$request->getUser()->getName();
+                $message = 'Process with PID "'.$pid.'" killed by Backend User: '.$this->getUser()->getUser()->getName();
                 $monitoringItem->getLogger()->warning($message);
                 $monitoringItem->setPid(null)->setStatus($monitoringItem::STATUS_FAILED)->save();
                 \Pimcore\Tool\Console::exec('kill -9 '.$pid);
