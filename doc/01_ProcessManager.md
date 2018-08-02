@@ -28,14 +28,7 @@ Shortcut menu:
 ## Installation
 **Be careful, normally there's already a `require` node, so you need to add the new line at the bottom**     
 ```
-{
-    "require": {
-        "pimcore-plugins/ProcessManager": "~1.0"
-    },
-    "repositories": [
-        { "type": "composer", "url": "https://composer-packages.elements.at/" }
-    ]
-}
+composer require elements/process-manager-bundle
 ```
 
 Run composer update: 
@@ -185,7 +178,7 @@ A entry could look like this:
 [
             "name" => "exportProducts",
             "class" => "\\ProcessManager\\Executor\\Callback\\General",
-            "extJsClass" => "pimcore.plugin.windhager.processmanager.executor.callback.exportProducts",
+            "extJsClass" => "pimcore.plugin.PLUGINNAME.processmanager.executor.callback.exportProducts",
 ]
 ```
 
@@ -268,8 +261,8 @@ It returns the monitoring item ...
 "executedByUser": 19,
 "logger": {},
 "callbackSettings": {
-"firstName": "Christian",
-"lastName": "Kogler"
+"firstName": "Max",
+"lastName": "Musterman"
 },
 "totalWorkload": "100",
 "currentWorkload": "100",
