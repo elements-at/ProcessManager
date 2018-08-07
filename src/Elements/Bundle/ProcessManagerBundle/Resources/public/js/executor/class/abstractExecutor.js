@@ -44,7 +44,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         this.panelConfiguration = new Ext.Panel({
             title: t("plugin_pm_executor_config"),
             border: false,
-            icon: '/pimcore/static6/img/flat-color-icons/settings.svg',
+            icon: '/bundles/pimcoreadmin/img/flat-color-icons/settings.svg',
             layout: "fit",
             region: "center",
             items: [this.getFormPanel()]

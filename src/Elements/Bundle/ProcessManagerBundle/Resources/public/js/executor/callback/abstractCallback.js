@@ -112,7 +112,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 scale: "medium",
                 //autoWidth : true,
                 text: t("plugin_pm_callback_settings_save"),
-                icon: '/pimcore/static6/img/flat-color-icons/ok.svg',
+                icon: '/bundles/pimcoreadmin/img/flat-color-icons/ok.svg',
                 hideLabel: true,
                 handler: function () {
                     var settings = this.getStorageValues();
@@ -190,7 +190,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 id: tabId,
                 border: false,
                 layout: "fit",
-                icon: '/pimcore/static6/img/flat-color-icons/settings.svg',
+                icon: '/bundles/pimcoreadmin/img/flat-color-icons/settings.svg',
                 closable: true,
                 items: [this.callbackSettingsForm],
                 tbar: tbar,
@@ -214,7 +214,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             height: '80%',
             layout: "fit",
             title: t("plugin_pm_callback_settings_save"),
-            icon: '/pimcore/static6/img/flat-color-icons/settings.svg',
+            icon: '/bundles/pimcoreadmin/img/flat-color-icons/settings.svg',
             modal: false,
             width: 700,
             items: [this.callbackSettingsForm],
@@ -233,7 +233,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 scale: "medium",
                 //autoWidth : true,
                 text: t("plugin_pm_permission_execute_button"),
-                icon: '/pimcore/static6/img/flat-color-icons/go.svg',
+                icon: '/bundles/pimcoreadmin/img/flat-color-icons/go.svg',
                 hideLabel: true,
                 style: {
                     // marginLeft: (this.settings.windowWidth-215) + 'px'

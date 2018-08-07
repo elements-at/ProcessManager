@@ -6,7 +6,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
             this.layout = new Ext.Panel({
                 title: t("plugin_pm_processes"),
                 border: false,
-                icon: '/pimcore/static6/img/flat-color-icons/cable_release.svg',
+                icon: '/bundles/pimcoreadmin/img/flat-color-icons/cable_release.svg',
                 layout: "fit",
                 region: "center"
             });
@@ -139,7 +139,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
                     items: [
                         {
                             tooltip: t('plugin_pm_permission_execute'),
-                            icon: "/pimcore/static6/img/flat-color-icons/go.svg",
+                            icon: "/bundles/pimcoreadmin/img/flat-color-icons/go.svg",
                             handler: function (grid, rowIndex) {
                                 processmanagerPlugin.executeJob(grid.getStore().getAt(rowIndex).get('id'));
                             },
@@ -163,7 +163,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
                 items: [
                     {
                         tooltip: t('settings'),
-                        icon: "/pimcore/static6/img/flat-color-icons/settings.svg",
+                        icon: "/bundles/pimcoreadmin/img/flat-color-icons/settings.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
                             var className = rec.get('extJsSettings').executorConfig.extJsClass;
@@ -183,7 +183,7 @@ pimcore.plugin.processmanager.panel.config = Class.create({
                 items: [
                     {
                         tooltip: t('delete'),
-                        icon: "/pimcore/static6/img/flat-color-icons/delete.svg",
+                        icon: "/bundles/pimcoreadmin/img/flat-color-icons/delete.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
 

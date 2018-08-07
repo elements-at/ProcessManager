@@ -36,7 +36,7 @@ class File extends AbstractLogger
         $logFile = $this->getLogFile($loggerData, $monitoringItem);
         if (is_readable($logFile)) {
             return '<a href="#" onClick="processManagerFileLogger.showLogs('.$monitoringItem->getId(
-                ).','.(int)$loggerData['index'].');return false;" class="process_manager_icon_download" alt="Show logs"><img src="/pimcore/static6/img/flat-color-icons/file-border.svg" alt="Download" height="18" title="File Logger"/></a>';
+                ).','.(int)$loggerData['index'].');return false;" class="process_manager_icon_download" alt="Show logs"><img src="/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg" alt="Download" height="18" title="File Logger"/></a>';
         }
     }
 

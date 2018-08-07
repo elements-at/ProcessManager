@@ -148,7 +148,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
     },
 
     getTooltip : function (text) {
-        return text ? '<img src="/pimcore/static6/img/flat-color-icons/info.svg" width="17" height="17" class="pm_tooltip_icon" data-qtip="' + text + '"></img>' : '';
+        return text ? '<img src="/bundles/pimcoreadmin/img/flat-color-icons/info.svg" width="17" height="17" class="pm_tooltip_icon" data-qtip="' + text + '"></img>' : '';
     },
 
     getFieldLabel : function (fieldName, config) {
@@ -523,7 +523,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                         width: 30,
                         items: [{
                             tooltip: t('remove'),
-                            icon: "/pimcore/static6/img/flat-color-icons/delete.svg",
+                            icon: "/bundles/pimcoreadmin/img/flat-color-icons/delete.svg",
                             handler: function (grid, rowIndex) {
                                 grid.getStore().removeAt(rowIndex);
                             }.bind(this)

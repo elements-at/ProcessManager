@@ -7,7 +7,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
             this.layout = new Ext.Panel({
                 title: t("plugin_pm_callback_settings"),
                 border: false,
-                icon : '/pimcore/static6/img/flat-color-icons/settings.svg',
+                icon : '/bundles/pimcoreadmin/img/flat-color-icons/settings.svg',
                 layout: "fit",
                 region: "center"
             });
@@ -91,7 +91,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                 items: [
                     {
                         tooltip: t('settings'),
-                        icon: "/pimcore/static6/img/flat-color-icons/settings.svg",
+                        icon: "/bundles/pimcoreadmin/img/flat-color-icons/settings.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
 
@@ -109,7 +109,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                 width: 70,
                 items: [{
                     tooltip: t('plugin_pm_copy'),
-                    icon: "/pimcore/static6/img/icon/page_white_copy.png",
+                    icon: "/bundles/pimcoreadmin/img/icon/page_white_copy.png",
                     handler: function (grid, rowIndex) {
 
                         var rec = grid.getStore().getAt(rowIndex);
@@ -140,7 +140,7 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                 items: [
                     {
                         tooltip: t('delete'),
-                        icon: "/pimcore/static6/img/flat-color-icons/delete.svg",
+                        icon: "/bundles/pimcoreadmin/img/flat-color-icons/delete.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
 

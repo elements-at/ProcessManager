@@ -8,7 +8,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             this.layout = new Ext.Panel({
                 title: t("plugin_pm_monitoring_items"),
                 border: false,
-                icon: '/pimcore/static6/img/flat-color-icons/rules.svg',
+                icon: '/bundles/pimcoreadmin/img/flat-color-icons/rules.svg',
                 layout: "fit",
                 region: "center"
             });
@@ -253,9 +253,9 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             sortable: false,
             renderer: function (v, x, record) {
                 if (record.get('retry')) {
-                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/pimcore/static6/img/flat-color-icons/refresh.svg" height="18" /></a>';
+                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" /></a>';
                 } else {
-                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/pimcore/static6/img/flat-color-icons/cancel.svg" height="18" /></a>';
+                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg" height="18" /></a>';
                 }
                 return '';
             }
@@ -269,7 +269,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                 width: 50,
                 items: [{
                     tooltip: t('delete'),
-                    icon: "/pimcore/static6/img/icon/cross.png",
+                    icon: "/bundles/pimcoreadmin/img/icon/cross.png",
                     handler: function (grid, rowIndex) {
                         var rec = grid.getStore().getAt(rowIndex);
                         Ext.Ajax.request({
@@ -301,7 +301,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
         tbar.push(t("plugin_pm_auto_refresh_seconds"));
 
         var clearMonitoringItems = new Ext.Button({
-            icon: "/pimcore/static6/img/icon/cross.png",
+            icon: "/bundles/pimcoreadmin/img/icon/cross.png",
             text: t("plugin_pm_clear_monitoring_items"),
             enableToggle: false,
             handler: this.clearMonitoringItems.bind(this)
@@ -354,7 +354,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                 scale: "medium",
                 //autoWidth : true,
                 text: t("plugin_pm_delete_monitoring_item_button"),
-                icon: '/pimcore/static6/img/flat-color-icons/go.svg',
+                icon: '/bundles/pimcoreadmin/img/flat-color-icons/go.svg',
                 hideLabel: true,
                 style: {
                     marginLeft: (200) + 'px'
@@ -386,7 +386,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             {
                 text: t("cancel"),
                 scale: "medium",
-                icon: "/pimcore/static6/img/icon/cross.png",
+                icon: "/bundles/pimcoreadmin/img/icon/cross.png",
                 handler: function () {
                     this.window.destroy();
                 }.bind(this)
@@ -428,7 +428,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             height: 300,
             layout: "fit",
             title: t('plugin_pm_clear_monitoring_items'),
-            icon: "/pimcore/static6/img/icon/cross.png",
+            icon: "/bundles/pimcoreadmin/img/icon/cross.png",
             modal: true,
             width: 500,
             close: function () {

@@ -41,7 +41,7 @@ class Download extends AbstractAction
 
             if (is_readable($file)) {
                 return '<a href="#" onClick="processmanagerPlugin.download('.$monitoringItem->getId(
-                    ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download"><img src="/pimcore/static6/img/flat-color-icons/download.svg" alt="Download" height="16"/></a>';
+                    ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download"><img src="/bundles/pimcoreadmin/img/flat-color-icons/download.svg" alt="Download" height="16"/></a>';
             } else {
                 return 'Download file not present';
             }
