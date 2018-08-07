@@ -3,7 +3,7 @@
   "type": "pimcore-bundle",
   "description": "The Process Manager allows you to manage (define,execute...) arbitrary processes/commands in the Pimcore backend.",
   "require": {
-    "pimcore/core-version": ">=5.1.0 <5.4",
+    "pimcore/core-version": ">=5.1.0 <5.5",
     "mtdowling/cron-expression": "^1.1.0"
   },
   "autoload": {
