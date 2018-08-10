@@ -15,6 +15,15 @@ are available (custom settings which the user can define for runtime execution) 
 - Store/Manage CallbackSettings and reuse them at execution time
 - Define/execute the scripts as cronjobs 
 
+Job execution state:
+![process-manager-log](./doc/img/process-manager-log.jpg)
+
+Job configuration:
+![process-manager-job-management](./doc/img/process-manager-job-management.jpg)
+
+Callback settings (user defined runtime settings):
+![callback-settings](./doc/img/callback-settings.jpg)
+
 
 ## Topics
 * [Installation & updates](./doc/installationAndUpdates.md)
