@@ -19,7 +19,7 @@ return [
     'general' => [
         'archive_treshold_logs' => 7, //keep monitoring items for x Days
         'executeWithMaintenance' => true, //do execute with maintenance (deactivate if you set up a separate cronjob)
-        'processTimeoutMinutes' => 15
+        'processTimeoutMinutes' => 15 //if no update of the monitoring item is done within this amount of minutes the process is considered as "hanging"
     ],
     'email' => [
         'recipients' => explode(';', (string)$systemConfig['applicationlog']['mail_notification']['mail_receiver']), //gets a reporting e-mail when a process is dead
