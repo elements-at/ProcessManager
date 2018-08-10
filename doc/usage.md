@@ -1,4 +1,4 @@
-### Usage
+### How to use
 
 **In short:** 
 The [SampleCommand](/src/Elements/Bundle/ProcessManagerBundle/examples/ProcessManager/Command/SampleCommand.php) is a example 
