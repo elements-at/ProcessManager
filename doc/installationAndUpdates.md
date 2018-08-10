@@ -1,4 +1,4 @@
-# Installation and updates
+# Installation
 
 Add the bundle to your composer.json 
 ```
@@ -18,4 +18,11 @@ It is advisable to set up a extra cronjob, which monitors the script execution.
 Just add the following command to your crontab (and set "executeWithMaintenance" to "false" in the config file)
 ```
 */5 * * * * php /home/my-project/www/bin/console process-manager:maintenance
+```
+
+# Update
+To update the bundle please use the following command:
+
+```
+composer update elements/process-manager-bundle; bin/console process-manager:update
 ```
