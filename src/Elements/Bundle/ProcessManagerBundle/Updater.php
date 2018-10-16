@@ -219,7 +219,7 @@ ENGINE=InnoDB
     {
         $db = \Pimcore\Db::get();
         $metadataColumns = $this->getTableColumns(ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION);
-        if (!in_array('restrictToRoles', $metadataColumns)) {
+        if (!$metadataColumns['restrictToRoles']) {
             $db->query(
                 'ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION." ADD COLUMN `restrictToRoles` VARCHAR(100) not null default ''"
             );
