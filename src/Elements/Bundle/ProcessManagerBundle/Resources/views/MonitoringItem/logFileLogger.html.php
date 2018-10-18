@@ -62,7 +62,7 @@ if (!$this->getParam('ajax')) {
                 cursor: pointer;
             }
         </style>
-        <script type="text/javascript" src="/pimcore/static6/js/lib/jquery-2.1.4.js"></script>
+        <script type="text/javascript" src="/bundles/elementsprocessmanager/js/jquery-3.3.1.js"></script>
 
     </head>
     <body>
