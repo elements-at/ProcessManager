@@ -201,7 +201,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
 
     getCronjobField: function () {
         var field = this.getTextField('cronjob');
-        field.width = 200;
+        field.width = 300;
         field.boxLabel = 'test';
         field.style = 'float:left;margin-right:20px;';
         return field;
