@@ -56,6 +56,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     const TABLE_NAME_CONFIGURATION = 'plugin_process_manager_configuration';
     const TABLE_NAME_MONITORING_ITEM = 'plugin_process_manager_monitoring_item';
     const TABLE_NAME_CALLBACK_SETTING = 'plugin_process_manager_callback_setting';
+    const MONITORING_ITEM_ENV_VAR = 'monitoring-item-id';
 
     /**
      * @return array
@@ -122,7 +123,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
          */
         if ($monitoringItem = self::getMonitoringItem()) {
             $error = error_get_last();
-            var_dump($error);
 
             if (in_array($error['type'], [E_WARNING, E_DEPRECATED, E_STRICT, E_NOTICE])) {
                 if ($config = Configuration::getById($monitoringItem->getConfigurationId())) {
@@ -202,8 +202,12 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     public static function getMonitoringItem($createDummyObjectIfRequired = true)
     {
         if ($createDummyObjectIfRequired && !self::$monitoringItem) {
-            self::$monitoringItem = new MonitoringItem();
-            self::$monitoringItem->setIsDummy(true);
+            if(getenv(self::MONITORING_ITEM_ENV_VAR)){
+                self::$monitoringItem = MonitoringItem::getById(getenv(self::MONITORING_ITEM_ENV_VAR));
+            }else{
+                self::$monitoringItem = new MonitoringItem();
+                self::$monitoringItem->setIsDummy(true);
+            }
         }
 
         return self::$monitoringItem;

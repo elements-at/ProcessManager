@@ -58,8 +58,9 @@ class Helper
 
             $command = $executor->getCommand($callbackSettings, $monitoringItem);
 
+            putenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR . '=' . $item->getId());
+
             if (!$executor->getIsShellCommand()) {
-                $command .= ' --monitoring-item-id=' . $item->getId();
                 $monitoringItem->getLogger()->info('Execution Command: ' . $command . ' in Background');
                 $monitoringItem->setCommand($command)->save();
             } else {

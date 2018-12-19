@@ -39,6 +39,16 @@ class PimcoreCommand extends AbstractExecutor
             $command .= ' ' . $options;
         }
 
+        if($monitoringItem){
+            $application = new \Pimcore\Console\Application(\Pimcore::getContainer()->get('kernel'));
+            /**
+             * @var \Pimcore\Console\AbstractCommand $commandObject
+             */
+            $commandObject = $application->find($this->getValues()['command']);
+            if($commandObject->getDefinition()->hasOption('monitoring-item-id')){
+                $command .= ' --monitoring-item-id='.$monitoringItem->getId();
+            }
+        }
         return $command;
     }
 }

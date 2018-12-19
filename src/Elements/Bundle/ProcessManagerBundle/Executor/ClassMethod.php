@@ -31,6 +31,11 @@ class ClassMethod extends AbstractExecutor
      */
     public function getCommand($callbackSettings = [], $monitoringItem = null)
     {
-        return Console::getPhpCli() . ' ' . realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' process-manager:class-method-executor -v';
+        $command =  Console::getPhpCli() . ' ' . realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' process-manager:class-method-executor -v';
+
+        if($monitoringItem){
+            $command .= ' --monitoring-item-id='.$monitoringItem->getId();
+        }
+        return $command;
     }
 }
