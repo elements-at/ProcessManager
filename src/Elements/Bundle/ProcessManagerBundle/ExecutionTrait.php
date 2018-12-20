@@ -111,7 +111,7 @@ trait ExecutionTrait
                     ->setTotalSteps($options['totalSteps'] ?: 1)->setStatus(MonitoringItem::STATUS_RUNNING)->save();
             }
         }
-        \Pimcore\Tool\Console::checkExecutingUser();
+        \Pimcore\Tool\Console::checkExecutingUser((array)ElementsProcessManagerBundle::getConfig()['general']['additionalScriptExecutionUsers']);
 
         return ElementsProcessManagerBundle::getMonitoringItem();
     }

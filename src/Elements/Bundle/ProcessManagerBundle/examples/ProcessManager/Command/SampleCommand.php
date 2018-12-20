@@ -40,7 +40,6 @@ class SampleCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->initProcessManager($input->getOption('monitoring-item-id'));
-        \Pimcore\Tool\Console::checkExecutingUser();
 
         $classList = new \Pimcore\Model\DataObject\ClassDefinition\Listing();
         $classes = $classList->load();
