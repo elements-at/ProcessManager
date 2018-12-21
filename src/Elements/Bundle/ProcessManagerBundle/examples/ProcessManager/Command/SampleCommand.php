@@ -63,9 +63,9 @@ class SampleCommand extends AbstractCommand
             $total = $list->getTotalCount();
             $perLoop = 50;
 
-            for ($i = 0; $i < (ceil($total / $perLoop)); $i++) {
+            for ($k = 0, $kMax = ceil($total / $perLoop); $k < $kMax; $k++) {
                 $list->setLimit($perLoop);
-                $offset = $i * $perLoop;
+                $offset = $k * $perLoop;
                 $list->setOffset($offset);
 
                 $monitoringItem->setCurrentWorkload(($offset ?: 1))
@@ -87,7 +87,7 @@ class SampleCommand extends AbstractCommand
                 }
             }
 
-            $monitoringItem->setWorloadCompleted()->save();
+            $monitoringItem->setWorkloadCompleted()->save();
             \Pimcore::collectGarbage();
         }
         $monitoringItem->setCurrentStep($totalSteps)->setCurrentWorkload(0)->setTotalWorkload(0)->setMessage(
