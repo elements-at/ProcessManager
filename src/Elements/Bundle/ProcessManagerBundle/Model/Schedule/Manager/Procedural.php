@@ -43,7 +43,7 @@ class Procedural extends \Pimcore\Model\Schedule\Manager\Procedural
                 $logger->error($e);
             }
             $job->unlock();
-            $monitoringItem->setWorloadCompleted()->save();
+            $monitoringItem->setWorkloadCompleted()->save();
         }
     }
 }

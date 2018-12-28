@@ -523,9 +523,18 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
+     * @deprecated Use setWorkloadCompleted() instead
      * @return $this
      */
     public function setWorloadCompleted()
+    {
+        return $this->setWorkloadCompleted();
+    }
+
+    /**
+     * @return $this
+     */
+    public function setWorkloadCompleted()
     {
         $this->setCurrentWorkload($this->getTotalWorkload());
 
@@ -538,14 +547,16 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         if ($took > 0) {
             if ($took < 60) {
                 return $took.'s';
-            } elseif ($took < 3600) {
+            }
+
+            if ($took < 3600) {
                 $minutes = floor($took / 60);
                 $seconds = $took - ($minutes * 60);
 
                 return $minutes.'m '.$seconds.'s';
-            } else {
-                return gmdate('h', $took).'h '.gmdate('i', $took).'m '.gmdate('s', $took).'s';
             }
+
+            return gmdate('h', $took).'h '.gmdate('i', $took).'m '.gmdate('s', $took).'s';
         }
     }
 
@@ -623,7 +634,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     public function setCompleted()
     {
-        $this->setWorloadCompleted();
+        $this->setWorkloadCompleted();
         $this->setCurrentStep($this->getTotalSteps());
         //do not change the state if set it to failed - otherwise it would appear to be successfully finished
         if ($this->getStatus() != self::STATUS_FAILED) {

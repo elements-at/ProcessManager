@@ -43,9 +43,9 @@ class SampleClassMethod
             $total = $list->getTotalCount();
             $perLoop = 50;
 
-            for ($i = 0; $i < (ceil($total / $perLoop)); $i++) {
+            for ($k = 0; $k < (ceil($total / $perLoop)); $k++) {
                 $list->setLimit($perLoop);
-                $offset = $i * $perLoop;
+                $offset = $k * $perLoop;
                 $list->setOffset($offset);
 
                 $monitoringItem->setCurrentWorkload(($offset ?: 1))
@@ -66,7 +66,7 @@ class SampleClassMethod
                 }
             }
 
-            $monitoringItem->setWorloadCompleted()->save();
+            $monitoringItem->setWorkloadCompleted()->save();
             \Pimcore::collectGarbage();
         }
 

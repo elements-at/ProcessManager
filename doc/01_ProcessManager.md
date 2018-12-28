@@ -154,7 +154,7 @@ class SampleCommand extends AbstractCommand {
         $monitoringItem->getLogger()->debug('Testmessage');
 
         //do your work and updates here...
-        $monitoringItem->setCurrentStep(1)->setWorloadCompleted()->setMessage('Done -> moving on')->save();
+        $monitoringItem->setCurrentStep(1)->setWorkloadCompleted()->setMessage('Done -> moving on')->save();
 
         $monitoringItem->setCurrentStep(2)->setMessage('Cleaning up something')->save();
         $monitoringItem->setMessage('Finished')->setCompleted();
