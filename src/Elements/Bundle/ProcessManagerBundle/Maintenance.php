@@ -69,6 +69,7 @@ class Maintenance
                         $reportItems[] = $item;
                     }
                 } else {
+                    Helper::executeMonitoringItemLoggerShutdown($item);
                     if ($item->getStatus() == $item::STATUS_FINISHED) {
                         $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
                         $item->setReportedDate(time())->save(true);

@@ -46,6 +46,9 @@ return [
         ],
         [
             'class' => '\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Logger\\Application'
+        ],
+        [
+            "class" => "\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Logger\\EmailSummary"
         ]
     ],
     'executorActionClasses' => [

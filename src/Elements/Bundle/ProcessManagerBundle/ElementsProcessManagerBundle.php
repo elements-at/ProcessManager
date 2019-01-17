@@ -97,6 +97,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             '/bundles/elementsprocessmanager/js/executor/logger/file.js',
             '/bundles/elementsprocessmanager/js/executor/logger/console.js',
             '/bundles/elementsprocessmanager/js/executor/logger/application.js',
+            '/bundles/elementsprocessmanager/js/executor/logger/emailSummary.js',
 
             '/bundles/elementsprocessmanager/js/executor/callback/abstractCallback.js',
             '/bundles/elementsprocessmanager/js/executor/callback/example.js',
@@ -123,6 +124,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
          */
         if ($monitoringItem = self::getMonitoringItem()) {
             $error = error_get_last();
+            Helper::executeMonitoringItemLoggerShutdown($monitoringItem);
 
             if (in_array($error['type'], [E_WARNING, E_DEPRECATED, E_STRICT, E_NOTICE])) {
                 if ($config = Configuration::getById($monitoringItem->getConfigurationId())) {

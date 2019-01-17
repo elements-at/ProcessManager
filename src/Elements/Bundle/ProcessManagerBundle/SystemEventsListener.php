@@ -79,6 +79,10 @@ class SystemEventsListener implements EventSubscriberInterface
             return;
         }
 
+        if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
+            Helper::executeMonitoringItemLoggerShutdown($monitoringItem);
+        }
+
         if ($e->getExitCode() == 0) {
             if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
                 if ($config = Configuration::getById($monitoringItem->getConfigurationId())) {

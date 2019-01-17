@@ -96,4 +96,25 @@ class Helper
             return $ids;
         }
     }
+
+    /**
+     * @param MonitoringItem $monitoringItem
+     *
+     * @return MonitoringItem
+     */
+    public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem){
+        $loggers = $monitoringItem->getLoggers();
+        foreach((array)$loggers as $i => $loggerConfig){
+            $logObj = new $loggerConfig['class'];
+            if(method_exists($logObj,'handleShutdown')){
+                $result = $logObj->handleShutdown($monitoringItem,$loggerConfig);
+                if($result){
+                    $loggers[$i] = array_merge($loggerConfig,$result);
+                }
+            }
+        }
+        $monitoringItem->setLoggers($loggers)->save();
+        return $monitoringItem;
+    }
+
 }
