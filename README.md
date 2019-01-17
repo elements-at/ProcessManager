@@ -8,6 +8,7 @@ are available (custom settings which the user can define for runtime execution) 
 ***Key features:***
 - Execute custom script in background
 - Report the current execution state to the customer in the Pimcore admin
+- Define loggers (email, file, application logger)... per process
 - View detailed debug log information in the Pimcore admin
 - Scripts are monitored and you will receive an email if a job fails
 - Provide custom actions after a job has finished (e.g download a file)
@@ -28,6 +29,9 @@ Job execution state:
 
 Job configuration:
 ![process-manager-job-management](./doc/img/process-manager-job-management.jpg)
+
+Define Loggers per process / job:
+![process-manager-job-management](./doc/img/loggers.png)
 
 Callback settings (user defined runtime settings):
 ![callback-settings](./doc/img/callback-settings.jpg)
