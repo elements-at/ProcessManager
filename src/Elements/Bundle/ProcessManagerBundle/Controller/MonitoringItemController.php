@@ -27,6 +27,7 @@ use Pimcore\Templating\Model\ViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 
 /**
  * @Route("/admin/elementsprocessmanager/monitoring-item")
@@ -405,6 +406,7 @@ class MonitoringItemController extends AdminController
         try {
             $monitoringItem = MonitoringItem::getById($request->get('id'));
             $monitoringItem->deleteLogFile()->resetState()->save();
+            putenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR . '=' . $monitoringItem->getId());
             \Pimcore\Tool\Console::execInBackground($monitoringItem->getCommand(), $monitoringItem->getLogFile());
 
             return $this->adminJson(['success' => true]);

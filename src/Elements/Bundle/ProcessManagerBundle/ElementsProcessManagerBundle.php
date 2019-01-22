@@ -56,7 +56,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     const TABLE_NAME_CONFIGURATION = 'plugin_process_manager_configuration';
     const TABLE_NAME_MONITORING_ITEM = 'plugin_process_manager_monitoring_item';
     const TABLE_NAME_CALLBACK_SETTING = 'plugin_process_manager_callback_setting';
-    const MONITORING_ITEM_ENV_VAR = 'monitoring-item-id';
+    const MONITORING_ITEM_ENV_VAR = 'monitoringItemId';
 
     /**
      * @return array
