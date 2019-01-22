@@ -205,14 +205,14 @@ ENGINE=InnoDB
         );
         $db->query('DELETE FROM '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM);
 
-        $configFile = \Pimcore\Config::locateConfigFile('plugin-process-manager.php');
+        /*$configFile = \Pimcore\Config::locateConfigFile('plugin-process-manager.php');
         $config = ElementsProcessManagerBundle::getConfig();
         $config['executorLoggerClasses'] = [
             '\ProcessManager\Executor\Logger\File' => [],
             '\ProcessManager\Executor\Logger\Console' => [],
             '\ProcessManager\Executor\Logger\Application' => [],
         ];
-        \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));
+        \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));*/
     }
 
     public function updateVersion5()
