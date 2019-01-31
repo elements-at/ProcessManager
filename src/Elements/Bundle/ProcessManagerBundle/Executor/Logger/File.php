@@ -35,7 +35,9 @@ class File extends AbstractLogger
     {
         $logFile = $this->getLogFile($loggerData, $monitoringItem);
         if (is_readable($logFile)) {
-            return '<a href="#" onclick="var tmp = new pimcore.plugin.processmanager.executor.logger.file(); tmp.showLogs('.$monitoringItem->getId().','.(int)$loggerData['index'].');"><img src="/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg" alt="Download" height="18" title="File Logger"/></a>';
+            $icon = $loggerData['icon'] ?: '/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg';
+            $title = $loggerData['title'] ?: 'File Logger';
+            return '<a href="#" onclick="var tmp = new pimcore.plugin.processmanager.executor.logger.file(); tmp.showLogs(' . $monitoringItem->getId() . ',' . (int)$loggerData['index'] . ');"><img src="' . $icon . '" alt="Download" height="18" title="' . $title . '"/></a>';
         }
     }
 

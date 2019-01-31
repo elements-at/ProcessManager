@@ -625,7 +625,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $this->setStatus(self::STATUS_UNKNOWN);
         $this->resetWorkload();
         $this->setCurrentStep(0)->setTotalSteps(0)->setPid(null);
-
+        $this->setMessage('');
         $this->setCreationDate(time());
         $this->setModificationDate(time());
 

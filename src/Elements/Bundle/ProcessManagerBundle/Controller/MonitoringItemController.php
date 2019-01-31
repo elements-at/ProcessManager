@@ -272,6 +272,10 @@ class MonitoringItemController extends AdminController
 
         if (is_readable($logFile)) {
             $data = file_get_contents($logFile);
+            if($config['disableFileProcessing']){
+                return new \Symfony\Component\HttpFoundation\Response($data);
+            }
+
 
             $fileSizeMb = round(filesize($logFile) / 1024 / 1024);
 
@@ -290,7 +294,7 @@ class MonitoringItemController extends AdminController
                     if (strpos($row, '.WARNING')) {
                         $data[$i] = '<span style="color:#ffb13b">'.$row.'</span>';
                     }
-                    if (strpos($row, '.ERROR')) {
+                    if (strpos($row, '.ERROR') || strpos($row, '.CRITICAL')) {
                         $data[$i] = '<span style="color:#ff131c">'.$row.'</span>';
                     }
                     if (strpos($row, 'dev-server > ') === 0 || strpos($row, 'production-server > ') === 0) {
