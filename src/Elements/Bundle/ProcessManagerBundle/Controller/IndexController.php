@@ -96,17 +96,20 @@ class IndexController extends AdminController
 
         $shortCutMenu = [];
 
-        $list = new Configuration\Listing();
-        $list->setUser($this->getAdminUser());
-        $list->setOrderKey('name');
-        foreach ($list->load() as $config) {
-            $group = $config->getGroup() ?: 'default';
-            $shortCutMenu[$group][] = [
-                'id' => $config->getId(),
-                'name' => $config->getName(),
-                'group' => $config->getGroup(),
-            ];
+        if($this->getParameter("elements_process_manager.shortCutMenu")) {
+            $list = new Configuration\Listing();
+            $list->setUser($this->getAdminUser());
+            $list->setOrderKey('name');
+            foreach ($list->load() as $config) {
+                $group = $config->getGroup() ?: 'default';
+                $shortCutMenu[$group][] = [
+                    'id' => $config->getId(),
+                    'name' => $config->getName(),
+                    'group' => $config->getGroup(),
+                ];
+            }
         }
+
         $data['shortCutMenu'] = $shortCutMenu ?: false;
 
         return $this->adminJson($data);
