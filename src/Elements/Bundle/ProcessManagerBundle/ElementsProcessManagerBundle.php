@@ -206,6 +206,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         if ($createDummyObjectIfRequired && !self::$monitoringItem) {
             if(getenv(self::MONITORING_ITEM_ENV_VAR)){
                 self::$monitoringItem = MonitoringItem::getById(getenv(self::MONITORING_ITEM_ENV_VAR));
+                self::$monitoringItem->setStatus(MonitoringItem::STATUS_RUNNING)->save();
             }else{
                 self::$monitoringItem = new MonitoringItem();
                 self::$monitoringItem->setIsDummy(true);
