@@ -31,6 +31,11 @@ class Dao extends AbstractDao
      */
     protected $model;
 
+    /**
+     * @var null | \Pimcore\Db\Connection
+     */
+    protected static $dbTransactionFree;
+
     public function getTableName()
     {
         return ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM;
@@ -47,6 +52,21 @@ class Dao extends AbstractDao
             return $this->model;
         }
 
+        /**
+         * If we are in a transction we need to create a new connection and use this because otherwise
+         * the satus won't be updated as the transaction isn't committed (e.g when a exception is thrown within a transaction)
+         */
+        if(\Pimcore\Db::get()->isTransactionActive()){
+            if(!self::$dbTransactionFree){
+                self::$dbTransactionFree = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
+            }
+            $db = self::$dbTransactionFree;
+        }else{
+            $db = $this->db;
+        }
+
+
+
         $data = $this->getValidStorageValues();
         if (!$preventModificationDateUpdate) {
             $data['modificationDate'] = time();
@@ -54,10 +74,10 @@ class Dao extends AbstractDao
 
         if (!$data['id']) {
             unset($data['id']);
-            $this->db->insert($this->getTableName(), $data);
-            $this->model->setId($this->db->lastInsertId($this->getTableName()));
+            $db->insert($this->getTableName(), $data);
+            $this->model->setId($db->lastInsertId($this->getTableName()));
         } else {
-            $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
+            $result = $db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
         }
 
         return $this->getById($this->model->getId());
