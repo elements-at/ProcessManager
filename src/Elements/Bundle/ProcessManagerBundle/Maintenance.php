@@ -96,12 +96,8 @@ class Maintenance
 
             $recipients = $config['email']['recipients'];
 
-            $recipients = array_shift($recipients);
             if ($recipients) {
                 $mail->addTo($recipients);
-                if (!empty($recipients)) {
-                    $mail->addCc($recipients);
-                }
                 try {
                     $mail->send();
                 } catch (\Exception $e) {
