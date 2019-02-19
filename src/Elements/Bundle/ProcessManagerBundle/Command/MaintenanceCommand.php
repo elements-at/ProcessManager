@@ -59,7 +59,7 @@ class MaintenanceCommand extends AbstractCommand
         $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'), $options);
         $this->doUniqueExecutionCheck(null, ['command' => $this->getCommand($options)]);
 
-        \Pimcore\Tool\Console::checkExecutingUser();
+        \Pimcore\Tool\Console::checkExecutingUser((array)ElementsProcessManagerBundle::getConfig()['general']['additionalScriptExecutionUsers']);
 
         $maintenance = new Maintenance($this->templatingEngine);
         $maintenance->execute();
