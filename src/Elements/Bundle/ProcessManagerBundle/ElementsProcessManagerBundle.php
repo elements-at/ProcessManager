@@ -235,4 +235,15 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 
         return $dir . 'version.txt';
     }
+
+    public function getVersion()
+    {
+        try {
+            $version = file_get_contents(self::getVersionFile());
+        } catch (\Exception $e) {
+            $version = 0;
+        }
+        
+        return (string) $version;
+    }
 }
