@@ -67,7 +67,14 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
 
         this.autoRefreshTask = {
             run: function () {
-                this.store.reload();
+                this.store.reload({
+                    callback: function (records, operation, success) {
+                        // do not retry refreshing in an endless loop when requests are failing
+                        if (!success) {
+                            Ext.TaskManager.stop(this.autoRefreshTask);
+                        }
+                    }.bind(this)
+                });
             }.bind(this),
             interval: (this.refreshInterval * 1000)
         }

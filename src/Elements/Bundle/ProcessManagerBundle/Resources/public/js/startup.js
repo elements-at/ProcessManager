@@ -35,6 +35,13 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                 cls: "pimcore_main_menu",
                 handler: this.showProcessManager.bind(this)
             });
+
+            //ignore process manager process log request exceptions as otherwise annoying errors can pop up in the pimcore backend
+            Ext.Ajax.on({requestexception: function (conn, response, options) {
+                if(response.request.url.startsWith('/admin/elementsprocessmanager/monitoring-item/list') && options.action === "read") {
+                    options.ignoreErrors = true;
+                }
+            }, priority: 1000});
         }
         if(extrasMenu){
             extrasMenu.updateLayout();
