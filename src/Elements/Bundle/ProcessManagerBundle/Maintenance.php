@@ -134,7 +134,7 @@ class Maintenance
             $message .= ' Next execution: ' . date('Y-m-d H:i:s', $nextRunTs);
             $logger->debug($message);
             $diff = $nextRunTs - $currentTs;
-            if ($diff < 0) {
+            if ($diff <= 0) {
                 $params = [];
                 //add default callback settings if defined
                 if ($settings = $config->getExecutorSettings()) {
