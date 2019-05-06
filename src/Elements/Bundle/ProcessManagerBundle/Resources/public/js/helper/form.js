@@ -455,6 +455,11 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         var store = Ext.create("Ext.data.ArrayStore", {
             fields: ["id", "path", "type"]
         });
+        
+        //prefill items based on default value
+        if (config.defaultValue) {
+            store.setData(config.defaultValue);
+        }
 
         var buttons = [
             {
