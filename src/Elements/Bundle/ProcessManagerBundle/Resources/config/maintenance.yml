@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Elements\Bundle\ProcessManagerBundle\Maintenance\MaintenanceTask:
+        tags:
+            - { name: pimcore.maintenance.task, type: process_manager_maintenance }

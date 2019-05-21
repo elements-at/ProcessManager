@@ -17,37 +17,19 @@ namespace Elements\Bundle\ProcessManagerBundle;
 
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Pimcore\Event\SystemEvents;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Templating\EngineInterface;
 
 class SystemEventsListener implements EventSubscriberInterface
 {
-    /**
-     * @var EngineInterface
-     */
-    protected $renderingEngine;
-
-    /**
-     * SystemEventsListener constructor.
-     *
-     * @param EngineInterface $renderingEngine
-     */
-    public function __construct(EngineInterface $renderingEngine)
-    {
-        $this->renderingEngine = $renderingEngine;
-    }
-
     /**
      * @return array
      */
     public static function getSubscribedEvents()
     {
         return [
-            SystemEvents::MAINTENANCE => 'onMaintenance',
             ConsoleEvents::ERROR => 'onConsoleError',
             ConsoleEvents::TERMINATE => 'onConsoleTerminate',
 
@@ -109,23 +91,6 @@ class SystemEventsListener implements EventSubscriberInterface
                 $monitoringItem->setCompleted();
                 $monitoringItem->setPid(null)->save();
             }
-        }
-    }
-
-    public function onMaintenance()
-    {
-        if (!ElementsProcessManagerBundle::isInstalled()) {
-            return;
-        }
-
-        $config = ElementsProcessManagerBundle::getConfig();
-        if ($config['general']['executeWithMaintenance']) {
-            ElementsProcessManagerBundle::initProcessManager(
-                null,
-                ElementsProcessManagerBundle::$maintenanceOptions
-            );
-            $maintenance = new \Elements\Bundle\ProcessManagerBundle\Maintenance($this->renderingEngine);
-            $maintenance->execute();
         }
     }
 }
