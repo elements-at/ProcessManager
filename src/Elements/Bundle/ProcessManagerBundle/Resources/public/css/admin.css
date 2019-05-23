@@ -12,8 +12,12 @@
     background: url(/bundles/pimcoreadmin/img/flat-color-icons/cable_release.svg) center center no-repeat !important;
 }
 
-#plugin_pm_shortcut_menu {
-    background-image: url(/bundles/pimcoreadmin/img/flat-color-icons/cable_release.svg) !important;
+#plugin_pm_shortcut_menu svg path:first-of-type{
+    fill: #37474F;
+}
+
+#plugin_pm_shortcut_menu svg path:last-of-type{
+    fill: #0277BD;
 }
 
 .pm_icon_cli {
