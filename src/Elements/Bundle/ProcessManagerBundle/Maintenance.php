@@ -94,10 +94,14 @@ class Maintenance
 
             $mail->setBodyHtml($html);
 
-            $recipients = $config['email']['recipients'];
+            $recipients = array_filter(explode(';',$config['email']['recipients']));
 
             if ($recipients) {
-                $mail->addTo($recipients);
+
+                foreach($recipients as $emailAdr){
+                    $mail->addTo($emailAdr);
+                }
+                
                 try {
                     $mail->send();
                 } catch (\Exception $e) {
