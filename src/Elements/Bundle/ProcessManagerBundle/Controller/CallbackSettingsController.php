@@ -17,6 +17,7 @@ namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
 use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
+use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -111,7 +112,7 @@ class CallbackSettingsController extends AdminController
         $list->setOrderKey('id');
         $list->setLimit($request->get('limit', 25));
         $list->setOffset($request->get('start'));
-        if ($filterCondition = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'))) {
+        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'))) {
             $list->setCondition($filterCondition);
         }
 

@@ -22,6 +22,7 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Logger\File;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
+use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Pimcore\Controller\Configuration\TemplatePhp;
 use Pimcore\Templating\Model\ViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -54,7 +55,7 @@ class MonitoringItemController extends AdminController
         $list->setOffset($request->get('start'));
 
         $allParams = array_merge($request->request->all(), $request->query->all());
-        $sortingSettings = \Pimcore\Admin\Helper\QueryParams::extractSortingSettings($allParams);
+        $sortingSettings = QueryParams::extractSortingSettings($allParams);
         if ($sortingSettings['orderKey'] && $sortingSettings['order']) {
             $list->setOrderKey($sortingSettings['orderKey']);
             $list->setOrder($sortingSettings['order']);
@@ -68,7 +69,7 @@ class MonitoringItemController extends AdminController
                 return ' executedByUser IN( '.implode(',', $ids).') ';
             },
         ];
-        if ($filterCondition = \Pimcore\Admin\Helper\QueryParams::getFilterCondition(
+        if ($filterCondition = QueryParams::getFilterCondition(
             $request->get('filter'),
             ['id', 'o_id', 'pid'],
             true,
@@ -81,7 +82,7 @@ class MonitoringItemController extends AdminController
         $condition = $list->getCondition();
 
         if (!$request->get('showHidden') || $request->get('showHidden') == 'false') {
-            $filterConditionArray = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'), ['id', 'o_id', 'pid'], false, $callbacks);
+            $filterConditionArray =  QueryParams::getFilterCondition($request->get('filter'), ['id', 'o_id', 'pid'], false, $callbacks);
 
             if ($filterConditionArray && $filterConditionArray['id']) {
             } else {

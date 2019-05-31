@@ -19,6 +19,7 @@ use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
+use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -79,7 +80,7 @@ class ConfigController extends AdminController
 
         $list->setUser($this->getAdminUser());
 
-        if ($filterCondition = \Pimcore\Admin\Helper\QueryParams::getFilterCondition($request->get('filter'))) {
+        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'))) {
             $list->setCondition($filterCondition);
         }
 
