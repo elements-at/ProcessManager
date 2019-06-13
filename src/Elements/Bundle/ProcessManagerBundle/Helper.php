@@ -105,7 +105,11 @@ class Helper
     public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem){
         $loggers = $monitoringItem->getLoggers();
         foreach((array)$loggers as $i => $loggerConfig){
-            $logObj = new $loggerConfig['class'];
+            $loggerClass = $loggerConfig['class'];
+            if (!class_exists($loggerClass)) {
+                continue;
+            }
+            $logObj = new $loggerClass;
             if(method_exists($logObj,'handleShutdown')){
                 $result = $logObj->handleShutdown($monitoringItem,$loggerConfig);
                 if($result){
