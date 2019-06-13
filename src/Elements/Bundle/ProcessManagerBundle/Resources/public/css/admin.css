@@ -12,6 +12,11 @@
     background: url(/bundles/pimcoreadmin/img/flat-color-icons/cable_release.svg) center center no-repeat !important;
 }
 
+.pimcore_version_6 .plugin_pmicon_header:before {
+    width: 24px;
+    height: 24px;
+}
+
 .pm_icon_cli {
     background: url(/bundles/pimcoreadmin/img/flat-color-icons/go.svg) center center no-repeat !important;
 }
