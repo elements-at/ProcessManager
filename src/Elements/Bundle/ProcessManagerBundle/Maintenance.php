@@ -94,7 +94,10 @@ class Maintenance
 
             $mail->setBodyHtml($html);
 
-            $recipients = array_filter(explode(';',$config['email']['recipients']));
+            $recipients = $config['email']['recipients'];
+            if (is_string($recipients) && !empty($recipients)) {
+                $recipients = array_filter(explode(';', $config['email']['recipients']));
+            }
 
             if ($recipients) {
 
