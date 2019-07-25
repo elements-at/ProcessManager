@@ -53,6 +53,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             name: "interval",
             width: 70,
             value: 5,
+            minValue: 0,
             listeners: {
                 change: function (item, value) {
                     Ext.TaskManager.stop(this.autoRefreshTask);
