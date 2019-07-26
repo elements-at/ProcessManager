@@ -53,7 +53,7 @@ class Maintenance
         $list = new MonitoringItem\Listing();
         $list->setCondition('IFNULL(reportedDate,0) = 0 ');
         $items = $list->load();
-        $reportItems = [];
+        $reportItems = $itemsAlive = [];
 
         $config = ElementsProcessManagerBundle::getConfig();
 
@@ -67,9 +67,10 @@ class Maintenance
                     if ($diff > (60 * $minutes)) {
                         $item->getLogger()->error('Process was checked by ProcessManager maintenance. Considered as hanging process - TimeDiff: ' . $diff . ' seconds.');
                         $reportItems[] = $item;
+                        $itemsAlive[] = true;
                     }
                 } else {
-                    Helper::executeMonitoringItemLoggerShutdown($item);
+                    Helper::executeMonitoringItemLoggerShutdown($item, true);
                     if ($item->getStatus() == $item::STATUS_FINISHED) {
                         $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
                         $item->setReportedDate(time())->save(true);
@@ -78,6 +79,7 @@ class Maintenance
                         $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
                         $this->monitoringItem->getLogger()->error('Monitoring item ' . $item->getId() . ' was checked by ProcessManager maintenance and considered as dead process');
                         $reportItems[] = $item;
+                        $itemsAlive[] = false;
                     }
                 }
             }
@@ -118,8 +120,8 @@ class Maintenance
         /**
          * @var $item MonitoringItem
          */
-        foreach ($reportItems as $item) {
-            $item->setReportedDate(time())->save();
+        foreach ($reportItems as $key => $item) {
+            $item->setReportedDate(time())->save($itemsAlive[$key]);
         }
         $this->monitoringItem->setStatus('Processes checked')->save();
     }

@@ -102,8 +102,9 @@ class Helper
      *
      * @return MonitoringItem
      */
-    public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem){
+    public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem, $preventModificationDateUpdate = false){
         $loggers = $monitoringItem->getLoggers();
+
         foreach((array)$loggers as $i => $loggerConfig){
             $loggerClass = $loggerConfig['class'];
             if (!class_exists($loggerClass)) {
@@ -117,7 +118,7 @@ class Helper
                 }
             }
         }
-        $monitoringItem->setLoggers($loggers)->save();
+        $monitoringItem->setLoggers($loggers)->save($preventModificationDateUpdate);
         return $monitoringItem;
     }
 
