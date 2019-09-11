@@ -474,6 +474,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function setCreationDate($creationDate)
     {
         $this->creationDate = $creationDate;
+
+        return $this;
     }
 
     /**
@@ -490,6 +492,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function setModificationDate($modificationDate)
     {
         $this->modificationDate = $modificationDate;
+
+        return $this;
     }
 
     /**
