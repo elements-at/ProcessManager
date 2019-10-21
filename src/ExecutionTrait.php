@@ -38,11 +38,16 @@ trait ExecutionTrait
      */
     protected static function checkExecutingUser($allowedUsers = [])
     {
+        $owner = null;
         $configFile = \Pimcore\Config::locateConfigFile('system.yml');
-        $owner = fileowner($configFile);
+        if (file_exists($configFile)) { //file must exist, otherwise fileowner will fail.
+            $owner = fileowner($configFile);
+        }
         if ($owner == false) {
             $configFile = \Pimcore\Config::locateConfigFile('system.php');
-            $owner = fileowner($configFile);
+            if (file_exists($configFile)) { /file must exist, otherwise fileowner will fail.
+                $owner = fileowner($configFile);
+            }
         }
 
         if ($owner == false) {
