@@ -45,7 +45,7 @@ trait ExecutionTrait
         }
         if ($owner == false) {
             $configFile = \Pimcore\Config::locateConfigFile('system.php');
-            if (file_exists($configFile)) { /file must exist, otherwise fileowner will fail.
+            if (file_exists($configFile)) { //file must exist, otherwise fileowner will fail.
                 $owner = fileowner($configFile);
             }
         }
