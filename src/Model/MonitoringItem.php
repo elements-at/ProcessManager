@@ -32,6 +32,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     const STATUS_FINISHED = 'finished';
 
+    const STATUS_FINISHED_WITH_ERROR = 'finished_with_errors';
+
     const STATUS_FAILED = 'failed';
 
     const STATUS_RUNNING = 'running';
@@ -125,6 +127,26 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      * @var string
      */
     public $metaData = '';
+
+    public $hasCriticalError = false;
+
+    /**
+     * @return bool
+     */
+    public function getHasCriticalError(): bool
+    {
+        return $this->hasCriticalError;
+    }
+
+    /**
+     * @param bool $hasCriticalError
+     * @return $this
+     */
+    public function setHasCriticalError($hasCriticalError)
+    {
+        $this->hasCriticalError = $hasCriticalError;
+        return $this;
+    }
 
     /**
      * @return string
@@ -642,7 +664,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $this->setCurrentStep($this->getTotalSteps());
         //do not change the state if set it to failed - otherwise it would appear to be successfully finished
         if ($this->getStatus() != self::STATUS_FAILED) {
-            $this->setStatus(self::STATUS_FINISHED);
+            $this->setStatus($this->getHasCriticalError() ? self::STATUS_FINISHED_WITH_ERROR : self::STATUS_FINISHED);
         }
         $this->save();
     }
@@ -737,7 +759,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function getLogger()
     {
         if (!$this->logger) {
-            $this->logger = new \Pimcore\Log\ApplicationLogger();
+            $this->logger = new \Elements\Bundle\ProcessManagerBundle\Logger();
             $this->logger->setComponent($this->getName());
             if ($loggerData = $this->getLoggers()) {
                 foreach ($loggerData as $loggerConfig) {
@@ -755,18 +777,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
                     }
                 }
             }
-
-            /*$this->logger = new Logger('process-manager-logger');
-            $this->logger->pushHandler(new StreamHandler($this->getLogFile(), Logger::DEBUG));
-            if(php_sapi_name() === 'cli'){
-                $this->logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
-            }*/
-
-            //   $this->logger->addWriter(new StreamHandler($this->getLogFile(), Logger::DEBUG));
-            //  $this->logger->addWriter(new \Pimcore\Log\Handler\ApplicationLoggerDb());
-            //  if(php_sapi_name() === 'cli'){
-            //      $this->logger->addWriter(new StreamHandler('php://stdout', Logger::DEBUG));
-            //  }
         }
 
         return $this->logger;

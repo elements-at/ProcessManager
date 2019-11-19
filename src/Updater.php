@@ -275,6 +275,14 @@ ENGINE=InnoDB
         \Pimcore\Cache::clearTags(['system', 'resource']);
     }
 
+    public function updateVersion10()
+    {
+        $db = \Pimcore\Db::get();
+        $db->query('ALTER TABLE '.ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM.' ADD `hasCriticalError` TINYINT NOT NULL DEFAULT 0 ');
+        \Pimcore\Cache::clearTags(['system', 'resource']);
+    }
+
+
     protected function copyConfig()
     {
         $configFile = dirname(__FILE__).'/install/plugin-process-manager.php';

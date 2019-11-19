@@ -32,37 +32,6 @@ trait ExecutionTrait
     }
 
     /**
-     * @param array $allowedUsers
-     *
-     * @throws \Exception
-     */
-    protected static function checkExecutingUser($allowedUsers = [])
-    {
-        $owner = null;
-        $configFile = \Pimcore\Config::locateConfigFile('system.yml');
-        if (file_exists($configFile)) { //file must exist, otherwise fileowner will fail.
-            $owner = fileowner($configFile);
-        }
-        if ($owner == false) {
-            $configFile = \Pimcore\Config::locateConfigFile('system.php');
-            if (file_exists($configFile)) { //file must exist, otherwise fileowner will fail.
-                $owner = fileowner($configFile);
-            }
-        }
-
-        if ($owner == false) {
-            throw new \Exception("Couldn't get user from file " . $configFile);
-        }
-        $userData = posix_getpwuid($owner);
-        $allowedUsers[] = $userData['name'];
-        $scriptExecutingUserData = posix_getpwuid(posix_geteuid());
-        $scriptExecutingUser = $scriptExecutingUserData['name'];
-        if (!in_array($scriptExecutingUser, $allowedUsers)) {
-            throw new \Exception("The current system user is not allowed to execute this script. Allowed users: '" . implode(',', $allowedUsers) ."' Executing user: '$scriptExecutingUser'.");
-        }
-    }
-
-    /**
      * @param $monitoringId
      * @param array $options
      *
@@ -213,5 +182,28 @@ trait ExecutionTrait
         $this->commandObject = $commandObject;
 
         return $this;
+    }
+
+    /**
+     * @param array $allowedUsers
+     *
+     * @throws \Exception
+     */
+    public static function checkExecutingUser($allowedUsers = [])
+    {
+        $configFile = \Pimcore\Config::locateConfigFile('system.yml');
+        $owner = fileowner($configFile);
+        if ($owner == false) {
+            throw new \Exception("Couldn't get user from file " . $configFile);
+        }
+        $userData = posix_getpwuid($owner);
+        $allowedUsers[] = $userData['name'];
+
+        $scriptExecutingUserData = posix_getpwuid(posix_geteuid());
+        $scriptExecutingUser = $scriptExecutingUserData['name'];
+
+        if (!in_array($scriptExecutingUser, $allowedUsers)) {
+            throw new \Exception("The current system user is not allowed to execute this script. Allowed users: '" . implode(',', $allowedUsers) ."' Executing user: '$scriptExecutingUser'.");
+        }
     }
 }
