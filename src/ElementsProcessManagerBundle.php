@@ -18,12 +18,13 @@ namespace Elements\Bundle\ProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
-use Pimcore\Extension\Bundle\Installer\InstallerInterface;
+use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
 
 class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 {
     use ExecutionTrait;
+    use PackageVersionTrait;
     use StateHelperTrait;
 
     public static $maintenanceOptions = [
@@ -48,6 +49,8 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     protected static $_config = null;
 
     protected static $monitoringItem;
+
+    const PLUGIN_NAME = 'ProcessManager';
 
     const TABLE_NAME_CONFIGURATION = 'plugin_process_manager_configuration';
     const TABLE_NAME_MONITORING_ITEM = 'plugin_process_manager_monitoring_item';
@@ -220,5 +223,16 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         }
 
         return $path;
-    }   
+    }
+
+    protected function getComposerPackageName()
+    {
+        return 'elements/process-manager-bundle';
+    }
+
+    public function getNiceName()
+    {
+        return self::PLUGIN_NAME;
+    }
+
 }
