@@ -26,8 +26,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     use ExecutionTrait;
     use StateHelperTrait;
 
-    const VERSION = 9;
-
     public static $maintenanceOptions = [
         'autoCreate' => true,
         'name' => 'ProcessManager maintenance',
@@ -50,8 +48,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     protected static $_config = null;
 
     protected static $monitoringItem;
-
-    const PLUGIN_NAME = 'ProcessManager';
 
     const TABLE_NAME_CONFIGURATION = 'plugin_process_manager_configuration';
     const TABLE_NAME_MONITORING_ITEM = 'plugin_process_manager_monitoring_item';
@@ -114,7 +110,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
      */
     public function getInstaller()
     {
-        return new Installer();
+        return $this->container->get(Installer::class);
     }
 
     public static function shutdownHandler($arguments)
@@ -224,26 +220,5 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         }
 
         return $path;
-    }
-
-    public static function getVersionFile()
-    {
-        $dir = self::getPluginWebsitePath();
-        if (!is_dir($dir)) {
-            \Pimcore\File::mkdir($dir);
-        }
-
-        return $dir . 'version.txt';
-    }
-
-    public function getVersion()
-    {
-        try {
-            $version = file_get_contents(self::getVersionFile());
-        } catch (\Exception $e) {
-            $version = 0;
-        }
-        
-        return (string) $version;
-    }
+    }   
 }

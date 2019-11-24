@@ -7,6 +7,11 @@ services:
         autoconfigure: true
         public: false
 
+    Elements\Bundle\ProcessManagerBundle\Installer:
+        public: true
+        arguments:
+            $bundle: "@=service('kernel').getBundle('ElementsProcessManagerBundle')"
+
     # auto-register all commands as services
     Elements\Bundle\ProcessManagerBundle\Command\:
         resource: '../../Command'
