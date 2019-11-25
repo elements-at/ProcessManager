@@ -18,15 +18,14 @@ namespace Elements\Bundle\ProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
-use Pimcore\Extension\Bundle\Installer\InstallerInterface;
+use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
 
 class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 {
     use ExecutionTrait;
+    use PackageVersionTrait;
     use StateHelperTrait;
-
-    const VERSION = 9;
 
     public static $maintenanceOptions = [
         'autoCreate' => true,
@@ -114,7 +113,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
      */
     public function getInstaller()
     {
-        return new Installer();
+        return $this->container->get(Installer::class);
     }
 
     public static function shutdownHandler($arguments)
@@ -226,24 +225,14 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return $path;
     }
 
-    public static function getVersionFile()
+    protected function getComposerPackageName()
     {
-        $dir = self::getPluginWebsitePath();
-        if (!is_dir($dir)) {
-            \Pimcore\File::mkdir($dir);
-        }
-
-        return $dir . 'version.txt';
+        return 'elements/process-manager-bundle';
     }
 
-    public function getVersion()
+    public function getNiceName()
     {
-        try {
-            $version = file_get_contents(self::getVersionFile());
-        } catch (\Exception $e) {
-            $version = 0;
-        }
-        
-        return (string) $version;
+        return self::PLUGIN_NAME;
     }
+
 }
