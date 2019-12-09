@@ -164,7 +164,7 @@ class Maintenance
                     $logger->debug('Execution job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff.' Command: '. $result['executedCommand']);
                     $config->setLastCronJobExecution(time())->save();
                 } else {
-                    $logger->emergency("Can't start the Cronjob. Data: " . print_r($result, true));
+                    $logger->info("Can't start the Cronjob. Data: " . print_r($result, true));
                 }
             } else {
                 $logger->debug('Skipping job: ' . $config->getName().' ID: ' . $config->getId().' Diff:' . $diff);
