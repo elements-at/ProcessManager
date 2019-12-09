@@ -23,8 +23,12 @@ class Logger extends \Pimcore\Log\ApplicationLogger
 
     public function log($level, $message, array $context = []){
         parent::log($level, $message, $context);
-        if(in_array($level,['critical','error','emergency'])){
-            \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getMonitoringItem()->setHasCriticalError(true)->save();
+        $monitoringItem = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getMonitoringItem();
+
+        if($check = $monitoringItem->getCriticalErrorLevel()){
+            if(in_array($level,$check)){
+                $monitoringItem->setHasCriticalError(true)->save();
+            }
         }
     }
 }

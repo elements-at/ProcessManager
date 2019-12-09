@@ -131,6 +131,32 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public $hasCriticalError = false;
 
     /**
+     * Error Level which sould be considered as critical
+     * ['critical','error','emergency']...
+     *
+     * @var array
+     */
+    public $criticalErrorLevel = [];
+
+    /**
+     * @return array
+     */
+    public function getCriticalErrorLevel(): array
+    {
+        return $this->criticalErrorLevel;
+    }
+
+    /**
+     * @param array $criticalErrorLevel
+     * @return $this
+     */
+    public function setCriticalErrorLevel($criticalErrorLevel)
+    {
+        $this->criticalErrorLevel = $criticalErrorLevel;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function getHasCriticalError(): bool
