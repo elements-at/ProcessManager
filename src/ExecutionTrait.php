@@ -193,7 +193,7 @@ trait ExecutionTrait
     {
         $configFile = \Pimcore\Config::locateConfigFile('system.yml');
         $owner = fileowner($configFile);
-        if ($owner == false) {
+        if ($owner === false) {
             throw new \Exception("Couldn't get user from file " . $configFile);
         }
         $userData = posix_getpwuid($owner);
