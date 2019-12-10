@@ -27,7 +27,7 @@ class Version00000004 extends AbstractPimcoreMigration
             $this->addSql("ALTER TABLE " . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM. " ADD COLUMN `loggers` TEXT;");
         }
 
-        if (!$monitoringTable->hasColumn('processManagerConfig')) {
+        if ($monitoringTable->hasColumn('processManagerConfig')) {
             $this->addSql("ALTER TABLE " . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . " DROP COLUMN `processManagerConfig`;");
         }
 
