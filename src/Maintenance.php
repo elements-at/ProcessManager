@@ -181,7 +181,7 @@ class Maintenance
 
         $treshold = ElementsProcessManagerBundle::getConfig()['general']['archive_treshold_logs'];
         if ($treshold) {
-            $timestamp = Carbon::createFromTimestamp(time())->subDay(1)->getTimestamp();
+            $timestamp = Carbon::createFromTimestamp(time())->subDay($treshold)->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
             $items = $list->load();
