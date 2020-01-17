@@ -700,7 +700,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public function getCallbackSettings()
     {
-        return $this->callbackSettings;
+        return is_string($this->callbackSettings) ? json_decode($this->callbackSettings, true) : $this->callbackSettings;
     }
 
     public function getCallbackSettingsForGrid()
