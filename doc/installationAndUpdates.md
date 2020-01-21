@@ -24,7 +24,7 @@ Just add the following command to your crontab (and set "executeWithMaintenance"
 To update the bundle please use the following command:
 
 ```
-composer update elements/process-manager-bundle; bin/console process-manager:update
+composer update elements/process-manager-bundle; bin/console pimcore:bundle:update ElementsProcessManagerBundle
 ```
 
 # Running with Pimcore < 5.4
