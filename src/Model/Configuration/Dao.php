@@ -51,6 +51,9 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
     public function save()
     {
         $data = $this->getValidStorageValues();
+        if($data['keepVersions'] === ''){
+            $data['keepVersions'] = null;
+        }
         if (!$data['id']) {
             unset($data['id']);
             $this->db->insert($this->getTableName(), $data);
