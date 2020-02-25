@@ -48,7 +48,7 @@ class ExportToolkit extends AbstractExecutor
      */
     public function getCommand($callbackSettings = [], $monitoringItem = null)
     {
-        $command = \Pimcore\Tool\Console::getPhpCli() . ' ' . PIMCORE_PROJECT_ROOT . '/pimcore/cli/console.php export-toolkit:export --config-name=' . $this->getValues()['configName'];
+        $command = \Pimcore\Tool\Console::getPhpCli() . ' ' . PIMCORE_PROJECT_ROOT . '/bin/console export-toolkit:export --config-name=' . $this->getValues()['configName'];
 
         return $command;
     }
