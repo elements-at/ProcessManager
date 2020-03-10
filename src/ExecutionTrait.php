@@ -43,6 +43,10 @@ trait ExecutionTrait
             if ($monitoringId) {
                 $monitoringItem = MonitoringItem::getById($monitoringId);
                 ElementsProcessManagerBundle::setMonitoringItem($monitoringItem);
+            }elseif(getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR)){ //check for env passed
+                $monitoringId = getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR);
+                $monitoringItem = MonitoringItem::getById($monitoringId);
+                ElementsProcessManagerBundle::setMonitoringItem($monitoringItem);
             }
 
             if ($options['autoCreate'] && !$monitoringItem) {
