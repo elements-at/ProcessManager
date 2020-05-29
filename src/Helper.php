@@ -20,7 +20,7 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 class Helper
 {
-    public static function executeJob($configId, $callbackSettings = [], $userId = 0)
+    public static function executeJob($configId, $callbackSettings = [], $userId = 0, $metaData = [], $parentMonitoringItemId = null, $callback = '')
     {
         try {
             $config = Configuration::getById($configId);
@@ -42,6 +42,8 @@ class Helper
             $monitoringItem->setExecutedByUser($userId);
             $monitoringItem->setActions($executor->getActions());
             $monitoringItem->setLoggers($executor->getLoggers());
+            $monitoringItem->setMetaData($metaData);
+            $monitoringItem->setParentId($parentMonitoringItemId);
 
             if ($executorSettings = $config->getExecutorSettings()) {
                 $executorData = json_decode($config->getExecutorSettings(), true);
@@ -54,6 +56,9 @@ class Helper
                 }
             }
 
+            if($callback){
+                $callback($monitoringItem);
+            }
             $item = $monitoringItem->save();
 
             $command = $executor->getCommand($callbackSettings, $monitoringItem);

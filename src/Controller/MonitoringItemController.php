@@ -389,8 +389,7 @@ class MonitoringItemController extends AdminController
             if ($pid) {
                 $message = 'Process with PID "'.$pid.'" killed by Backend User: '.$this->getUser()->getUser()->getName();
                 $monitoringItem->getLogger()->warning($message);
-                $monitoringItem->setPid(null)->setStatus($monitoringItem::STATUS_FAILED)->save();
-                \Pimcore\Tool\Console::exec('kill -9 '.$pid);
+                return $this->adminJson(['success' => $monitoringItem->stopProcess()]);
             }
 
             return $this->adminJson(['success' => true]);
@@ -412,9 +411,9 @@ class MonitoringItemController extends AdminController
             $monitoringItem = MonitoringItem::getById($request->get('id'));
             $monitoringItem->deleteLogFile()->resetState()->save();
             putenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR . '=' . $monitoringItem->getId());
-            \Pimcore\Tool\Console::execInBackground($monitoringItem->getCommand(), $monitoringItem->getLogFile());
-
-            return $this->adminJson(['success' => true]);
+            $pid = \Pimcore\Tool\Console::execInBackground($monitoringItem->getCommand(), $monitoringItem->getLogFile());
+            $monitoringItem->setPid($pid)->save();
+            return $this->adminJson(['success' => true,'PID' => $pid]);
         } catch (\Exception $e) {
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }

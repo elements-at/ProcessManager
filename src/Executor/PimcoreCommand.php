@@ -48,6 +48,10 @@ class PimcoreCommand extends AbstractExecutor
             if($commandObject->getDefinition()->hasOption('monitoring-item-id')){
                 $command .= ' --monitoring-item-id='.$monitoringItem->getId();
             }
+
+            if($monitoringItem->getParentId()){
+                $command .= ' --monitoring-item-parent-id='.$monitoringItem->getParentId();
+            }
         }
         return $command;
     }

@@ -19,6 +19,7 @@ use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use function Symfony\Component\Debug\Tests\testHeader;
 
 /**
  * Class MonitoringItem
@@ -44,6 +45,11 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      * @var int
      */
     public $id;
+
+    /**
+     * @var int
+     */
+    public $parentId;
 
     public $name;
 
@@ -163,6 +169,26 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         return $this->hasCriticalError;
     }
+
+    /**
+     * @return int
+     */
+    public function getParentId()
+    {
+        return $this->parentId;
+    }
+
+    /**
+     * @param int $parentId
+     * @return $this
+     */
+    public function setParentId($parentId)
+    {
+        $this->parentId = $parentId;
+        return $this;
+    }
+
+
 
     /**
      * @param bool $hasCriticalError
@@ -504,7 +530,17 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function isAlive()
     {
         if ($pid = $this->getPid()) {
-            return file_exists('/proc/'.$pid);
+            $checks = 0;
+            while(self::getById($this->getId()) == self::STATUS_INITIALIZING){ //check for state because shortly after the background execution the process is alive...
+                usleep(500000);
+                $checks++;
+                if($checks > 10){
+                    break; //just to make sure we do not end in a endlessloop
+                }
+            }
+            return posix_getpgid($pid) ? true: false ;
+        }else{
+            return false;
         }
     }
 
@@ -875,5 +911,44 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         }
 
         return null;
+    }
+
+
+    public function stopProcess(){
+        $pid = $this->getPid();
+        if($pid){
+            $this->setPid(null)->setStatus(self::STATUS_FAILED)->save();
+            $res = \Pimcore\Tool\Console::exec('kill -9 '.$pid);
+            return !$this->isAlive();
+        }
+    }
+
+    public function getChildProcesses(){
+        $list = new MonitoringItem\Listing();
+        $list->setCondition('parentId = ?',[$this->getId()]);
+        $list->setOrder('id');
+        return $list->load();
+    }
+
+    public function getChildProcessesStatus(){
+        $result = ['active' => 0, 'failed' => 0,'finished' => 0];
+
+        $satus = [];
+
+        foreach($this->getChildProcesses() as $child){
+            $status[$child->getStatus()][] = ['id' => $child->getId(),'message' => $child->getMessage(),'alive' => $child->isAlive()];
+
+            if($child->getStatus() == self::STATUS_FINISHED){
+                $result['finished']++;
+            }else{
+                if($child->isAlive()){
+                    $result['active']++;
+                }else{
+                    $result['failed']++;
+                }
+            }
+        }
+
+        return ['summary' => $result,'details' => $status];
     }
 }

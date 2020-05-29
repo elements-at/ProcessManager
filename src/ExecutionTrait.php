@@ -210,4 +210,38 @@ trait ExecutionTrait
             throw new \Exception("The current system user is not allowed to execute this script. Allowed users: '" . implode(',', $allowedUsers) ."' Executing user: '$scriptExecutingUser'.");
         }
     }
+
+    /**
+     * @param MonitoringItem $monitoringItem
+     * @param int $numberOfchildProcesses number of child processes to run in parallel
+     * @param array $workload workload to process
+     * @param int $batchSize items to process per child process
+     * @param null $callback callback to modifiy the monitoring item before start (e.g. alter actions,loggers...)
+     * @throws \Exception
+     */
+    protected function executeChildProcesses(MonitoringItem $monitoringItem,array $workload, $numberOfchildProcesses = 5, $batchSize = 10, $callback = null){
+        $workload = array_chunk($workload,$batchSize); //entries per process
+        $childProcesses = $monitoringItem->getChildProcesses();
+        foreach($childProcesses as $c){
+            $c->delete();
+        }
+        $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Starting child processes')->save();
+
+        foreach($workload as $i => $package){
+
+            $monitoringItem->setCurrentWorkload($i+1)->setMessage('Processing package '. ($i+1))->save();
+
+            $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0,$package,$monitoringItem->getId(),$callback);
+
+            while ($monitoringItem->getChildProcessesStatus()['summary']['active'] >= $numberOfchildProcesses){ //run x processes parrallel
+                $monitoringItem->getLogger()->info('Waiting -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
+                sleep(1);
+            }
+
+            if($monitoringItem->getChildProcessesStatus()['failed']){
+                throw new \Exception('Childs failed');
+            }
+
+        }
+    }
 }
