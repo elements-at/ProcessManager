@@ -140,6 +140,14 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
 
         items.push({
             xtype: "numberfield",
+            fieldLabel: "Parent ID",
+            name: "parentId",
+            readOnly: true,
+            value: this.data.parentId
+        });
+
+        items.push({
+            xtype: "numberfield",
             fieldLabel: "CID",
             name: "cid",
             readOnly: true,

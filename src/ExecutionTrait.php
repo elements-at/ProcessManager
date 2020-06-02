@@ -23,6 +23,8 @@ trait ExecutionTrait
 {
     protected $commandObject;
 
+    protected $childProcessCheckInterval = 500000; //microseconds
+
     protected static function getCommand($options)
     {
         global $argv;
@@ -234,14 +236,50 @@ trait ExecutionTrait
             $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0,$package,$monitoringItem->getId(),$callback);
 
             while ($monitoringItem->getChildProcessesStatus()['summary']['active'] >= $numberOfchildProcesses){ //run x processes parrallel
-                $monitoringItem->getLogger()->info('Waiting -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
-                sleep(1);
+                $monitoringItem->getLogger()->info('Waiting to start child processes -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
+                $this->childProcessCheck($monitoringItem);
+                usleep($this->childProcessCheckInterval);
             }
 
             if($monitoringItem->getChildProcessesStatus()['failed']){
                 throw new \Exception('Childs failed');
             }
-
         }
+
+        while($monitoringItem->getChildProcessesStatus()['summary']['active']){
+            $monitoringItem->getLogger()->info('Waiting for child processes to be finished -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
+            $this->childProcessCheck($monitoringItem);
+            usleep($this->childProcessCheckInterval);
+        }
+    }
+
+    protected function childProcessCheck(MonitoringItem $monitoringItem){
+        $statuses = $monitoringItem->getChildProcessesStatus();
+        if($statuses['summary']['failed']){
+            foreach([MonitoringItem::STATUS_RUNNING,MonitoringItem::STATUS_INITIALIZING,MonitoringItem::STATUS_UNKNOWN] as $status){
+                $items = $statuses['details'][$status];
+                foreach((array)$items as $entry){
+                    $mItem = MonitoringItem::getById($entry['id']);
+
+                    //little hack to remove console loggers if they are defined in the child processes
+                    $loggers = $mItem->getLoggers();
+                    foreach($loggers as $i => $e){
+                        if($e['class'] == '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console'){
+                            unset($loggers[$i]);
+                        }
+                    }
+                    $mItem->setLoggers($loggers);
+
+
+                    if($mItem){
+                        $mItem->stopProcess();
+                        $mItem->setMessage('Killed by MonitoringItem ID '. $monitoringItem->getId(). ' because child process failed')->save();
+                    }
+                }
+            }
+
+            throw new \Exception('Exiting because child failed: ' .print_r($statuses['details'][MonitoringItem::STATUS_FAILED],true));
+        }
+
     }
 }

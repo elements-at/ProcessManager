@@ -67,7 +67,7 @@ class MonitoringItemController extends AdminController
                 $ids = $db->fetchCol('SELECT id FROM users where name LIKE '.$db->quote('%'.$f->value.'%')) ?: [0];
 
                 return ' executedByUser IN( '.implode(',', $ids).') ';
-            },
+            }
         ];
         if ($filterCondition = QueryParams::getFilterCondition(
             $request->get('filter'),
@@ -80,6 +80,13 @@ class MonitoringItemController extends AdminController
         }
 
         $condition = $list->getCondition();
+        if($filters = $request->get('filter')){
+            foreach(json_decode($filters,true) as $e){
+                if($e['property'] == 'id'){
+                    $condition .= ' OR `parentId` = ' . (int)$e['value'].' ';
+                }
+            }
+        }
 
         if (!$request->get('showHidden') || $request->get('showHidden') == 'false') {
             $filterConditionArray =  QueryParams::getFilterCondition($request->get('filter'), ['id', 'o_id', 'pid'], false, $callbacks);
@@ -92,8 +99,8 @@ class MonitoringItemController extends AdminController
                     $condition .= ' published=1';
                 }
             }
-            $list->setCondition($condition);
         }
+        $list->setCondition($condition);
 
         $total = $list->getTotalCount();
 

@@ -130,10 +130,19 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
 
         var gridColumns = [];
 
-        gridColumns.push({header: "ID", width: 70, sortable: true, dataIndex: 'id', filter: 'numeric'});
+        gridColumns.push({header: "ID", width: 70, sortable: true, dataIndex: 'id', filter: 'numeric',
+            renderer: function (v,meta, record) {
+                var data = record.getData();
+                if(data.parentId){
+                    v += '/' + data.parentId;
+                }
+                return v;
+            }
+        });
+        gridColumns.push({header: "Parent ID", width: 70, sortable: true, dataIndex: 'parentId', filter: 'numeric',hidden: true});
 
         gridColumns.push({
-            header: "CID",
+            header: "Configuration ID",
             width: 40,
             hidden: true,
             sortable: true,
@@ -254,6 +263,22 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             sortable: false,
             width: 50
         });
+        gridColumns.push({
+            header: t("plugin_pm_details"),
+            xtype: 'actioncolumn',
+            width: 50,
+            sortable: false,
+            items: [
+                {
+                    icon   : '/bundles/pimcoreadmin/img/flat-color-icons/about.svg',                // Use a URL in the icon config
+                    tooltip: 'Details',
+                    handler: function(grid, rowIndex, colIndex,item,e) {
+                        var rec = grid.store.getAt(rowIndex);
+                        new pimcore.plugin.processmanager.window.detailwindow(rec.getData());
+                    }
+                }
+            ]
+        });
 
         gridColumns.push({
             header: t("plugin_pm_retry"),
@@ -261,9 +286,9 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             sortable: false,
             renderer: function (v, x, record) {
                 if (record.get('retry')) {
-                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" /></a>';
+                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" title="Restart" /></a>';
                 } else {
-                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg" height="18" /></a>';
+                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg" height="18" title="Stop"/></a>';
                 }
                 return '';
             }
