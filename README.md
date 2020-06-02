@@ -20,7 +20,7 @@ are available (custom settings which the user can define for runtime execution) 
 * [Installation & updates](./doc/installationAndUpdates.md)
 * [Configuration](./doc/configuration.md)
 * [How to use](./doc/usage.md)
-* [How to use - Parallization](./doc/usageParallelization.md)
+* [How to use - Parallelization](./doc/usageParallelization.md)
 * [Migration from Pimcore 4 to Pimcore 5](./doc/migration.md)
 
 ***First impressions:***
