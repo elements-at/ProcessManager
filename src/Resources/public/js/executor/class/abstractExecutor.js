@@ -213,7 +213,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
             xtype: "displayfield",
             hideLabel: true,
             width: 300,
-            value: '<a href="http://cron.nmonitoring.com/cron-generator.html" target="_blank">' + t("plugin_pm_cronjob_expression_generator") + ' </a>',
+            value: '<a href="https://crontab.guru" target="_blank">' + t("plugin_pm_cronjob_expression_generator") + ' </a>',
             cls: "process-manager-link"
         };
     },
