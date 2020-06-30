@@ -95,6 +95,11 @@ class Dao extends AbstractDao
                     $class->preMonitoringItemDeletion($this->model, $action);
                 }
             }
+
+            if($this->model->isAlive()){
+                $this->model->stopProcess();
+            }
+
             $this->db->query('DELETE FROM '.$this->getTableName().' where id='.$this->model->getId());
             if ($logFile = $this->model->getLogFile()) {
                 @unlink($logFile);
