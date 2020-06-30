@@ -339,6 +339,9 @@ class MonitoringItemController extends AdminController
     {
         $entry = MonitoringItem::getById($request->get('id'));
         if ($entry) {
+            if($entry->isAlive()){
+                $entry->stopProcess();
+            }
             $entry->delete();
 
             return $this->adminJson(['success' => true]);
