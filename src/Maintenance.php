@@ -101,12 +101,14 @@ class Maintenance
                 $recipients = array_filter(explode(';', $config['email']['recipients']));
             }
 
+            $recipients = array_filter($recipients);
+
             if ($recipients) {
 
                 foreach($recipients as $emailAdr){
                     $mail->addTo($emailAdr);
                 }
-                
+
                 try {
                     $mail->send();
                 } catch (\Exception $e) {

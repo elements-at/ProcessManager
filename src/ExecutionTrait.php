@@ -99,7 +99,7 @@ trait ExecutionTrait
                         }
                     }
                     $values = $config ? $config->getExecutorClassObject()->getValues() : $options;
-                    if ($values['uniqueExecution']) {
+                    if ($values['uniqueExecution'] && !$monitoringItem->getParentId()) { //dont check if it is a child process
                         self::doUniqueExecutionCheck($config, $options);
                     }
                 }
@@ -234,6 +234,10 @@ trait ExecutionTrait
             $monitoringItem->setCurrentWorkload($i+1)->setMessage('Processing package '. ($i+1))->save();
 
             $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0,$package,$monitoringItem->getId(),$callback);
+
+            if($result['success'] == false){
+                throw new \Exception("Can't start child  - reason: " . $result['message']);
+            }
 
             while ($monitoringItem->getChildProcessesStatus()['summary']['active'] >= $numberOfchildProcesses){ //run x processes parrallel
                 $monitoringItem->getLogger()->info('Waiting to start child processes -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));

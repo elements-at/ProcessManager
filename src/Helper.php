@@ -26,7 +26,7 @@ class Helper
             $config = Configuration::getById($configId);
 
             $executor = $config->getExecutorClassObject();
-            if ($executor->getValues()['uniqueExecution']) {
+            if ($executor->getValues()['uniqueExecution']  && is_null($parentMonitoringItemId)) {
                 $running = $config->getRunningProcesses();
                 if (!empty($running)) {
                     $msg = "Can't start the process because " . count($running) . ' process is running (ID: ' . $running[0]->getId() . '). Please wait until this processes is finished.';
