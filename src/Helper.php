@@ -57,7 +57,7 @@ class Helper
             }
 
             if($callback){
-                $callback($monitoringItem);
+                $callback($monitoringItem,$executor);
             }
             $item = $monitoringItem->save();
 
