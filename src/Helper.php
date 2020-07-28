@@ -25,6 +25,11 @@ class Helper
         try {
             $config = Configuration::getById($configId);
 
+            if(!$config){
+                $config = new Configuration();
+                $config->setExecutorClass(Executor\PimcoreCommand::class);
+            }
+
             $executor = $config->getExecutorClassObject();
             if ($executor->getValues()['uniqueExecution']  && is_null($parentMonitoringItemId)) {
                 $running = $config->getRunningProcesses();
