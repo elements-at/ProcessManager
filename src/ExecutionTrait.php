@@ -106,7 +106,7 @@ trait ExecutionTrait
 
                 $options['monitoringItem'] = $monitoringItem;
 
-                if (!PIMCORE_CONSOLE) {
+                if (!defined('PIMCORE_CONSOLE') || !PIMCORE_CONSOLE) {
                     register_shutdown_function(function ($arguments) {
                         ElementsProcessManagerBundle::shutdownHandler($arguments);
                     }, $options);
