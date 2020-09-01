@@ -455,7 +455,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         var store = Ext.create("Ext.data.ArrayStore", {
             fields: ["id", "path", "type"]
         });
-        
+
         //prefill items based on default value
         if (config.defaultValue) {
             store.setData(config.defaultValue);
@@ -566,9 +566,46 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             });
         }.bind(this));
 
+        this['formElement' + fieldName].on("render", function (el) {
+            var targetField = this['formElement' + fieldName];
+        }.bind(this));
+
+
+        this['formElement' + fieldName].on("rowcontextmenu", function(grid, record, tr, rowIndex, e, eOpts){
+            var menu = new Ext.menu.Menu();
+            var data = record;
+
+            var reference = this['formElement' + fieldName];
+            menu.add(new Ext.menu.Item({
+                text: t('remove'),
+                iconCls: "pimcore_icon_delete",
+                handler: function(rowIndex,b,c){
+                    reference.store.removeAt(rowIndex);
+                }.bind(this, rowIndex)
+            }));
+
+            menu.add(new Ext.menu.Item({
+                text: t('open'),
+                iconCls: "pimcore_icon_open",
+                handler: function (data, item) {
+
+                    item.parentMenu.destroy();
+
+                    var subtype = data.data.subtype;
+                    if (data.data.type == "object" && data.data.subtype != "folder") {
+                        subtype = "object";
+                    }
+                    pimcore.helpers.openElement(data.data.id, data.data.type, subtype);
+                }.bind(this, data)
+            }));
+            e.stopEvent();
+            menu.showAt(e.getXY());
+        }.bind(this));
 
         return this['formElement' + fieldName];
     },
+
+
 
     getPropertySelector : function (fieldName,config) {
         config = defaultValue(config,{});
