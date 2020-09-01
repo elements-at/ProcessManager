@@ -24,6 +24,8 @@ use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\GridConfig;
 
 /**
  * @Route("/admin/elementsprocessmanager/index")
@@ -176,5 +178,53 @@ class IndexController extends AdminController
         }
 
         return $this->adminJson(['success' => true, 'data' => $result]);
+    }
+
+    /**
+     * @Route("/get-classes")
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *
+     * @throws \Exception
+     *
+     */
+    public function getClassesAction(Request $request): JsonResponse
+    {
+        $result = [];
+
+        $list = new ClassDefinition\Listing();
+        $list->setOrderKey('name')->setOrder('ASC');
+        foreach ($list as $c) {
+            $result[] = ['id' => $c->getId(), 'name' => $c->getName()];
+        }
+
+        return new JsonResponse(['data' => $result]);
+    }
+
+    /**
+     * @Route("/get-grid-configs")
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *
+     * @throws \Exception
+     *
+     */
+    public function getGridConfigsAction(Request $request ): JsonResponse
+    {
+        $result = [];
+
+        $list = new GridConfig\Listing();
+        $list->setOrderKey('name');
+        $list->setCondition('ownerId = ? OR shareGlobally =1',[$this->getAdminUser()->getId()]);
+        $config = $list->load();
+        foreach ($list as $c) {
+            $result[] = ['id' => $c->getId(), 'name' => $c->getName()];
+        }
+
+        return new JsonResponse(['data' => $result]);
     }
 }
