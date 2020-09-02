@@ -18,12 +18,13 @@ namespace Elements\Bundle\ProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Monolog\Logger;
+use phpDocumentor\Reflection\Types\Static_;
 
 trait ExecutionTrait
 {
     protected $commandObject;
 
-    protected $childProcessCheckInterval = 500000; //microseconds
+    protected static $childProcessCheckInterval = 500000; //microseconds
 
     protected static function getCommand($options)
     {
@@ -221,7 +222,7 @@ trait ExecutionTrait
      * @param null $callback callback to modifiy the monitoring item before start (e.g. alter actions,loggers...)
      * @throws \Exception
      */
-    protected function executeChildProcesses(MonitoringItem $monitoringItem,array $workload, $numberOfchildProcesses = 5, $batchSize = 10, $callback = null){
+    public static function executeChildProcesses(MonitoringItem $monitoringItem,array $workload, $numberOfchildProcesses = 5, $batchSize = 10, $callback = null){
         $workload = array_chunk($workload,$batchSize); //entries per process
         $childProcesses = $monitoringItem->getChildProcesses();
         foreach($childProcesses as $c){
@@ -241,8 +242,8 @@ trait ExecutionTrait
 
             while ($monitoringItem->getChildProcessesStatus()['summary']['active'] >= $numberOfchildProcesses){ //run x processes parrallel
                 $monitoringItem->getLogger()->info('Waiting to start child processes -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
-                $this->childProcessCheck($monitoringItem);
-                usleep($this->childProcessCheckInterval);
+                static::childProcessCheck($monitoringItem);
+                usleep(static::$childProcessCheckInterval);
             }
 
             if($monitoringItem->getChildProcessesStatus()['failed']){
@@ -252,12 +253,12 @@ trait ExecutionTrait
 
         while($monitoringItem->getChildProcessesStatus()['summary']['active']){
             $monitoringItem->getLogger()->info('Waiting for child processes to be finished -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
-            $this->childProcessCheck($monitoringItem);
-            usleep($this->childProcessCheckInterval);
+            static::childProcessCheck($monitoringItem);
+            usleep(static::$childProcessCheckInterval);
         }
     }
 
-    protected function childProcessCheck(MonitoringItem $monitoringItem){
+    protected static function childProcessCheck(MonitoringItem $monitoringItem){
         $statuses = $monitoringItem->getChildProcessesStatus();
         if($statuses['summary']['failed']){
             foreach([MonitoringItem::STATUS_RUNNING,MonitoringItem::STATUS_INITIALIZING,MonitoringItem::STATUS_UNKNOWN] as $status){
@@ -266,18 +267,18 @@ trait ExecutionTrait
                     $mItem = MonitoringItem::getById($entry['id']);
 
                     //little hack to remove console loggers if they are defined in the child processes
-                    $loggers = $mItem->getLoggers();
+                    /*$loggers = $mItem->getLoggers();
                     foreach($loggers as $i => $e){
                         if($e['class'] == '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console'){
                             unset($loggers[$i]);
                         }
                     }
-                    $mItem->setLoggers($loggers);
+                    $mItem->setLoggers($loggers);*/
 
 
                     if($mItem){
                         $mItem->stopProcess();
-                        $mItem->setMessage('Killed by MonitoringItem ID '. $monitoringItem->getId(). ' because child process failed')->save();
+                        $mItem->setMessage('Killed by MonitoringItem ID '. $monitoringItem->getId(). ' because child process failed',false)->save();
                     }
                 }
             }
