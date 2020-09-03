@@ -428,4 +428,23 @@ class MonitoringItemController extends AdminController
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    /**
+     * @Route("/get-by-id")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getByIdAction(Request $request){
+        $data = [];
+
+        $item = MonitoringItem::getById($request->get('id'));
+        $data = $item->getObjectVars();
+        $data['callbackSettings'] = json_decode($data['callbackSettings']);
+        $data['executorSettings']['values'] = [];
+        return $this->adminJson($data);
+
+    }
+
 }

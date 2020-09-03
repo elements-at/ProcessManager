@@ -268,6 +268,11 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                     });
                     this.predefinedConfig.setValue(preDefinedConfigId);
                 }
+
+                //from log grid
+                if(this.config.monitoringItemData){
+                    this.applyCallbackSettings(this.config.monitoringItemData.callbackSettings);
+                }
             }
 
         } else {

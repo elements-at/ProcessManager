@@ -214,7 +214,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             dataIndex: 'executedByUser',
             filter: 'string'
         });
-        gridColumns.push({header: t("group"), width: 100, sortable: false, dataIndex: 'group', filter: 'string'});
+        gridColumns.push({header: t("group"), width: 100, sortable: false, dataIndex: 'group', filter: 'string',hidden: true});
         gridColumns.push({header: t("status"), width: 100, sortable: true, dataIndex: 'status', filter: 'string'});
         gridColumns.push({header: t("steps"), width: 50, sortable: false, dataIndex: 'steps'});
         gridColumns.push({header: t("plugin_pm_monitor_duration"), width: 100, dataIndex: 'duration'});
@@ -279,20 +279,26 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                 }
             ]
         });
-
-        gridColumns.push({
-            header: t("plugin_pm_retry"),
-            width: 50,
-            sortable: false,
-            renderer: function (v, x, record) {
-                if (record.get('retry')) {
-                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" title="Restart" /></a>';
-                } else {
-                    return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg" height="18" title="Stop"/></a>';
+        if (pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_execute")) {
+            gridColumns.push({
+                header: t("plugin_pm_retry"),
+                width: 65,
+                sortable: false,
+                renderer: function (v, x, record) {
+                    if (record.get('retry')) {
+                        let data =  '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" title="Restart" /></a>';
+                        if(record.get('callbackSettingsString') != '[]'){
+                            data +=  '<a href="#" onClick="processmanagerPlugin.monitoringReopenCallback(' + record.get('configurationId') +',' + record.get('id')+ ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/go.svg" height="18" title="Reopen" /></a>';
+                        }
+                        return data;
+                    } else {
+                        return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg" height="18" title="Stop"/></a>';
+                    }
+                    return '';
                 }
-                return '';
-            }
-        });
+            });
+        }
+
 
         if (pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_execute")) {
             gridColumns.push({

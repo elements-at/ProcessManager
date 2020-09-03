@@ -155,6 +155,17 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
             }.bind(this)
         });
     },
+
+
+    monitoringReopenCallback : function(configurationId,monitoringItemId){
+        Ext.Ajax.request({
+            url: '/admin/elementsprocessmanager/monitoring-item/get-by-id?id=' + monitoringItemId,
+            success: function(response, opts) {
+                processmanagerPlugin.executeJob(configurationId,Ext.decode(response.responseText));
+            }.bind(this)
+        });
+    },
+
     monitoringItemCancel : function (id) {
         Ext.Ajax.request({
             url: '/admin/elementsprocessmanager/monitoring-item/cancel?id=' + id,
@@ -175,7 +186,7 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
         pimcore.helpers.download(url);
     },
 
-    executeJob: function (id) {
+    executeJob: function (id,monitoringItemData) {
         Ext.Ajax.request({
             url: '/admin/elementsprocessmanager/config/get-by-id?id=' + id,
             success: function (response) {
@@ -188,6 +199,11 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                     } else {
                         callbackClass = new pimcore.plugin.processmanager.executor.callback.default();
                     }
+
+                    if(monitoringItemData){
+                        configData.monitoringItemData = monitoringItemData;
+                    }
+
                     callbackClass.reset();
                     callbackClass.setConfig(configData);
                     callbackClass.execute();
