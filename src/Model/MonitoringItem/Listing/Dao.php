@@ -63,7 +63,10 @@ class Dao extends Model\Listing\Dao\AbstractDao
 
         $items = [];
         foreach ($ids as $id) {
-            $items[] = MonitoringItem::getById($id);
+            $item = MonitoringItem::getById($id);
+            if($item){//hack because somehow it can happen that we dont get a monitoring id if we are using multiprocessing and the element would be empty
+                $items[] = $item;
+            }
         }
 
         return $items;
