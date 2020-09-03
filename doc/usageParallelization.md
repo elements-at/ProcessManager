@@ -19,3 +19,16 @@ $this->executeChildProcesses($monitoringItem,$data,2,4,$callback);
 | $numberOfChildProcesses | defines how much child processes can be run in parallel |
 | $batchSize | defines how much entries should be processed in each child process |
 | $callback | A function that can be used to modify the monitoringItem settings of the child process
+
+
+To execute multiple processes from an arbitrary place you could call:
+
+```php
+$monitoringItem = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getMonitoringItem();
+\Elements\Bundle\ProcessManagerBundle\ExecutionTrait::executeChildProcesses($monitoringItem,$data,5,50,function ( MonitoringItem $monitoringItem, \Elements\Bundle\ProcessManagerBundle\Executor\PimcoreCommand $executor){
+                    $values = $executor->getValues();
+                    $values['command'] = 'website:import:articles'; //execute another command
+                    $monitoringItem->setName('Article import - child');
+                    $executor->setValues($values);
+                });
+```
