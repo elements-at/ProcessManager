@@ -44,6 +44,7 @@ pimcore.plugin.processmanager.executor.class.pimcoreCommand = Class.create(pimco
         items.push(this.getCronjobField());
         items.push(this.getCronjobDescription());
         items.push(this.getNumberField("keepVersions"));
+        items.push(this.getNumberField("deleteAfterHours"));
         items.push(this.getCheckbox("hideMonitoringItem"));
         return items;
     }

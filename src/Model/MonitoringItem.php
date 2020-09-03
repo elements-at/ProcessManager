@@ -130,6 +130,11 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public $group = '';
 
     /**
+     * @var int | null
+     */
+    public $deleteAfterHours = null;
+
+    /**
      * @var string
      */
     public $metaData = '';
@@ -159,6 +164,26 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function setCriticalErrorLevel($criticalErrorLevel)
     {
         $this->criticalErrorLevel = $criticalErrorLevel;
+        return $this;
+    }
+
+
+
+    /**
+     * @return int
+     */
+    public function getDeleteAfterHours()
+    {
+        return $this->deleteAfterHours;
+    }
+
+    /**
+     * @param int $deleteAfterHours
+     * @return $this
+     */
+    public function setDeleteAfterHours($deleteAfterHours)
+    {
+        $this->deleteAfterHours = $deleteAfterHours;
         return $this;
     }
 

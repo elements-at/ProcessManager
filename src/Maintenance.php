@@ -42,6 +42,22 @@ class Maintenance
         $this->checkProcesses();
         $this->executeCronJobs();
         $this->clearMonitoringLogs();
+        $this->deleteExpiredMonitoringItems();
+    }
+
+    protected function deleteExpiredMonitoringItems(){
+        $list = new Model\MonitoringItem\Listing();
+        $list->setCondition('(status = "'.MonitoringItem::STATUS_FINISHED.'" OR status = "'.MonitoringItem::STATUS_FINISHED_WITH_ERROR.'") AND (deleteAfterHours > 0 AND (UNIX_TIMESTAMP()-(deleteAfterHours*3600)) > modificationDate)');
+
+        $items = $list->load();
+
+        foreach($items as $item){
+            $ts = time()-$item->getModificationDate();
+            $modDate = \Carbon\Carbon::createFromTimestamp($item->getModificationDate());
+            $diff = $modDate->diffInHours(\Carbon\Carbon::now());
+            $item->getLogger()->error('Delete item ' . $item->getId() .' because it expired. Hours diff: ' . $diff);
+            $item->delete();
+        }
     }
 
     public function checkProcesses()
