@@ -29,7 +29,7 @@ trait ExecutionTrait
     protected static function getCommand($options)
     {
         global $argv;
-        $command = $options['command'] ?: implode(' ', $argv);
+        $command = !empty($options['command']) ? $options['command'] : implode(' ', $argv);
 
         return trim($command);
     }
@@ -43,6 +43,7 @@ trait ExecutionTrait
     public static function initProcessManager($monitoringId, $options = [])
     {
         if (!ElementsProcessManagerBundle::getMonitoringItem(false)) {
+            $monitoringItem = null;
             if ($monitoringId) {
                 $monitoringItem = MonitoringItem::getById($monitoringId);
                 ElementsProcessManagerBundle::setMonitoringItem($monitoringItem);
@@ -70,7 +71,7 @@ trait ExecutionTrait
                 /**
                  * only set console logger if dont pass loggers or the config doesn't have loggers
                  */
-                if (is_null($options['loggers']) && empty($monitoringItem->getLoggers())) {
+                if (empty($options['loggers']) && empty($monitoringItem->getLoggers())) {
                     $monitoringItem->setLoggers([
                         [
                             'logLevel' => 'DEBUG',
