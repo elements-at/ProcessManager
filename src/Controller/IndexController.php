@@ -53,7 +53,7 @@ class IndexController extends AdminController
             'executorLoggerClasses' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger',
         ];
         foreach ($classTypeMapping as $classType => $abstractClassType) {
-            if (is_null($data[$classType])) {
+            if (empty($data[$classType])) {
                 $data[$classType] = [];
             }
             foreach ((array)$pluginConfig[$classType] as $config) {
@@ -98,7 +98,7 @@ class IndexController extends AdminController
 
         $shortCutMenu = [];
 
-        if(!$pluginConfig['general']['disableShortcutMenu']){
+        if(empty($pluginConfig['general']['disableShortcutMenu'])) {
             $list = new Configuration\Listing();
             $list->setUser($this->getAdminUser());
             $list->setOrderKey('name');
