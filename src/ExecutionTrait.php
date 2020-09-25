@@ -101,7 +101,7 @@ trait ExecutionTrait
                         }
                     }
                     $values = $config ? $config->getExecutorClassObject()->getValues() : $options;
-                    if ($values['uniqueExecution'] && !$monitoringItem->getParentId()) { //dont check if it is a child process
+                    if (!empty($values['uniqueExecution']) && !$monitoringItem->getParentId()) { //dont check if it is a child process
                         self::doUniqueExecutionCheck($config, $options);
                     }
                 }
@@ -115,11 +115,11 @@ trait ExecutionTrait
                 }
                 ElementsProcessManagerBundle::startup($options);
 
-                $monitoringItem->setCurrentStep($options['currentStop'] ?: 1)
-                    ->setTotalSteps($options['totalSteps'] ?: 1)->setStatus(MonitoringItem::STATUS_RUNNING)->save();
+                $monitoringItem->setCurrentStep($options['currentStop'] ?? 1)
+                    ->setTotalSteps($options['totalSteps'] ?? 1)->setStatus(MonitoringItem::STATUS_RUNNING)->save();
             }
         }
-        self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfig()['general']['additionalScriptExecutionUsers']);
+        self::checkExecutingUser((array)(ElementsProcessManagerBundle::getConfig()['general']['additionalScriptExecutionUsers'] ?? []));
 
         return ElementsProcessManagerBundle::getMonitoringItem();
     }
