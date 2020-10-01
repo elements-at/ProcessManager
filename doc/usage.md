@@ -43,9 +43,29 @@ The example.js file provides a callback window like this:
 ## Rest-API
 
 The Process Manager also provides a rest service to start jobs...
+If you want to use the Rest Service you have to define the Pimcore users which should be allowed to execute/list... jobs in the "plugin-process-manager.php" config file.
+Therefore add an array "restApiUsers" to the config as shown in the example below
+```php
+return [
+    "general" => [
+        "archive_treshold_logs" => 7,
+        "executeWithMaintenance" => false,
+        "processTimeoutMinutes" => 30
+    ],
+    "restApiUsers" => [
+        [
+            "username" => "ckogler",
+            'apiKey' => "secret"
+        ]
+    ],
 
+...
+]
 
-**URL: http://YOUR-DOMAIN/webservice/elementsprocessmanager/rest/execute**
+```
+ You have to pass the "username" and "apiKey" parameter on each request. 
+
+**URL: http://YOUR-DOMAIN/webservice/elementsprocessmanager/rest/execute?username=ckogler&apiKey=secret**
  
 Executes a job by an ID or by the name. 
 
@@ -63,7 +83,7 @@ It returns the monitoring item ID to check the process state...
 }
 ```
 
-**URL: http://YOUR-DOMAIN/webservice/elementsprocessmanager/monitoring-item-state**
+**URL: http://YOUR-DOMAIN/webservice/elementsprocessmanager/monitoring-item-state?username=ckogler&apiKey=secret**
  
 Returns the state of a process by the monitoring item id
 

@@ -19,7 +19,9 @@ use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Bundle\AdminBundle\Controller\Rest\AbstractRestController;
+use Pimcore\Controller\FrontendController;
 use Pimcore\Templating\Model\ViewModel;
+use Pimcore\Tool\Frontend;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,8 +29,36 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/webservice/elementsprocessmanager/rest")
  */
-class RestController extends AbstractRestController
+class RestController extends FrontendController
 {
+
+    protected function getApiUser(Request $request){
+        $user = \Pimcore\Model\User::getByName($request->get('username'));
+        if(!$user){
+            return $this->json(['success' => false, 'message' => 'User not found']);
+        }
+
+        $config = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getConfig();
+        $validApiUser = false;
+
+        foreach((array)$config['restApiUsers'] as $entry){
+            if($entry['username'] == $user->getName()){
+                if($request->get('apiKey') == $entry['apiKey']){
+                    $validApiUser = true;
+                }else{
+                    return $this->json(['success' => false, 'message' => 'No valid api key for user']);
+                }
+            }
+        }
+        if($validApiUser == false){
+            return $this->json(['success' => false, 'message' => 'The user is not a valid api user']);
+        }
+        if(!$user->getPermission('plugin_pm_permission_execute') || !$user->getPermission('plugin_pm_permission_view')){
+            return $this->json(['success' => false, 'message' => 'Missing permissions for user']);
+        }
+
+        return $user;
+    }
     /**
      * @Route("/execute")
      *
@@ -38,16 +68,17 @@ class RestController extends AbstractRestController
      */
     public function executeAction(Request $request)
     {
-        if (!$this->checkPermission('plugin_pm_permission_execute') || !$this->checkPermission('plugin_pm_permission_view')) {
-            return $this->adminJson(['success' => false, 'The current user is not allowed to execute or view the processes.']);
+        $user = $this->getApiUser($request);
+        if($user instanceof \Pimcore\Model\User == false){
+            return $user;
         }
 
         if (!$request->get('id') && !$request->get('name')) {
-            return $this->adminJson(['success' => false, 'Please provide a "name" or "id" parameter/value.']);
+            return $this->json(['success' => false, 'message' => 'Please provide a "name" or "id" parameter/value.']);
         }
 
         $list = new Configuration\Listing();
-        $list->setUser($this->getAdminUser());
+        $list->setUser($user);
         if ($id = $request->get('id')) {
             $list->setCondition('id = ?', [$id]);
         } elseif ($name = $request->get('name')) {
@@ -55,7 +86,7 @@ class RestController extends AbstractRestController
         }
         $config = $list->load()[0];
         if (!$config) {
-            return $this->adminJson(['success' => false, 'message' => "Couldn't find a process to execute."]);
+            return $this->json(['success' => false, 'message' => "Couldn't find a process to execute."]);
         }
 
         $callbackSettings = [];
@@ -70,14 +101,14 @@ class RestController extends AbstractRestController
             }
 
             if ($val && !$callbackSettings) {
-                return $this->adminJson(['success' => false, 'message' => "Couldn't decode the callbackSettigs. Please make sure that you passed a valid JSON or XML."]);
+                return $this->json(['success' => false, 'message' => "Couldn't decode the callbackSettigs. Please make sure that you passed a valid JSON or XML."]);
             }
         }
 
-        $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getAdminUser()->getId());
+        $result = Helper::executeJob($request->get('id'), $callbackSettings, $user->getId());
         unset($result['executedCommand']);
 
-        return $this->adminJson($result);
+        return $this->json($result);
     }
 
     /**
@@ -89,22 +120,23 @@ class RestController extends AbstractRestController
      */
     public function monitoringItemStateAction(Request $request)
     {
-        $list = new MonitoringItem\Listing();
-        $list->setUser($this->getAdminUser());
-
-        if (!$this->checkPermission('plugin_pm_permission_execute') || !$this->checkPermission('plugin_pm_permission_view')) {
-            return $this->adminJson(['success' => false, 'The current user is not allowed to execute or view the processes.']);
+        $user = $this->getApiUser($request);
+        if($user instanceof \Pimcore\Model\User == false){
+            return $user;
         }
+
+        $list = new MonitoringItem\Listing();
+        $list->setUser($user);
 
         $list->setCondition(' id = ?', [$request->get('id')]);
 
         $monitoringItem = $list->load()[0];
         if (!$monitoringItem) {
-            return $this->adminJson(['success' => false, 'message' => 'The monitoring Item was not found.']);
+            return $this->json(['success' => false, 'message' => 'The monitoring Item was not found.']);
         }
-        $monitoringItem->getLogger()->notice('Checked by rest webservice User ID: ' . $this->getAdminUser()->getId());
+        $monitoringItem->getLogger()->notice('Checked by rest webservice User ID: ' . $user->getId());
 
-        return $this->adminJson(['success' => true, 'data' => $monitoringItem->getForWebserviceExport()]);
+        return $this->json(['success' => true, 'data' => $monitoringItem->getForWebserviceExport()]);
     }
 
     /**
