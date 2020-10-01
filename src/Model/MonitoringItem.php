@@ -556,7 +556,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         if ($pid = $this->getPid()) {
             $checks = 0;
-            while(self::getById($this->getId()) == self::STATUS_INITIALIZING){ //check for state because shortly after the background execution the process is alive...
+            while(in_array(self::getById($this->getId())->getStatus(),[self::STATUS_INITIALIZING,self::STATUS_UNKNOWN])){ //check for state because shortly after the background execution the process is alive...
                 usleep(500000);
                 $checks++;
                 if($checks > 10){
