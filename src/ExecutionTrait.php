@@ -235,10 +235,18 @@ trait ExecutionTrait
 
             $monitoringItem->setCurrentWorkload($i+1)->setMessage('Processing package '. ($i+1))->save();
 
-            $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0,$package,$monitoringItem->getId(),$callback);
+            for($x = 1; $x <= 3; $x++){
+                $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0,$package,$monitoringItem->getId(),$callback);
 
-            if($result['success'] == false){
-                throw new \Exception("Can't start child  - reason: " . $result['message']);
+                if($result['success'] == false){
+                    $monitoringItem->getLogger()->warning("Can't start child (tried ". $i ." time ) - reason: " . $result['message']);
+                    sleep(5);
+                    if($x == 3){
+                        throw new \Exception("Can't start child  - reason: " . $result['message']);
+                    }
+                }else{
+                    break;
+                }
             }
 
             while ($monitoringItem->getChildProcessesStatus()['summary']['active'] >= $numberOfchildProcesses){ //run x processes parrallel
@@ -261,6 +269,7 @@ trait ExecutionTrait
 
     protected static function childProcessCheck(MonitoringItem $monitoringItem){
         $statuses = $monitoringItem->getChildProcessesStatus();
+        $monitoringItem->setModificationDate(time())->save();
         if($statuses['summary']['failed']){
             foreach([MonitoringItem::STATUS_RUNNING,MonitoringItem::STATUS_INITIALIZING,MonitoringItem::STATUS_UNKNOWN] as $status){
                 $items = $statuses['details'][$status];

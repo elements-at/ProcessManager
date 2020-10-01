@@ -75,7 +75,7 @@ class SystemEventsListener implements EventSubscriberInterface
                             100000000000
                         ); //a limit has to defined otherwise the offset wont work
                         $list->setCondition(
-                            'status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? ',
+                            'status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? AND parentId IS NULL ',
                             [$config->getId(), $monitoringItem->getPid()]
                         );
 

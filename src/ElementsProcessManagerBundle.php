@@ -131,7 +131,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
                     if (is_numeric($versions)) {
                         $list = new MonitoringItem\Listing();
                         $list->setOrder('DESC')->setOrderKey('id')->setOffset((int)$versions)->setLimit(100000000000); //a limit has to defined otherwise the offset wont work
-                        $list->setCondition('status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? ', [$config->getId(), $monitoringItem->getPid()]);
+                        $list->setCondition('status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? AND parentId IS NULL ', [$config->getId(), $monitoringItem->getPid()]);
 
                         $items = $list->load();
                         foreach ($items as $item) {
