@@ -24,6 +24,8 @@ trait ExecutionTrait
 {
     protected $commandObject;
 
+    protected static $childProcessErrorHandling = 'strict';
+
     protected static $childProcessCheckInterval = 500000; //microseconds
 
     protected static function getCommand($options)
@@ -32,6 +34,23 @@ trait ExecutionTrait
         $command = !empty($options['command']) ? $options['command'] : implode(' ', $argv);
 
         return trim($command);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getChildProcessErrorHandling(): string
+    {
+        return static::$childProcessErrorHandling;
+    }
+
+    /**
+     * @param string $childProcessErrorHandling
+     * @return $this
+     */
+    public static function setChildProcessErrorHandling($childProcessErrorHandling)
+    {
+        static::$childProcessErrorHandling = $childProcessErrorHandling;
     }
 
     /**
@@ -270,20 +289,11 @@ trait ExecutionTrait
     protected static function childProcessCheck(MonitoringItem $monitoringItem){
         $statuses = $monitoringItem->getChildProcessesStatus();
         $monitoringItem->setModificationDate(time())->save();
-        if($statuses['summary']['failed']){
+        if($statuses['summary']['failed']  && static::getChildProcessErrorHandling() == 'strict'){
             foreach([MonitoringItem::STATUS_RUNNING,MonitoringItem::STATUS_INITIALIZING,MonitoringItem::STATUS_UNKNOWN] as $status){
                 $items = $statuses['details'][$status];
                 foreach((array)$items as $entry){
                     $mItem = MonitoringItem::getById($entry['id']);
-
-                    //little hack to remove console loggers if they are defined in the child processes
-                    /*$loggers = $mItem->getLoggers();
-                    foreach($loggers as $i => $e){
-                        if($e['class'] == '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console'){
-                            unset($loggers[$i]);
-                        }
-                    }
-                    $mItem->setLoggers($loggers);*/
 
 
                     if($mItem){
