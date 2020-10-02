@@ -300,7 +300,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
         }
 
 
-        if (pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_execute")) {
+        if (pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_execute") && pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_delete_monitoring_item")) {
             gridColumns.push({
                 xtype: 'actioncolumn',
                 header: t("delete"),
@@ -339,13 +339,16 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
         tbar.push(this.intervalInSeconds);
         tbar.push(t("plugin_pm_auto_refresh_seconds"));
 
-        var clearMonitoringItems = new Ext.Button({
-            icon: "/bundles/pimcoreadmin/img/icon/cross.png",
-            text: t("plugin_pm_clear_monitoring_items"),
-            enableToggle: false,
-            handler: this.clearMonitoringItems.bind(this)
-        });
-        tbar.push(clearMonitoringItems);
+        if(pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_delete_monitoring_item")){
+            var clearMonitoringItems = new Ext.Button({
+                icon: "/bundles/pimcoreadmin/img/icon/cross.png",
+                text: t("plugin_pm_clear_monitoring_items"),
+                enableToggle: false,
+                handler: this.clearMonitoringItems.bind(this)
+            });
+            tbar.push(clearMonitoringItems);
+        }
+
         tbar.push("->");
 
 

@@ -337,6 +337,7 @@ class MonitoringItemController extends AdminController
      */
     public function deleteAction(Request $request)
     {
+        $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
         $entry = MonitoringItem::getById($request->get('id'));
         if ($entry) {
             if($entry->isAlive()){
@@ -359,6 +360,7 @@ class MonitoringItemController extends AdminController
      */
     public function deleteBatchAction(Request $request)
     {
+        $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
         $logLevels = array_filter(explode(',', $request->get('logLevels')));
         if (!empty($logLevels)) {
             $list = new MonitoringItem\Listing();
