@@ -741,6 +741,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $this->setMessage('');
         $this->setCreationDate(time());
         $this->setModificationDate(time());
+        $this->setHasCriticalError(0);
 
         return $this;
     }
