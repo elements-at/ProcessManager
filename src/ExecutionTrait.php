@@ -28,6 +28,13 @@ trait ExecutionTrait
 
     protected static $childProcessCheckInterval = 500000; //microseconds
 
+    /**
+     * @param int $microseconds
+     */
+    public static function setChildProcessCheckInterval($microseconds){
+        self::$childProcessCheckInterval = $microseconds;
+    }
+
     protected static function getCommand($options)
     {
         global $argv;
@@ -240,9 +247,10 @@ trait ExecutionTrait
      * @param array $workload workload to process
      * @param int $batchSize items to process per child process
      * @param null $callback callback to modifiy the monitoring item before start (e.g. alter actions,loggers...)
+     * @param int $startAfterPackage Start after package (skip packages before)
      * @throws \Exception
      */
-    public static function executeChildProcesses(MonitoringItem $monitoringItem,array $workload, $numberOfchildProcesses = 5, $batchSize = 10, $callback = null){
+    public static function executeChildProcesses(MonitoringItem $monitoringItem,array $workload, $numberOfchildProcesses = 5, $batchSize = 10, $callback = null, $startAfterPackage = null){
         $workload = array_chunk($workload,$batchSize); //entries per process
         $childProcesses = $monitoringItem->getChildProcesses();
         foreach($childProcesses as $c){
@@ -251,6 +259,11 @@ trait ExecutionTrait
         $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Starting child processes')->save();
 
         foreach($workload as $i => $package){
+
+            if($startAfterPackage && $startAfterPackage > ($i+1)){
+                $monitoringItem->getLogger()->debug('Skipping Package' . ($i+1));
+                continue;
+            }
 
             $monitoringItem->setCurrentWorkload($i+1)->setMessage('Processing package '. ($i+1))->save();
 
