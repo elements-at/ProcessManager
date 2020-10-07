@@ -14,7 +14,7 @@
  */
 
 $systemConfig = \Pimcore\Config::getSystemConfig()->toArray();
-
+$emailRecipients = array_filter(preg_split('/,|;/', (string)$systemConfig['applicationlog']['mail_notification']['mail_receiver']));
 return [
     'general' => [
         'archive_treshold_logs' => 7, //keep monitoring items for x Days
@@ -24,7 +24,7 @@ return [
         //'disableShortcutMenu' => true, //disables the shortcut menu on the left side in the admin interface
     ],
     'email' => [
-        'recipients' => explode(';', (string)$systemConfig['applicationlog']['mail_notification']['mail_receiver']), //gets a reporting e-mail when a process is dead
+        'recipients' => $emailRecipients, //gets a reporting e-mail when a process is dead
     ],
     'executorClasses' => [
         [
