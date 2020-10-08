@@ -9,7 +9,7 @@ use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version00000016 extends AbstractPimcoreMigration
+class Version00000017 extends AbstractPimcoreMigration
 {
     /**
      * @param Schema $schema
