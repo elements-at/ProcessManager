@@ -51,13 +51,13 @@ pimcore.plugin.processmanager.executor.logger.application = Class.create(pimcore
                     var applicationLogger = pimcore.globalmanager.get("pimcore_applicationlog_admin");
                     applicationLogger.clearValues();
 
-                    var fromDate = new Date(result.data.creationDate * 1000);
+                    var fromDate = new Date((result.data.creationDate - 1 ) * 1000);
                     applicationLogger.fromDate.setValue(fromDate);
 
                     applicationLogger.fromTime.setValue(fromDate);
 
                     if (!result.data.pid) {
-                        var tillDate = new Date(result.data.modificationDate * 1000);
+                        var tillDate = new Date((result.data.modificationDate + 1 ) * 1000);
                         applicationLogger.toDate.setValue(tillDate);
                         applicationLogger.toTime.setValue(formateTime(tillDate));
                     }
