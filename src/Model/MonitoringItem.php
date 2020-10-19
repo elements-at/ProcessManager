@@ -557,12 +557,18 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         if ($pid = $this->getPid()) {
             $checks = 0;
             while(in_array(self::getById($this->getId())->getStatus(),[self::STATUS_INITIALIZING,self::STATUS_UNKNOWN])){ //check for state because shortly after the background execution the process is alive...
+                if(posix_getpgid($pid) == false){
+                    $this->setPid(null)->getLogger()->debug('PID' . $pid.' does not exist - removing pid');
+                    $this->save();
+                    return false;
+                }
                 usleep(500000);
                 $checks++;
-                if($checks > 10){
+                if($checks > 3){
                     break; //just to make sure we do not end in a endlessloop
                 }
             }
+
             return posix_getpgid($pid) ? true: false ;
         }else{
             return false;
