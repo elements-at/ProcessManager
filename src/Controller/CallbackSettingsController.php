@@ -124,6 +124,7 @@ class CallbackSettingsController extends AdminController
             }
         }
 
+        $data = [];
         foreach ($list->load() as $item) {
             $tmp = $item->getObjectVars();
             $tmp['extJsSettings'] = json_decode($tmp['settings'], true);
