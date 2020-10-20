@@ -47,7 +47,8 @@ class SystemEventsListener implements EventSubscriberInterface
 
         if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
             $error = $e->getError();
-            $monitoringItem->setMessage('ERROR:' . $error . $monitoringItem->getMessage());
+            $monitoringItem->setMessage('ERROR: ' . $error->getMessage());
+            $monitoringItem->getLogger()->error($error);
             $monitoringItem->setPid(null)->setStatus($monitoringItem::STATUS_FAILED)->save();
         }
     }
