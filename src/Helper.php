@@ -31,7 +31,8 @@ class Helper
             }
 
             $executor = $config->getExecutorClassObject();
-            if ($executor->getValues()['uniqueExecution']  && is_null($parentMonitoringItemId)) {
+            $uniqueExecution = $executor->getValues()['uniqueExecution'] ?? false;
+            if ($uniqueExecution && is_null($parentMonitoringItemId)) {
                 $running = $config->getRunningProcesses();
                 if (!empty($running)) {
                     $msg = "Can't start the process because " . count($running) . ' process is running (ID: ' . $running[0]->getId() . '). Please wait until this processes is finished.';
@@ -54,7 +55,8 @@ class Helper
                 $executorData = json_decode($config->getExecutorSettings(), true);
 
                 if ($executorData['values']) {
-                    if ($executorData['values']['hideMonitoringItem'] == 'on') {
+                    $hideMonitoringItem = $executorData['values']['hideMonitoringItem'] ?? false;
+                    if ($hideMonitoringItem == 'on') {
                         $monitoringItem->setPublished(false);
                     }
                     $monitoringItem->setGroup($executorData['values']['group']);
