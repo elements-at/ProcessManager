@@ -39,7 +39,7 @@ class EmailSummary extends AbstractLogger
     public function createStreamHandler($config, $monitoringItem)
     {
         if (!$this->streamHandler) {
-            if (!$config['logLevel']) {
+            if (empty($config['logLevel'])) {
                 $config['logLevel'] = 'DEBUG';
             }
 
@@ -49,7 +49,7 @@ class EmailSummary extends AbstractLogger
             $logFile = $this->getLogFile($monitoringItem,$config);
             $this->streamHandler = new StreamHandler($logFile,$logLevel);
 
-            if ($config['simpleLogFormat']) {
+            if ($config['simpleLogFormat'] ?? false) {
                 $this->streamHandler->setFormatter(new \Monolog\Formatter\LineFormatter(self::LOG_FORMAT_SIMPLE));
             }
         }
