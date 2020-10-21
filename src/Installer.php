@@ -19,6 +19,7 @@ use Doctrine\DBAL\Migrations\Version;
 use Doctrine\DBAL\Schema\Schema;
 use Pimcore\Extension\Bundle\Installer\MigrationInstaller;
 use Pimcore\Logger;
+use Pimcore\Model\Translation\Admin;
 
 class Installer extends MigrationInstaller
 {
@@ -33,7 +34,12 @@ class Installer extends MigrationInstaller
         $this->createTables();
         $this->copyConfig();
 
+        self::updateTranslations();
         return true;
+    }
+
+    public static function updateTranslations($replaceExistingTranslations = false){
+        Admin::importTranslationsFromFile(__DIR__ . '/Resources/translations/admin.csv',$replaceExistingTranslations);
     }
 
     public function migrateUninstall(Schema $schema, Version $version)
@@ -131,7 +137,7 @@ class Installer extends MigrationInstaller
 
     protected function copyConfig()
     {
-        //TODO: Check path 
+        //TODO: Check path
         $configFile = dirname(__FILE__) . '/Resources/install/plugin-process-manager.php';
         if (!is_dir(PIMCORE_CUSTOM_CONFIGURATION_DIRECTORY)) {
             \Pimcore\File::mkdir(PIMCORE_CUSTOM_CONFIGURATION_DIRECTORY);
