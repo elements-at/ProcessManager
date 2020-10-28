@@ -181,7 +181,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
                 type: 'ajax',
                 reader: {
                     type: 'json',
-                    root: "data"
+                    rootProperty: "data"
                 },
                 extraParams : {
                     type : callbackType

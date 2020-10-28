@@ -52,7 +52,7 @@ class Download extends AbstractAction
             $downloadFileExists = $this->downloadFileExists($monitoringItem,$actionData);
             if ($downloadFileExists) {
                 return '<a href="#" onClick="processmanagerPlugin.download('.$monitoringItem->getId(
-                    ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download">&nbsp;</a>&nbsp;';
+                    ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download" title="Download">&nbsp;</a>&nbsp;';
             } else {
                 return $this->trans('plugin_pm_download_file_doesnt_exist');
             }

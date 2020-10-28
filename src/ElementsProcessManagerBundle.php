@@ -91,6 +91,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 
             '/bundles/elementsprocessmanager/js/executor/action/abstractAction.js',
             '/bundles/elementsprocessmanager/js/executor/action/download.js',
+            '/bundles/elementsprocessmanager/js/executor/action/openItem.js',
 
             '/bundles/elementsprocessmanager/js/executor/logger/abstractLogger.js',
             '/bundles/elementsprocessmanager/js/executor/logger/file.js',

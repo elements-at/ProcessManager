@@ -1,10 +1,10 @@
 pimcore.registerNS("pimcore.plugin.processmanager.executor.action.abstractAction");
-pimcore.plugin.processmanager.executor.action.abstractAction = Class.create({
+pimcore.plugin.processmanager.executor.action.abstractAction = Class.create(pimcore.plugin.processmanager.helper.form,{
     values : {},
     getTopBar: function (niceName, id) {
         return [{
             xtype: "tbtext",
-            text: "<b>" + niceName + "</b>"
+            text: "<img src='" + this.button.icon + "' alt='' class='process-manager-action-icon-tbar'/> <b>" + niceName + "</b>"
         },
         "->",
         {
