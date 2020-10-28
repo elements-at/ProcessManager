@@ -17,6 +17,11 @@ Just add the following command to your crontab (and set "executeWithMaintenance"
 * * * * * php ~/www/bin/console process-manager:maintenance > /dev/null 2>&1
 ```
 
+# Update notes
+
+## v3.1.0
+* Implemented userfriendly execution mode for processes. After the update all MonitoringItems from the users will be hidden as they would otherwise appear in the active process list.
+
 # Update
 To update the bundle please use the following command:
 

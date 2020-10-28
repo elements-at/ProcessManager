@@ -331,19 +331,9 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             success: function (response) {
                 var data = Ext.decode(response.responseText);
                 if (data.success) {
-                    pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
-                    if (Ext.getCmp("pimcore_plugin_pm_panel")) {
-                        Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(1);
-                    } else {
-                        processmanagerPlugin.showProcessManager({activeTab: 1});
-                    }
-
-                    var pm = pimcore.globalmanager.get("plugin_pm_cnf");
-
-                    var column = pm.monitoringItems.grid.columnManager.getColumns()[0];
-                    column.filter.setValue({eq : data.monitoringItemId});
-                    column.filter.setActive(true);
-                    pm.monitoringItems.grid.store.reload();
+                    processmanagerPlugin.activeProcesses.refreshTask.start();
+                    /*pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
+                    */
                 } else {
                     pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", data.message);
                 }

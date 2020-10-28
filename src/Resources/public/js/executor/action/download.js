@@ -1,5 +1,5 @@
 pimcore.registerNS("pimcore.plugin.processmanager.executor.action.download");
-pimcore.plugin.processmanager.executor.action.download = Class.create(pimcore.plugin.processmanager.executor.action.abstractAction,{
+pimcore.plugin.processmanager.executor.action.download = new Class.create(pimcore.plugin.processmanager.executor.action.abstractAction,{
 
     getButton : function(){
         this.button = {
@@ -33,6 +33,14 @@ pimcore.plugin.processmanager.executor.action.download = Class.create(pimcore.pl
             },
             {
                 xtype: "textfield",
+                fieldLabel: t("plugin_pm_label"),
+                name: "label",
+                width: "100%",
+                readOnly: false,
+                value: this.getFieldValue('label')
+            },
+            {
+                xtype: "textfield",
                 fieldLabel: t("plugin_pm_download_filepath") + ' <span style="color:#f00;">*</span>',
                 name: "filepath",
                 width: "100%",
@@ -57,6 +65,35 @@ pimcore.plugin.processmanager.executor.action.download = Class.create(pimcore.pl
         });
 
         return this.form;
+    },
+
+    executeActionForActiveProcessList : function(actionButtonPanel,actionData,monitoringItem,obj,index){
+
+        let buttonId = 'processmanager_action_download_button_' + monitoringItem.id + '_' + actionData.accessKey;
+        let button = Ext.getCmp(buttonId);
+        if(monitoringItem.status == 'finished'){
+
+            let text = actionData.label ? actionData.label : t('download');
+            let disabled = false;
+
+            if(actionData.dynamicData.fileExists == false){
+                text += ' (' + t('plugin_pm_download_file_doesnt_exist') + ')';
+                disabled = true;
+            }
+            button = Ext.create('Ext.Button', {
+                text: text,
+                //  id : buttonId,
+                icon : "/bundles/pimcoreadmin/img/flat-color-icons/download-cloud.svg",
+                // id: buttonId,
+                style: (index > 0 ? 'margin-left:5px;' : ''),
+                disabled : disabled,
+                scale: 'small',
+                handler: function() {
+                    processmanagerPlugin.download(monitoringItem.id,actionData.accessKey);
+                }
+            });
+            actionButtonPanel.items.add(button);
+        }
     }
 
 });

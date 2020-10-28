@@ -124,6 +124,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public $published = true;
 
+
     /**
      * @var string
      */
@@ -166,7 +167,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $this->criticalErrorLevel = $criticalErrorLevel;
         return $this;
     }
-
 
 
     /**

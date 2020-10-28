@@ -326,6 +326,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                                 id: rec.get('id')
                             }
                         });
+                        processmanagerPlugin.activeProcesses.refreshTask.start();
                         grid.getStore().removeAt(rowIndex);
                     }.bind(this)
                 }]

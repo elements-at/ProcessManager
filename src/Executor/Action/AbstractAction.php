@@ -19,12 +19,22 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 abstract class AbstractAction
 {
+    use \Pimcore\Model\DataObject\Traits\ObjectVarTrait;
+
     public $extJsClass = '';
 
     public $name = '';
 
     protected $config = [];
 
+    /**
+     * @param $key
+     * @return string
+     */
+    protected function trans($key){
+        $translator = \Pimcore::getKernel()->getContainer()->get('translator');
+        return $translator->trans($key,[],'admin');
+    }
     /**
      * @return string
      */
@@ -109,5 +119,16 @@ abstract class AbstractAction
      */
     public function preMonitoringItemDeletion($monitoringItem, $actionData)
     {
+    }
+
+    /**
+     * returns data which can be used in action classes
+     * @param MonitoringItem $monitoringItem
+     * @param array $actionData
+     * @return array
+     */
+    public function toJson(MonitoringItem $monitoringItem,$actionData){
+        $data = $this->getObjectVars();
+        return $data;
     }
 }

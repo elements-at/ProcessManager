@@ -65,8 +65,20 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
             success: function(response, opts) {
                 this.config = Ext.decode(response.responseText);
                 this.addShortcutMenu();
+                this.initActiveProcesses();
+
+                if(this.config.jsSettings.devMode){
+                    this.showProcessManager({activeTab: 1});
+                }
             }.bind(this)
         });
+    },
+
+    initActiveProcesses : function(){
+        if(pimcore.globalmanager.get("user").isAllowed("plugin_pm_permission_execute")){
+            this.activeProcesses = new pimcore.plugin.processmanager.window.activeProcesses();
+            this.activeProcesses.refreshTask.start();
+        }
     },
 
     getMenuItem : function (data) {
@@ -147,7 +159,8 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
             success: function(response, opts) {
                 var data = Ext.decode(response.responseText);
                 if(data.success){
-                    pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
+                  //  pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
+                    this.activeProcesses.refreshTask.start();
                     Ext.getCmp("plugin_pmmonitoring_item_list_panel").store.reload();
                 }else{
                     pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error",data.message);
@@ -179,6 +192,21 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                 }
             }.bind(this)
         });
+    },
+
+    openLogId : function (id){
+        if (Ext.getCmp("pimcore_plugin_pm_panel")) {
+            Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(1);
+        } else {
+            processmanagerPlugin.showProcessManager({activeTab: 1});
+        }
+
+        let pm = pimcore.globalmanager.get("plugin_pm_cnf");
+
+        let column = pm.monitoringItems.grid.columnManager.getColumns()[0];
+        column.filter.setValue({eq : id});
+        column.filter.setActive(true);
+        pm.monitoringItems.grid.store.reload();
     },
 
     download : function(id,accessKey){

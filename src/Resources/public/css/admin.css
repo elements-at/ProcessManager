@@ -20,11 +20,13 @@
 .pm_icon_cli {
     background: url(/bundles/pimcoreadmin/img/flat-color-icons/go.svg) center center no-repeat !important;
 }
-
-.plugin-process-manager-status-finished {
+.process-manager-notification-progress-bar {
+  /*  height:30px;*/
+}
+.plugin-process-manager-status-finished, .process-manager-notification-progress-bar.finished .x-progress-bar {
     background-color: #9ACD32;
 }
-.plugin-process-manager-status-failed {
+.plugin-process-manager-status-failed, .process-manager-notification-progress-bar.finished_with_errors .x-progress-bar , .process-manager-notification-progress-bar.failed .x-progress-bar{
     background-color: #FF6347;
 }
 .plugin-process-manager-save-button{
@@ -40,7 +42,7 @@
     width: 27px;
     border-radius: 3px;
     height: 21px;
-    display: block;
+    display: inline-block;
 }
 
 .process-manager-callback-settings-table {
@@ -82,4 +84,35 @@
 }
 .plugin_pm_property_selector_panel {
     margin-bottom: 10px;
+}
+
+#processmanager_active_processes-body {
+    /*overflow-y: scroll;*/
+}
+
+.process-manager-active-processes-header-text {
+    margin-bottom: 2px;
+    display: block;
+}
+.process-manager-active-processes-header-text .x-form-display-field {
+    min-height: auto;
+}
+.pm-hide {
+    background-color: #ffae00;
+}
+
+a.process-manager-details-link {
+    color: #404040 !important;
+}
+.x-tool-process-manager-unpublish-all {
+    background-image: url(/bundles/pimcoreadmin/img/flat-color-icons/approve.svg) !important;
+    background-size: contain;
+    background-color: #3c3f41;
+}
+
+.active_processes_finished_icon {
+    width: 15px;
+    height: 15px;
+    position: relative;
+    top:4px;
 }

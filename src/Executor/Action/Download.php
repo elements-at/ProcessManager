@@ -28,22 +28,33 @@ class Download extends AbstractAction
      * @param $monitoringItem MonitoringItem
      * @param $actionData
      *
+     * @return bool
+     */
+    protected function downloadFileExists($monitoringItem, $actionData){
+        if ($actionData['filepath']) {
+            $file = PIMCORE_PROJECT_ROOT.$actionData['filepath'];
+        } else {
+            $file = $monitoringItem->getLogFile();
+        }
+        return is_readable($file);
+    }
+
+    /**
+     * @param $monitoringItem MonitoringItem
+     * @param $actionData
+     *
      * @return string
      */
     public function getGridActionHtml($monitoringItem, $actionData)
     {
         if ($monitoringItem->getStatus() == $monitoringItem::STATUS_FINISHED) {
-            if ($actionData['filepath']) {
-                $file = PIMCORE_PROJECT_ROOT.$actionData['filepath'];
-            } else {
-                $file = $monitoringItem->getLogFile();
-            }
 
-            if (is_readable($file)) {
+            $downloadFileExists = $this->downloadFileExists($monitoringItem,$actionData);
+            if ($downloadFileExists) {
                 return '<a href="#" onClick="processmanagerPlugin.download('.$monitoringItem->getId(
-                    ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download">&nbsp;</a>';
+                    ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download">&nbsp;</a>&nbsp;';
             } else {
-                return 'Download file not present';
+                return $this->trans('plugin_pm_download_file_doesnt_exist');
             }
         }
     }
@@ -83,5 +94,16 @@ class Download extends AbstractAction
                 unlink($file);
             }
         }
+    }
+
+    public function toJson(MonitoringItem $monitoringItem, $actionData)
+    {
+        $data = parent::toJson($monitoringItem, $actionData);
+        if ($monitoringItem->getStatus() == $monitoringItem::STATUS_FINISHED) {
+            $data['fileExists'] = $this->downloadFileExists($monitoringItem,$actionData);
+        }else {
+            $data['fileExists'] = false;
+        }
+        return $data;
     }
 }
