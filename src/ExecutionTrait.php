@@ -287,7 +287,7 @@ trait ExecutionTrait
                 usleep(static::$childProcessCheckInterval);
             }
 
-            if($monitoringItem->getChildProcessesStatus()['failed']){
+            if($monitoringItem->getChildProcessesStatus()['failed'] ?? false){
                 throw new \Exception('Childs failed');
             }
         }

@@ -38,14 +38,14 @@ class Console extends AbstractLogger
     public function createStreamHandler($config, $monitoringItem)
     {
         if (!$this->streamHandler && php_sapi_name() === 'cli') {
-            if (!$config['logLevel']) {
+            if (empty($config['logLevel'])) {
                 $config['logLevel'] = 'DEBUG';
             }
 
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
             $this->streamHandler = new StreamHandler('php://stdout', $logLevel);
 
-            if ($config['simpleLogFormat']) {
+            if ($config['simpleLogFormat'] ?? false) {
                 $this->streamHandler->setFormatter(new \Monolog\Formatter\LineFormatter(self::LOG_FORMAT_SIMPLE));
             }
         }

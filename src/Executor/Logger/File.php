@@ -35,8 +35,8 @@ class File extends AbstractLogger
     {
         $logFile = $this->getLogFile($loggerData, $monitoringItem);
         if (is_readable($logFile)) {
-            $icon = $loggerData['icon'] ?: '/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg';
-            $title = $loggerData['title'] ?: 'File Logger';
+            $icon = ($loggerData['icon'] ?? null) ?: '/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg';
+            $title = ($loggerData['title'] ?? null) ?: 'File Logger';
             return '<a href="#" onclick="var tmp = new pimcore.plugin.processmanager.executor.logger.file(); tmp.showLogs(' . $monitoringItem->getId() . ',' . (int)$loggerData['index'] . ');"><img src="' . $icon . '" alt="Download" height="18" title="' . $title . '"/></a>';
         }
     }
@@ -44,7 +44,7 @@ class File extends AbstractLogger
     public function createStreamHandler($config, $monitoringItem)
     {
         if (!$this->streamHandler) {
-            if (!$config['logLevel']) {
+            if (empty($config['logLevel'])) {
                 $config['logLevel'] = 'DEBUG';
             }
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
@@ -71,7 +71,7 @@ class File extends AbstractLogger
 
             $this->streamHandler = new StreamHandler($logFile, $logLevel);
 
-            if ($config['simpleLogFormat']) {
+            if ($config['simpleLogFormat'] ?? false) {
                 $this->streamHandler->setFormatter(new \Monolog\Formatter\LineFormatter(self::LOG_FORMAT_SIMPLE));
             }
         }

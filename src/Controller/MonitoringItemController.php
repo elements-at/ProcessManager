@@ -291,10 +291,12 @@ class MonitoringItemController extends AdminController
                 if ($config->getActive() == 0) {
                     $tmp['retry'] = 0;
                 } else {
-                    if ($config->getExecutorClassObject()->getValues()['uniqueExecution']) {
+                        $uniqueExecution = $config->getExecutorClassObject()->getValues()['uniqueExecution'] ?? false;
+                        if ($uniqueExecution) {
                         $runningProcesses = $config->getRunningProcesses();
                         if (!empty($runningProcesses)) {
                             $tmp['retry'] = 0;
+
                         }
                     }
                 }

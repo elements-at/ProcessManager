@@ -965,7 +965,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function getChildProcessesStatus(){
         $result = ['active' => 0, 'failed' => 0,'finished' => 0];
 
-        $satus = [];
+        $status = [];
 
         foreach($this->getChildProcesses() as $child){
             $status[$child->getStatus()][] = ['id' => $child->getId(),'message' => $child->getMessage(),'alive' => $child->isAlive()];
@@ -981,6 +981,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
             }
         }
 
-        return ['summary' => $result,'details' => $status];
+        return ['summary' => $result, 'details' => $status];
     }
 }
