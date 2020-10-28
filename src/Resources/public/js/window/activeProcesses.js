@@ -23,7 +23,6 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
         if (this.getPanelByItemId(item.id)) {
             let currentItem = this.getPanelByItemId(item.id);
             let progressBar = Ext.getCmp('processmanager_monitoring_item_progress_bar_' + item.id);
-            let extraMessage = Ext.getCmp('processmanager_monitoring_item_extra_message_' + item.id);
             let actionBtnsPanel = Ext.getCmp('processmanager_active_process_action_buttons_' + item.id);
 
             this._updateProgressBar(progressBar, item);
@@ -133,7 +132,17 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
             message = item.message;
         }
 
-        progressBar.updateProgress(item.progressPercentage/100, (message + ' (' + Math.round(item.progressPercentage) + '%)').trim(), true);
+        if(item.progressPercentage){
+            message += ' (' + Math.round(item.progressPercentage) + '%)';
+        }
+
+        if(item.totalSteps > 1){
+            message += ' - Step ' + item.currentStep + '/' + item.totalSteps;
+        }
+
+        message = message.trim();
+
+        progressBar.updateProgress(item.progressPercentage/100, message, true);
         progressBar.removeCls('unknown');
         progressBar.removeCls('finished');
         progressBar.removeCls('finished_with_errors');
