@@ -15,6 +15,7 @@ are available (custom settings which the user can define for runtime execution) 
 - Define custom Callback-Windows to provide the user the ability to define runtime execution options
 - Store/Manage CallbackSettings and reuse them at execution time
 - Define/execute the scripts as cronjobs 
+- Support multiprocessing (execute multiple processes parallel)
 
 ## Topics
 * [Installation & updates](./doc/installationAndUpdates.md)
@@ -25,11 +26,14 @@ are available (custom settings which the user can define for runtime execution) 
 
 ***First impressions:***
 
+Job execution by user:
+![process-manager-log](./doc/img/process-manager-active-processes.png)
+
 Job execution state:
-![process-manager-log](./doc/img/process-manager-log.jpg)
+![process-manager-log](./doc/img/process-manager-log.png)
 
 Job configuration:
-![process-manager-job-management](./doc/img/process-manager-job-management.jpg)
+![process-manager-job-management](./doc/img/process-manager-settings.png)
 
 Define Loggers per process / job:
 ![process-manager-job-management](./doc/img/loggers.png)
