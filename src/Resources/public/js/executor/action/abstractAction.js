@@ -33,5 +33,12 @@ pimcore.plugin.processmanager.executor.action.abstractAction = Class.create({
         this.form.updateLayout();
         Ext.getCmp('plugin_pm_action_panel').updateLayout();
         return this.form;
+    },
+
+    /**
+     * Implement in extended class if needed
+     */
+    executeActionForActiveProcessList : function () {
+
     }
 });

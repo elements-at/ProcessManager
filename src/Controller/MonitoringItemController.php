@@ -105,97 +105,216 @@ class MonitoringItemController extends AdminController
         $total = $list->getTotalCount();
 
         foreach ($list->load() as $item) {
-            $tmp = $item->getObjectVars();
-            $tmp['steps'] = '-';
-            if ($item->getTotalSteps() > 0 || $item->getCurrentStep()) {
-                $tmp['steps'] = $item->getCurrentStep().'/'.$item->getTotalSteps();
-            }
-            $tmp['duration'] = $item->getDuration() ?: '-';
-            $tmp['progress'] = 0;
-
-            if ($tmp['executedByUser']) {
-                $user = \Pimcore\Model\User::getById($tmp['executedByUser']);
-                if ($user) {
-                    $tmp['executedByUser'] = $user->getName();
-                } else {
-                    $tmp['executedByUser'] = 'User id: '.$tmp['executedByUser'];
-                }
-            } else {
-                $tmp['executedByUser'] = 'System';
-            }
-
-            $logFile = 0;
-            /* if(is_readable($item->getLogFile())){
-                 $content = trim(file_get_contents($item->getLogFile()));
-                 if($content){
-                     $logFile = 1;
-                 }
-             }*/
-            $tmp['action'] = '';
-
-            if ($actions = $item->getActions()) {
-                foreach ($actions as $action) {
-                    /**
-                     * @var $class AbstractAction
-                     */
-                    $class = new $action['class'];
-                    if ($s = $class->getGridActionHtml($item, $action)) {
-                        $tmp['action'] .= $s;
-                    }
-                }
-            }
-
-            $tmp['logger'] = '';
-            if ($loggers = $item->getLoggers()) {
-                foreach ((array)$loggers as $i => $logger) {
-                    /**
-                     * @var $class AbstractLogger
-                     */
-                    $class = new $logger['class'];
-                    if (\Pimcore\Tool::classExists(get_class($class))) {
-                        $logger['index'] = $i;
-                        if ($s = $class->getGridLoggerHtml($item, $logger)) {
-                            $tmp['logger'] .= $s;
-                        }
-                    }
-                }
-            }
-
-            $tmp['retry'] = 1;
-            if ($item->isAlive()) {
-                $tmp['retry'] = 0;
-            }
-
-            if ($tmp['retry'] == 1) {
-                $config = Configuration::getById($item->getConfigurationId());
-                if ($config) {
-                    if ($config->getActive() == 0) {
-                        $tmp['retry'] = 0;
-                    } else {
-                        if ($config->getExecutorClassObject()->getValues()['uniqueExecution']) {
-                            $runningProcesses = $config->getRunningProcesses();
-                            if (!empty($runningProcesses)) {
-                                $tmp['retry'] = 0;
-                            }
-                        }
-                    }
-                }
-            }
-            $tmp['isAlive'] = $item->isAlive();
-
-            $tmp['progress'] = '-';
-            if ($item->getCurrentWorkload() && $item->getTotalWorkload()) {
-                $progress = $item->getProgressPercentage();
-                $tmp['progress'] = '<div class="x-progress x-progress-default x-border-box" style="width:100%;"><div class="x-progress-text x-progress-text-back">'.$progress.'%</div><div class="x-progress-bar x-progress-bar-default" style="width:'.$progress.'%"><div class="x-progress-text"><div>'.$progress.'%</div></div></div></div>';
-            }
-
-            $tmp['callbackSettingsString'] = json_encode($item->getCallbackSettings());
-            $tmp['callbackSettings'] = $item->getCallbackSettingsForGrid();
-            //$tmp['callbackSettings'] = '<table><tr><td><th>Key</th><th>Value</th></td></tr><tr><td>name:</td><td>testaa</td></tr></table>';
-            $data[] = $tmp;
+            $data[] = $this->getItemData($item);
         }
 
         return $this->adminJson(['success' => true, 'total' => $total, 'data' => $data]);
+    }
+
+    /**
+     * @Route("/update")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function update(Request $request){
+
+        $monitoringItem = MonitoringItem::getById($request->get('id'));
+
+        $data = [];
+
+        if($monitoringItem){
+            if($monitoringItem->getExecutedByUser() == $this->getUser()->getId()){
+                foreach($request->request->all() as $key => $value){
+                    $setter = "set" . ucfirst($key);
+                    if(method_exists($monitoringItem,$setter)){
+                        $monitoringItem->$setter($value);
+                    }
+                }
+                $monitoringItem->save();
+            }
+            $data = $this->getItemData($monitoringItem);
+        }
+
+        return $this->json(['success' => true,'data' => $data]);
+
+    }
+
+    /**
+     * @return MonitoringItem\Listing
+     */
+    protected function getProcessesForCurrentUser(){
+        $list = new MonitoringItem\Listing();
+        $list->setOrder('DESC');
+        $list->setOrderKey('id');
+        #$list->setLimit(10);
+
+        $list->setCondition('executedByUser = ? and parentId IS NULL AND published = 1 ',[$this->getUser()->getId()]);
+        return $list;
+    }
+
+
+
+    /**
+     * @Route("/update-all-user-monitoring-items")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function updateAllUserMonitoringItems(Request $request){
+
+        $list = $this->getProcessesForCurrentUser();
+        $params = $request->request->all();
+        /**
+         * @var MonitoringItem $item
+         */
+        foreach($list->load() as $item){
+            $item->setValues($params)->save();
+        }
+
+        return $this->adminJson(['success' => true]);
+    }
+
+    /**
+     * @Route("/list-processes-for-user")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function listProcessesForUser(Request $request){
+        $data = [
+            'total' => 0,
+            'active' => 0,
+            'items' => []
+        ];
+
+        try {
+            $this->checkPermission('plugin_pm_permission_view');
+        }catch (\Exception $e){
+            return $this->adminJson($data);
+        }
+
+        $list = $this->getProcessesForCurrentUser();
+
+        $data['total'] = $list->getTotalCount();
+
+        foreach($list->load() as $item){
+            $tmp = $this->getItemData($item);
+            if($tmp['isAlive']){
+                $data['active']++;
+            }
+            $data['items'][] = $tmp;
+        }
+
+        return $this->adminJson($data);
+    }
+
+    protected function getItemData(MonitoringItem $item){
+        $tmp = $item->getObjectVars();
+        $tmp['messageShort'] = \Pimcore\Tool\Text::cutStringRespectingWhitespace($tmp['message'],30);
+        $tmp['steps'] = '-';
+        if ($item->getTotalSteps() > 0 || $item->getCurrentStep()) {
+            $tmp['steps'] = $item->getCurrentStep().'/'.$item->getTotalSteps();
+        }
+        $tmp['duration'] = $item->getDuration() ?: '-';
+        $tmp['progress'] = 0;
+
+        if ($tmp['executedByUser']) {
+            $user = \Pimcore\Model\User::getById($tmp['executedByUser']);
+            if ($user) {
+                $tmp['executedByUser'] = $user->getName();
+            } else {
+                $tmp['executedByUser'] = 'User id: '.$tmp['executedByUser'];
+            }
+        } else {
+            $tmp['executedByUser'] = 'System';
+        }
+
+        $logFile = 0;
+        $tmp['action'] = '';
+
+        if ($actions = $item->getActions()) {
+            foreach ($actions as $action) {
+                /**
+                 * @var $class AbstractAction
+                 */
+                $class = new $action['class'];
+                if ($s = $class->getGridActionHtml($item, $action)) {
+                    $tmp['action'] .= $s;
+                }
+            }
+        }
+        $tmp['actionItems'] = [];
+
+        if($tmp['actions']){
+            $actionItems = json_decode($tmp['actions'],true);
+
+            foreach($actionItems as $i => $v){
+                if($class = $v['class']){
+                    if(\Pimcore\Tool::classExists($class)){
+                        $o = new $class();
+                        $v['dynamicData'] = $o->toJson($item,$v);
+                    }
+
+                    $actionItems[$i] = $v;
+                }
+            }
+            $tmp['actionItems'] = $actionItems;
+        }
+        $tmp['logger'] = '';
+        if ($loggers = $item->getLoggers()) {
+            foreach ((array)$loggers as $i => $logger) {
+                /**
+                 * @var $class AbstractLogger
+                 */
+                $class = new $logger['class'];
+                if (\Pimcore\Tool::classExists(get_class($class))) {
+                    $logger['index'] = $i;
+                    if ($s = $class->getGridLoggerHtml($item, $logger)) {
+                        $tmp['logger'] .= $s;
+                    }
+                }
+            }
+        }
+
+        $tmp['retry'] = 1;
+        if ($item->isAlive()) {
+            $tmp['retry'] = 0;
+        }
+
+        if ($tmp['retry'] == 1) {
+            $config = Configuration::getById($item->getConfigurationId());
+            if ($config) {
+                if ($config->getActive() == 0) {
+                    $tmp['retry'] = 0;
+                } else {
+                    if ($config->getExecutorClassObject()->getValues()['uniqueExecution']) {
+                        $runningProcesses = $config->getRunningProcesses();
+                        if (!empty($runningProcesses)) {
+                            $tmp['retry'] = 0;
+                        }
+                    }
+                }
+            }
+        }
+        $tmp['isAlive'] = $item->isAlive();
+
+        $tmp['progress'] = '-';
+        if ($item->getCurrentWorkload() && $item->getTotalWorkload()) {
+            $progress = $item->getProgressPercentage();
+            $tmp['progress'] = '<div class="x-progress x-progress-default x-border-box" style="width:100%;"><div class="x-progress-text x-progress-text-back">'.$progress.'%</div><div class="x-progress-bar x-progress-bar-default" style="width:'.$progress.'%"><div class="x-progress-text"><div>'.$progress.'%</div></div></div></div>';
+        }
+
+        $tmp['progressPercentage'] = (float)$item->getProgressPercentage();
+        $tmp['callbackSettingsString'] = json_encode($item->getCallbackSettings());
+        $tmp['callbackSettings'] = $item->getCallbackSettingsForGrid();
+        $tmp['extraMessage'] = 'Die super nachricht ' . $item->getId();
+        $tmp['headerText'] = $item->getName().' (ID: '.$item->getId().')';
+        //$tmp['callbackSettings'] = '<table><tr><td><th>Key</th><th>Value</th></td></tr><tr><td>name:</td><td>testaa</td></tr></table>';
+        return $tmp;
     }
 
     /**

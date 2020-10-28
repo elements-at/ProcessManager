@@ -103,6 +103,9 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             '/bundles/elementsprocessmanager/js/executor/callback/default.js',
             '/bundles/elementsprocessmanager/js/executor/callback/executionNote.js',
             '/bundles/elementsprocessmanager/js/executor/callback/phing.js',
+            '/bundles/elementsprocessmanager/js/window/activeProcesses.js',
+
+
         ];
     }
 
