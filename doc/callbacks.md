@@ -1,4 +1,4 @@
-# Callbacks
+# Callbacks (Configuration windows)
 
 Callbacks are configuration windows/forms which are displayed before a process is executed. 
 This allows the user to configure certain runtime options/settings. 
