@@ -1,4 +1,4 @@
-#Callbacks
+# Callbacks
 
 Callbacks are configuration windows/forms which are displayed before a process is executed. 
 This allows the user to configure certain runtime options/settings. 
@@ -16,7 +16,13 @@ $callbackSettings = $monitoringItem->getCallbackSettings();
 The callback window which should pop up can the defined in the process settings:
 ![callbackDefinition](img/callbackDefinition.png)
 
-#Creating your own callbacks
+## Predefined execution Settings
+In the "Predefined execution Settings" tab you can create predefined configurations for your callback windows.
+![callbackPredefined](img/callbackPredefined.png)
+
+When you execute the "regular job", you can select these settings with the "Predefined config" field.  
+![callbackPredefined](img/selectPredefined.png)
+# Creating your own callbacks
 
 To create a callback you have to add a definition in the /app/config/pimcore/plugin-process-manager.php (section "executorCallbackClasses")
 
