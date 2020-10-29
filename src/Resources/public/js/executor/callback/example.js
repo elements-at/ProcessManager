@@ -4,7 +4,7 @@ pimcore.plugin.processmanager.executor.callback.example = Class.create(pimcore.p
     name: "example",
 
     // remove this param or set it to "window" if you want that the callback is opened in a modal window instead of a tab
-    callbackWindowType: 'tab',
+   // callbackWindowType: 'tab',
 
     //change the label width
     //labelWidth : 300,
