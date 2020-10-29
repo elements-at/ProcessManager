@@ -26,7 +26,7 @@ pimcore.plugin.processmanager.executor.action.openItem = new Class.create(pimcor
                 ['asset', t('plugin_pm_type_asset')]
             ]
         }));
-        items.push(this.getNumberField('item_id'));
+        items.push(this.getNumberField('itemId'));
         items.push(this.getTextField('class',{hidden: true,value : '\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Action\\OpenItem'}));
 
         this.form =  new Ext.form.FormPanel({
@@ -61,13 +61,13 @@ pimcore.plugin.processmanager.executor.action.openItem = new Class.create(pimcor
                 handler: function() {
                     let type = actionData.type;
                     if(type === 'asset'){
-                        pimcore.helpers.openAsset(actionData.item_id,actionData.dynamicData.item_type);
+                        pimcore.helpers.openAsset(actionData.itemId,actionData.dynamicData.item_type);
                     }
                     if(type === 'object'){
-                        pimcore.helpers.openObject(actionData.item_id,actionData.dynamicData.item_type);
+                        pimcore.helpers.openObject(actionData.itemId,actionData.dynamicData.item_type);
                     }
                     if(type === 'document'){
-                        pimcore.helpers.openDocument(actionData.item_id,actionData.dynamicData.item_type);
+                        pimcore.helpers.openDocument(actionData.itemId,actionData.dynamicData.item_type);
                     }
                 }
             });

@@ -158,6 +158,6 @@
 "plugin_pm_type_object";"Object"
 "plugin_pm_type_asset";"Asset"
 "plugin_pm_type_document";"Document"
-"plugin_pm_item_id";"Item ID"
+"plugin_pm_itemId";"Item ID"
 "plugin_pm_tooltip_accessKey";"Unique identifier to access the settings programmaticaly"
 "plugin_pm_stop";"stop"

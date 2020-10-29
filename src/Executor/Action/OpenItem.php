@@ -25,13 +25,83 @@ class OpenItem extends AbstractAction
     public $extJsClass = 'pimcore.plugin.processmanager.executor.action.openItem';
 
     /**
+     * @var string
+     */
+    protected $label = '';
+
+    /**
+     * @var string
+     */
+    protected $type = '';
+
+    /**
+     * @var int
+     */
+    protected $itemId = null;
+
+    /**
+     * @return string
+     */
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    /**
+     * @param string $label
+     * @return $this
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getItemId(): int
+    {
+        return $this->itemId;
+    }
+
+    /**
+     * @param int $itemId
+     * @return $this
+     */
+    public function setItemId($itemId)
+    {
+        $this->itemId = $itemId;
+        return $this;
+    }
+
+
+    /**
      * @param $monitoringItem MonitoringItem
      * @param $actionData
      *
      * @return object | null
      */
     protected function getItem($monitoringItem, $actionData){
-        return \Pimcore\Model\Element\Service::getElementById($actionData['type'],$actionData['item_id']);
+        return \Pimcore\Model\Element\Service::getElementById($actionData['type'],$actionData['itemId']);
     }
 
     protected function getIcon($type){
@@ -58,7 +128,7 @@ class OpenItem extends AbstractAction
                 $type = $item->getType();
                 $method = 'pimcore.helpers.open'.ucfirst($actionData['type']);
                 $cssClass = 'process_manager_icon_action_open '.$actionData['type'].' ';
-                $s =  '<a href="#" onClick="'.$method.'('.$actionData['item_id'].',\''.$item->getType().'\');" class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
+                $s =  '<a href="#" onClick="'.$method.'('.$actionData['itemId'].',\''.$item->getType().'\');" class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
 
                 return $s;
             } else {
@@ -88,5 +158,18 @@ class OpenItem extends AbstractAction
 
     public function execute($monitoringItem, $actionData)
     {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStorageData(): array
+    {
+        return [
+            'label' => $this->getLabel(),
+            'type' => $this->getType(),
+            'itemId' => $this->getItemId(),
+            'class' => self::class
+        ];
     }
 }

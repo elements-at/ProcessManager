@@ -16,6 +16,7 @@
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
+use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
@@ -132,7 +133,19 @@ class ConfigController extends AdminController
          */
         $executorClass = new $executorConfig['class']();
         $executorClass->setValues($data['values']);
-        $executorClass->setActions($data['actions']);
+
+        $actions = [];
+
+        foreach($data['actions'] as $actionData){
+            /**
+             * @var $obj AbstractAction
+             */
+            $className = $actionData['class'];
+            $obj = new $className();
+            $obj->setValues($actionData);
+            $actions[] = $obj;
+        }
+        $executorClass->setActions($actions);
         $executorClass->setLoggers($data['loggers']);
 
         // $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);

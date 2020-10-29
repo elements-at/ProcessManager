@@ -76,6 +76,17 @@ abstract class AbstractAction
     }
 
     /**
+     * @param array $data
+     */
+    public function setValues(array $data){
+        foreach($data as $key => $value){
+            $setter = "set" . ucfirst($key);
+            if(method_exists($this,$setter)){
+                $this->$setter($value);
+            }
+        }
+    }
+    /**
      * @return array
      */
     public function getConfig()
@@ -131,4 +142,11 @@ abstract class AbstractAction
         $data = $this->getObjectVars();
         return $data;
     }
+
+    /**
+     * returns an array for storage in the database
+     *
+     * @return array
+     */
+    abstract public function getStorageData(): array;
 }

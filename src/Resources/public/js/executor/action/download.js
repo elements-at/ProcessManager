@@ -20,7 +20,10 @@ pimcore.plugin.processmanager.executor.action.download = new Class.create(pimcor
         items.push(this.getTextField('accessKey',{mandatory : true,tooltip : t('plugin_pm_tooltip_accessKey')}));
         items.push(this.getTextField('label'));
         items.push(this.getTextField('filepath',{mandatory: true}));
-        items.push(this.getCheckbox('deleteWithMonitoringItem',{mandatory: true,fieldLabel : t('plugin_pm_action_download_delete_with_monitoring_item')}));
+        items.push(this.getCheckbox('deleteWithMonitoringItem',{
+            fieldLabel : t('plugin_pm_action_download_delete_with_monitoring_item'),
+            inputValue : true
+        }));
         items.push(this.getTextField('class',{hidden: true,value : '\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Action\\Download'}));
         this.form =  new Ext.form.FormPanel({
             forceLayout: true,

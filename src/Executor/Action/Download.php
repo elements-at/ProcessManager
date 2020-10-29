@@ -25,6 +25,101 @@ class Download extends AbstractAction
     public $extJsClass = 'pimcore.plugin.processmanager.executor.action.download';
 
     /**
+     * @var string
+     */
+    public $accessKey = '';
+
+    /**
+     * @var string
+     */
+    public $label = '';
+
+    /**
+     * @var string
+     */
+    public $filePath = '';
+
+    /**
+     * @var bool
+     */
+    public $deleteWithMonitoringItem = false;
+
+    /**
+     * @return bool
+     */
+    public function getDeleteWithMonitoringItem(): bool
+    {
+        return $this->deleteWithMonitoringItem;
+    }
+
+    /**
+     * @param bool $deleteWithMonitoringItem
+     * @return $this
+     */
+    public function setDeleteWithMonitoringItem($deleteWithMonitoringItem)
+    {
+        $this->deleteWithMonitoringItem = $deleteWithMonitoringItem;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessKey(): string
+    {
+        return $this->accessKey;
+    }
+
+    /**
+     * @param string $accessKey
+     * @return $this
+     */
+    public function setAccessKey($accessKey)
+    {
+        $this->accessKey = $accessKey;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    /**
+     * @param string $label
+     * @return $this
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param string $filePath
+     * @return $this
+     */
+    public function setFilePath($filePath)
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
+
+
+
+
+    /**
      * @param $monitoringItem MonitoringItem
      * @param $actionData
      *
@@ -88,7 +183,7 @@ class Download extends AbstractAction
      */
     public function preMonitoringItemDeletion($monitoringItem, $actionData)
     {
-        if ($actionData['deleteWithMonitoringItem']) {
+        if ($actionData['deleteWithMonitoringItem'] == true || $actionData['deleteWithMonitoringItem'] == "on") {
             $file = \PIMCORE_PROJECT_ROOT.$actionData['filepath'];
             if (is_readable($file)) {
                 unlink($file);
@@ -105,5 +200,19 @@ class Download extends AbstractAction
             $data['fileExists'] = false;
         }
         return $data;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStorageData() : array
+    {
+        return [
+            'accessKey' => $this->getAccessKey(),
+            'label' => $this->getLabel(),
+            'filepath' => $this->getFilePath(),
+            'deleteWithMonitoringItem' => $this->getDeleteWithMonitoringItem(),
+            'class' => self::class,
+        ];
     }
 }
