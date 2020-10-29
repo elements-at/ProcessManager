@@ -13,7 +13,7 @@ The selected values are stored in the monitoring item and can be retrieved by ca
 $callbackSettings = $monitoringItem->getCallbackSettings();
 ```
 
-The callback window which should pop up can the defined in the process settings:
+The callback window which should pop up can be defined in the process settings:
 ![callbackDefinition](img/callbackDefinition.png)
 
 ## Predefined execution Settings
