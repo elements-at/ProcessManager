@@ -1,9 +1,10 @@
 ### How to use
 
 **In short:** 
-The [SampleCommand](/src/Elements/Bundle/ProcessManagerBundle/examples/ProcessManager/Command/SampleCommand.php) is a example 
-how you should use the plugin. If you are new to this Bundle just copy this file to your projekt command space (alter namespaces) 
-and set up the command in the processmanager.
+The [ProcessManagerSampleCommandSimple](sample/src/AppBundle/Command/ProcessManagerSampleCommandSimple.php) is a very simple example on
+how you should use the bundle. If you are new to this Bundle just copy this file to your project command space  
+and set up the command in the ProcessManager.
+The [ProcessManagerSampleCommandAdvanced](sample/src/AppBundle/Command/ProcessManagerSampleCommandAdvanced.php) is a more advanced example.
 
 Details: When a script is executed via the Pimcore admin interface a monitoring item is created and the id of the monitoring item is passed to the cli script (Param: monitoring-item-id).
 You will have to retrieve this id in your script and call the initProcessManager() function of the \Elements\Bundle\ProcessManagerBundle\ExecutionTrait. 
@@ -13,7 +14,7 @@ in the pimcore admin.
 
 ## Callbacks
 
-Callbacks are configuration windows/forms which are displayed before a process is executed. This allowes the user to configure certain runitme options. 
+Callbacks are configuration windows/forms which are displayed before a process is executed. This allowes the user to configure certain runtime options. 
 The selected values are stored in the monitoring item and can be retrieved by calling 
 
 ```php
