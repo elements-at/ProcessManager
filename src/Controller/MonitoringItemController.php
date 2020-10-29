@@ -313,9 +313,6 @@ class MonitoringItemController extends AdminController
         $tmp['progressPercentage'] = (float)$item->getProgressPercentage();
         $tmp['callbackSettingsString'] = json_encode($item->getCallbackSettings());
         $tmp['callbackSettings'] = $item->getCallbackSettingsForGrid();
-        $tmp['extraMessage'] = 'Die super nachricht ' . $item->getId();
-        $tmp['headerText'] = $item->getName().' (ID: '.$item->getId().')';
-        //$tmp['callbackSettings'] = '<table><tr><td><th>Key</th><th>Value</th></td></tr><tr><td>name:</td><td>testaa</td></tr></table>';
         return $tmp;
     }
 

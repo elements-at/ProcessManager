@@ -23,11 +23,25 @@
 .process-manager-notification-progress-bar {
   /*  height:30px;*/
 }
-.plugin-process-manager-status-finished, .process-manager-notification-progress-bar.finished .x-progress-bar {
+.plugin-process-manager-status-finished,
+.process-manager-notification-progress-bar.finished,
+.process-manager-notification-progress-bar.finished .x-progress-bar {
     background-color: #9ACD32;
 }
-.plugin-process-manager-status-failed, .process-manager-notification-progress-bar.finished_with_errors .x-progress-bar , .process-manager-notification-progress-bar.failed .x-progress-bar{
+.plugin-process-manager-status-failed,
+.process-manager-notification-progress-bar.finished_with_errors ,
+.process-manager-notification-progress-bar.finished_with_errors .x-progress-bar ,
+.process-manager-notification-progress-bar.failed,
+.process-manager-notification-progress-bar.failed .x-progress-bar
+{
     background-color: #FF6347;
+}
+
+#processmanager_active_processes .process-manager-notification-progress-bar.failed .x-progress-text-back,
+#processmanager_active_processes .process-manager-notification-progress-bar.finished_with_errors .x-progress-text-back,
+#processmanager_active_processes .process-manager-notification-progress-bar.finished .x-progress-text-back
+{
+    color:#fff;
 }
 .plugin-process-manager-save-button{
     background: url("/bundles/pimcoreadmin/img/flat-color-icons/ok.svg") no-repeat scroll left center transparent !important;

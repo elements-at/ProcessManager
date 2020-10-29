@@ -57,23 +57,8 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
             tooltip: t('plugin_pm_process_list_set_unpublished'),
             id: 'processmanager_monitoring_item_primary_button_' + item.id,
             icon : '/bundles/pimcoreadmin/img/flat-color-icons/approve.svg',
-            style: 'margin-left:5px;height:30px',
-            handler: function() {
-                Ext.Ajax.request({
-                    url: '/admin/elementsprocessmanager/monitoring-item/update',
-                    method : 'post',
-                    params : {
-                        id : item.id,
-                        published : true
-                    },
-                    success: function (content) {
-                        let result = Ext.decode(content.responseText);
-                        if(result.success){
-                            this._removeProgressPanel(result.data.id);
-                        }
-                    }.bind(this)
-                });
-            }.bind(this)
+            style: 'margin-left:5px;height:30px'
+
         });
 
         let progressPanel = Ext.create('Ext.panel.Panel', {
@@ -155,7 +140,46 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
 
     _updatePrimaryBtn: function(item) {
         let button = Ext.getCmp('processmanager_monitoring_item_primary_button_' + item.id);
-        button.setDisabled(item.isAlive);
+        if(item.isAlive){
+            button.setIcon('/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg')
+            button.setTooltip(t('plugin_pm_stop'));
+        }else{
+            button.setIcon('/bundles/pimcoreadmin/img/flat-color-icons/approve.svg');
+            button.setTooltip(t('plugin_pm_process_list_set_unpublished'));
+        }
+        //need to set the handler here to get the correct value for the item
+        button.handler = function() {
+            if(item.isAlive){
+                Ext.Ajax.request({
+                    url: '/admin/elementsprocessmanager/monitoring-item/cancel',
+                    method : 'get',
+                    params : {
+                        id : item.id
+                    },
+                    success: function (content) {
+                        let result = Ext.decode(content.responseText);
+                        if(result.success){
+                        }
+                    }.bind(this)
+                });
+            }else{
+                Ext.Ajax.request({
+                    url: '/admin/elementsprocessmanager/monitoring-item/update',
+                    method : 'post',
+                    params : {
+                        id : item.id,
+                        published : true
+                    },
+                    success: function (content) {
+                        let result = Ext.decode(content.responseText);
+                        if(result.success){
+                            this._removeProgressPanel(result.data.id);
+                        }
+                    }.bind(this)
+                });
+            }
+        }.bind(this)
+        //button.setDisabled(item.isAlive);
     },
 
     _updateActionBtns: function(actionBtnsPanel, item) {
