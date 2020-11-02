@@ -23,6 +23,7 @@ Just add the following command to your crontab (and set "executeWithMaintenance"
 * Implemented userfriendly execution mode for processes. After the update all MonitoringItems from the users will be hidden as they would otherwise appear in the active process list.
 * Added Open Item  + JS Event Actions
 * Custom Action must now implement the method getStorageData()
+* Migrations are now executed by default
 
 # Update
 To update the bundle please use the following command:
