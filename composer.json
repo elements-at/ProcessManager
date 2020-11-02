@@ -11,6 +11,11 @@
         "Elements\\Bundle\\ProcessManagerBundle\\": "src"
     }
   },
+  "scripts": {
+    "post-update-cmd": [
+      "Pimcore\\Composer::executeBundleMigrationsUp"
+    ]
+  },
   "extra": {
     "pimcore": {
       "bundles": [
