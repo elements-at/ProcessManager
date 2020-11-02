@@ -43,13 +43,14 @@ Provides a download button after the process has been finished.
 Programmatically creation: 
 
 ```php
-$openItemAction = new Action\OpenItem();
-$openItemAction
-    ->setLabel('Open document')
-    ->setItemId(1) //id of the document/object/asset
-    ->setType('document');
+$downloadAction = new Action\Download();
+$downloadAction
+    ->setAccessKey('myIcon')
+    ->setLabel('Download Icon')
+    ->setFilePath('/web/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
+    ->setDeleteWithMonitoringItem(false);
 $monitoringItem->setActions([
-    $openItemAction
+    $downloadAction
 ]);
 
 $monitoringItem->save();
@@ -61,14 +62,14 @@ The "Open item" shows a button after the process is finished with which the user
 Programmatically creation: 
 
 ```php
-$downloadAction = new Action\Download();
-$downloadAction
-    ->setAccessKey('myIcon')
-    ->setLabel('Download Icon')
-    ->setFilePath('/web/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
-    ->setDeleteWithMonitoringItem(false);
+
+$openItemAction = new Action\OpenItem();
+$openItemAction
+    ->setLabel('Open document')
+    ->setItemId(1) //id of the document/object/asset
+    ->setType('document');
 $monitoringItem->setActions([
-    $downloadAction
+    $openItemAction
 ]);
 
 $monitoringItem->save();
