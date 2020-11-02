@@ -11,6 +11,11 @@ use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
  */
 class Version00000021 extends AbstractPimcoreMigration
 {
+    public function doesSqlMigrations(): bool
+    {
+        return false;
+    }
+
     /**
      * @param Schema $schema
      */
