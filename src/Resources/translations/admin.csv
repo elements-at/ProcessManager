@@ -161,3 +161,8 @@
 "plugin_pm_itemId";"Item ID"
 "plugin_pm_tooltip_accessKey";"Unique identifier to access the settings programmaticaly"
 "plugin_pm_stop";"stop"
+"plugin_pm_jsEvent";"JavaScript Event"
+"plugin_pm_eventName";"Event name"
+"plugin_pm_eventData";"Event data"
+"plugin_pm_eventData_tooltip";"JSON string which is passed as event data"
+"plugin_pm_icon";"Icon"

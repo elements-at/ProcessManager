@@ -55,6 +55,12 @@ return [
     'executorActionClasses' => [
         [
             'class' => '\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Action\\Download'
+        ],
+        [
+            'class' => '\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Action\\OpenItem'
+        ],
+        [
+            'class' => '\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Action\\JsEvent'
         ]
     ],
     'executorCallbackClasses' => [

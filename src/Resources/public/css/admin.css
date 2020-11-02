@@ -59,16 +59,25 @@
     display: inline-block;
     vertical-align: top;
 }
-/*
-.process_manager_icon_action_overlay_go {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    bottom: 0px;
-    right: 0px;
-    content: "";
-    background: url(/bundles/pimcoreadmin/img/flat-color-icons/overlay-go.svg) center center no-repeat !important;
-}*/
+
+.process_manager_action_js_event {
+    margin-right: 5px;
+    text-align: center;
+}
+.process_manager_action_js_event img {
+
+}
+
+    /*
+    .process_manager_icon_action_overlay_go {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        bottom: 0px;
+        right: 0px;
+        content: "";
+        background: url(/bundles/pimcoreadmin/img/flat-color-icons/overlay-go.svg) center center no-repeat !important;
+    }*/
 
 .process_manager_icon_action_open {
     position: relative;
