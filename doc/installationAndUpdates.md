@@ -17,6 +17,8 @@ Just add the following command to your crontab (and set "executeWithMaintenance"
 * * * * * php ~/www/bin/console process-manager:maintenance > /dev/null 2>&1
 ```
 
+Please take a look at the "Update" section below if you want to execute migrations automatically when the bundle is updated.
+ 
 # Update notes
 
 ## v3.1.0
@@ -30,6 +32,21 @@ To update the bundle please use the following command:
 
 ```
 composer update elements/process-manager-bundle; bin/console pimcore:bundle:update ElementsProcessManagerBundle
+```
+
+If you want that the migrations of the ProcessManagerBundle are automatically executed when you do a "composer update elements/process-manager-bundle;",  please add  
+"Elements\\Bundle\\ProcessManagerBundle\\Composer::executeMigrationsUp" 
+to your **project composer.json**
+```
+  "scripts": {
+    "post-create-project-cmd": "Pimcore\\Composer::postCreateProject",
+    "post-install-cmd": [
+       //...,
+    ],
+    "post-update-cmd": [
+       //...,
+      "Elements\\Bundle\\ProcessManagerBundle\\Composer::executeMigrationsUp"
+    ],
 ```
 
 # Running with Pimcore < 5.4
