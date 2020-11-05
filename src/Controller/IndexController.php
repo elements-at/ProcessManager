@@ -46,7 +46,7 @@ class IndexController extends AdminController
 
         $pluginConfig = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getConfig();
 
-        $data['jsSettings'] = (array)$pluginConfig['jsSettings'];
+        $data['jsSettings'] = (array) ($pluginConfig['jsSettings'] ?? []);
 
         $classTypeMapping = [
             'executorClasses' => '\Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor',
