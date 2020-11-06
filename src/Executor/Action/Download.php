@@ -185,7 +185,7 @@ class Download extends AbstractAction
     {
         if ($actionData['deleteWithMonitoringItem'] == true || $actionData['deleteWithMonitoringItem'] == "on") {
             $file = \PIMCORE_PROJECT_ROOT.$actionData['filepath'];
-            if (is_readable($file)) {
+            if (is_readable($file) && is_file($file)) {
                 unlink($file);
             }
         }
