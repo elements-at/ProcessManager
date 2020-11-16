@@ -615,16 +615,18 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      * convenience function to set the process message
      *
      * @param string $itemType
+     * @param int $logLevel
      *
      * @return $this
      */
-    public function setDefaultProcessMessage($itemType = 'item')
+    public function setDefaultProcessMessage($itemType = 'item', $logLevel = Logger::NOTICE)
     {
         $currentWorkload = $this->getCurrentWorkload() ?: 1;
 
         $this->setMessage(
             'Processing '.$itemType.' '.$currentWorkload.' from '.$this->getTotalWorkload(
-            ).' ('.($this->getTotalWorkload() - $currentWorkload).' remaining)'
+            ).' ('.($this->getTotalWorkload() - $currentWorkload).' remaining)',
+            $logLevel
         );
 
         return $this;
