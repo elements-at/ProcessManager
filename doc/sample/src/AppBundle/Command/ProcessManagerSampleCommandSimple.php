@@ -15,6 +15,9 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Model\Product\Car;
+use Carbon\Carbon;
+use Elements\Bundle\ProcessManagerBundle\MetaDataFile;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,6 +45,18 @@ class ProcessManagerSampleCommandSimple extends AbstractCommand
     {
         $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
 
+        $metDataFileObject = MetaDataFile::getById('spample-id');
+
+        $start = \Carbon\Carbon::now();
+        if($ts = $metDataFileObject->getData()['lastRun']){
+            $lastRun = \Carbon\Carbon::createFromTimestamp($ts);
+        }else{
+            $lastRun = \Carbon\Carbon::now();
+        }
+
+        //query api with last successfully execution time...
+
+
         $workload = ['one','two','three','four'];
 
         $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Starting process')->save();
@@ -63,6 +78,9 @@ class ProcessManagerSampleCommandSimple extends AbstractCommand
         $monitoringItem->setActions([
             $downloadAction
         ]);
+
+        $monitoringItem->getLogger()->debug('Last Run: ' . $lastRun->format(\Carbon\Carbon::DEFAULT_TO_STRING_FORMAT));
+        $metDataFileObject->setData(['lastRun' => $start->getTimestamp()])->save();
 
         $monitoringItem->setMessage('Job finished')->setCompleted();
     }
