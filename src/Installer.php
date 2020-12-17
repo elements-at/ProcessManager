@@ -34,12 +34,7 @@ class Installer extends MigrationInstaller
         $this->createTables();
         $this->copyConfig();
 
-        self::updateTranslations();
         return true;
-    }
-
-    public static function updateTranslations($replaceExistingTranslations = false){
-        Admin::importTranslationsFromFile(__DIR__ . '/Resources/translations/admin.csv',$replaceExistingTranslations);
     }
 
     public function migrateUninstall(Schema $schema, Version $version)
