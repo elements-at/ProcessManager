@@ -44,7 +44,6 @@ class Version00000021 extends AbstractPimcoreMigration
             ];
         }
         \Pimcore\File::putPhpFile($configFile, to_php_data_file_format($config));
-        \Elements\Bundle\ProcessManagerBundle\Installer::updateTranslations();
     }
 
     /**
