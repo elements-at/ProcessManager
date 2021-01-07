@@ -7,7 +7,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * Update translations
  */
 class Version00000019 extends AbstractPimcoreMigration
 {
@@ -16,7 +16,7 @@ class Version00000019 extends AbstractPimcoreMigration
      */
     public function up(Schema $schema)
     {
-        \Elements\Bundle\ProcessManagerBundle\Installer::updateTranslations();
+        // Removed per https://github.com/elements-at/ProcessManager/pull/78
     }
 
     /**
