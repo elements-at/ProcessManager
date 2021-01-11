@@ -17,7 +17,6 @@ class Version00000020 extends AbstractPimcoreMigration
     public function up(Schema $schema)
     {
         $this->addSql("UPDATE " . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . " SET published=0 where executedByUser > 0");
-        \Elements\Bundle\ProcessManagerBundle\Installer::updateTranslations(true);
     }
 
     /**

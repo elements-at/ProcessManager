@@ -16,7 +16,6 @@ class Version00000019 extends AbstractPimcoreMigration
      */
     public function up(Schema $schema)
     {
-        \Elements\Bundle\ProcessManagerBundle\Installer::updateTranslations();
     }
 
     /**
