@@ -265,7 +265,7 @@ trait ExecutionTrait
                 continue;
             }
 
-            $monitoringItem->setCurrentWorkload($i+1)->setMessage('Processing package '. ($i+1))->save();
+            $monitoringItem->setCurrentWorkload($i)->setMessage('Processing package '. ($i+1))->save();
 
             for($x = 1; $x <= 3; $x++){
                 $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0,$package,$monitoringItem->getId(),$callback);
@@ -297,6 +297,8 @@ trait ExecutionTrait
             static::childProcessCheck($monitoringItem);
             usleep(static::$childProcessCheckInterval);
         }
+
+        $monitoringItem->setCurrentWorkload($monitoringItem->getTotalWorkload())->save();
     }
 
     protected static function childProcessCheck(MonitoringItem $monitoringItem){
