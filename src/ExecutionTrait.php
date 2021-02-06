@@ -287,8 +287,8 @@ trait ExecutionTrait
                 usleep(static::$childProcessCheckInterval);
             }
 
-            if($monitoringItem->getChildProcessesStatus()['failed'] ?? false){
-                throw new \Exception('Childs failed');
+            if ($monitoringItem->getChildProcessesStatus()['summary']['failed'] > 0){
+                throw new \Exception('Child process failed');
             }
         }
 
@@ -296,6 +296,10 @@ trait ExecutionTrait
             $monitoringItem->getLogger()->info('Waiting for child processes to be finished -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
             static::childProcessCheck($monitoringItem);
             usleep(static::$childProcessCheckInterval);
+        }
+
+        if ($monitoringItem->getChildProcessesStatus()['summary']['failed'] > 0){
+            throw new \Exception('Child process failed');
         }
     }
 
