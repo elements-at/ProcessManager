@@ -965,24 +965,30 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     public function getChildProcessesStatus(){
-        $result = ['active' => 0, 'failed' => 0,'finished' => 0];
-
-        $status = [];
+        $summary = ['active' => 0, 'failed' => 0,'finished' => 0];
+        $details = ['active' => [], 'failed' => [],'finished' => []];
+        $currentWorkload = 0;
 
         foreach($this->getChildProcesses() as $child){
-            $status[$child->getStatus()][] = ['id' => $child->getId(),'message' => $child->getMessage(),'alive' => $child->isAlive()];
+            $details[$child->getStatus()][] = ['id' => $child->getId(),'message' => $child->getMessage(),'alive' => $child->isAlive()];
+
+            $currentWorkload += $child->getCurrentWorkload();
 
             if($child->getStatus() == self::STATUS_FINISHED){
-                $result['finished']++;
+                $summary['finished']++;
             }else{
                 if($child->isAlive()){
-                    $result['active']++;
+                    $summary['active']++;
                 }else{
-                    $result['failed']++;
+                    $summary['failed']++;
                 }
             }
         }
 
-        return ['summary' => $result, 'details' => $status];
+        return [
+            'summary' => $summary,
+            'details' => $details,
+            'currentWorkload' => $currentWorkload,
+        ];
     }
 }
