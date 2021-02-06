@@ -20,7 +20,7 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 class Helper
 {
-    public static function executeJob($configId, $callbackSettings = [], $userId = 0, $metaData = [], $parentMonitoringItemId = null, $callback = '')
+    public static function executeJob($configId, $callbackSettings = [], $userId = 0, $metaData = '[]', $parentMonitoringItemId = null, $callback = '')
     {
         try {
             $config = Configuration::getById($configId);
