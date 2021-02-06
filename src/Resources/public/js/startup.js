@@ -159,11 +159,11 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
             success: function(response, opts) {
                 var data = Ext.decode(response.responseText);
                 if(data.success){
-                  //  pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
+                    pimcore.helpers.showNotification(t("success"), t("plugin_pm_restart_success"), "success");
                     this.activeProcesses.refreshTask.start();
                     Ext.getCmp("plugin_pmmonitoring_item_list_panel").store.reload();
                 }else{
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error",data.message);
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_restart_error"), "error",data.message);
                 }
             }.bind(this)
         });
@@ -185,10 +185,10 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
             success: function(response, opts) {
                 var data = Ext.decode(response.responseText);
                 if(data.success){
-                    pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
+                    pimcore.helpers.showNotification(t("success"), t("plugin_pm_cancel_success"), "success");
                     Ext.getCmp("plugin_pmmonitoring_item_list_panel").store.reload();
                 }else{
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error",data.message);
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_cancel_error"), "error",data.message);
                 }
             }.bind(this)
         });
@@ -236,7 +236,7 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                     callbackClass.setConfig(configData);
                     callbackClass.execute();
                 } else {
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", data.message);
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_error_process_manager"), "error", data.message);
                 }
             }.bind(this)
         });
