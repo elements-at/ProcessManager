@@ -79,6 +79,12 @@ class ConfigController extends AdminController
         $list->setLimit($request->get('limit', 25));
         $list->setOffset($request->get('start'));
 
+        $sortingSettings = QueryParams::extractSortingSettings($request->request->all());
+        if ($sortingSettings['orderKey'] && $sortingSettings['order']) {
+            $list->setOrderKey($sortingSettings['orderKey']);
+            $list->setOrder($sortingSettings['order']);
+        }
+
         $list->setUser($this->getAdminUser());
 
         if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'))) {
