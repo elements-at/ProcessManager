@@ -517,9 +517,13 @@ class MonitoringItemController extends AdminController
         try {
             $pid = $monitoringItem->getPid();
             if ($pid) {
+                $status = $monitoringItem->stopProcess();
                 $message = 'Process with PID "'.$pid.'" killed by Backend User: '.$this->getUser()->getUser()->getName();
                 $monitoringItem->getLogger()->warning($message);
-                return $this->adminJson(['success' => $monitoringItem->stopProcess()]);
+                foreach($monitoringItem->getChildProcesses() as $child) {
+                    $child->stopProcess();
+                }
+                return $this->adminJson(['success' => $status]);
             }
 
             return $this->adminJson(['success' => true]);
