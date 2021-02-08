@@ -251,21 +251,21 @@ trait ExecutionTrait
      * @throws \Exception
      */
     public static function executeChildProcesses(MonitoringItem $monitoringItem,array $workload, $numberOfchildProcesses = 5, $batchSize = 10, $callback = null, $startAfterPackage = null){
-        $workload = array_chunk($workload,$batchSize); //entries per process
+        $workloadChunks = array_chunk($workload,$batchSize); //entries per process
         $childProcesses = $monitoringItem->getChildProcesses();
         foreach($childProcesses as $c){
             $c->delete();
         }
         $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Starting child processes')->save();
 
-        foreach($workload as $i => $package){
+        foreach($workloadChunks as $i => $package){
 
             if($startAfterPackage && $startAfterPackage > ($i+1)){
                 $monitoringItem->getLogger()->debug('Skipping Package' . ($i+1));
                 continue;
             }
 
-            $monitoringItem->setCurrentWorkload($i+1)->setMessage('Processing package '. ($i+1))->save();
+            $monitoringItem->setMessage('Processing batch '. ($i+1) . ' of ' . count($workloadChunks))->save();
 
             for($x = 1; $x <= 3; $x++){
                 $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, json_encode($package), $monitoringItem->getId(), $callback);
@@ -280,23 +280,9 @@ trait ExecutionTrait
                     break;
                 }
             }
-
-            while ($monitoringItem->getChildProcessesStatus()['summary']['active'] >= $numberOfchildProcesses){ //run x processes parrallel
-                $monitoringItem->getLogger()->info('Waiting to start child processes -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
-                static::childProcessCheck($monitoringItem);
-                usleep(static::$childProcessCheckInterval);
-            }
-
-            if($monitoringItem->getChildProcessesStatus()['failed'] ?? false){
-                throw new \Exception('Childs failed');
-            }
+            self::waitForChildProcesses($monitoringItem, $i * $batchSize, $numberOfchildProcesses);
         }
-
-        while($monitoringItem->getChildProcessesStatus()['summary']['active']){
-            $monitoringItem->getLogger()->info('Waiting for child processes to be finished -> status: ' . print_r($monitoringItem->getChildProcessesStatus()['summary'],true));
-            static::childProcessCheck($monitoringItem);
-            usleep(static::$childProcessCheckInterval);
-        }
+        self::waitForChildProcesses($monitoringItem, $i * $batchSize);
     }
 
     protected static function childProcessCheck(MonitoringItem $monitoringItem){
@@ -319,5 +305,30 @@ trait ExecutionTrait
             throw new \Exception('Exiting because child failed: ' .print_r($statuses['details'][MonitoringItem::STATUS_FAILED],true));
         }
 
+    }
+
+    /**
+     * @param MonitoringItem $monitoringItem
+     * @param int $i
+     * @param int $batchSize
+     * @param int $numberOfchildProcesses
+     * @throws \Exception
+     */
+    protected static function waitForChildProcesses(MonitoringItem $monitoringItem, int $baseline, int $maxProcesses = 0): void
+    {
+        do {
+            $status = $monitoringItem->getChildProcessesStatus();
+            $activeProcesses = $status['summary']['active'];
+
+            $monitoringItem->setCurrentWorkload($baseline + $status['currentWorkload'])->save();
+
+            $monitoringItem->getLogger()->info('Waiting to start child processes -> status: ' . print_r($status['summary'], true));
+            static::childProcessCheck($monitoringItem);
+            usleep(static::$childProcessCheckInterval);
+        } while ($activeProcesses > $maxProcesses);
+
+        if ($status['summary']['failed'] > 0) {
+            throw new \Exception('Child process failed');
+        }
     }
 }
