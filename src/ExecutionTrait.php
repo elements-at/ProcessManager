@@ -268,7 +268,7 @@ trait ExecutionTrait
             $monitoringItem->setCurrentWorkload($i+1)->setMessage('Processing package '. ($i+1))->save();
 
             for($x = 1; $x <= 3; $x++){
-                $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0,$package,$monitoringItem->getId(),$callback);
+                $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, json_encode($package), $monitoringItem->getId(), $callback);
 
                 if($result['success'] == false){
                     $monitoringItem->getLogger()->warning("Can't start child (tried ". $i ." time ) - reason: " . $result['message']);
