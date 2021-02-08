@@ -332,10 +332,10 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                 var data = Ext.decode(response.responseText);
                 if (data.success) {
                     processmanagerPlugin.activeProcesses.refreshTask.start();
-                    /*pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_execution_success"), "success");
+                    /*pimcore.helpers.showNotification(t("success"), t("plugin_pm_start_success"), "success");
                     */
                 } else {
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", data.message);
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_start_error"), "error", data.message);
                 }
                 if (this.store) {
                     this.store.reload();

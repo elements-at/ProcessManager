@@ -73,7 +73,7 @@ pimcore.plugin.processmanager.executor.logger.application = Class.create(pimcore
                         applicationLogger.autoRefresh.setValue(true);
                     }
                 } else {
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_execution_error"), "error", result.message);
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_error_process_manager"), "error", result.message);
                 }
             }.bind(this)
         });
