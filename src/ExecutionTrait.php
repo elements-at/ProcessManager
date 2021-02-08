@@ -227,18 +227,22 @@ trait ExecutionTrait
     {
         $configFile = \Pimcore\Config::locateConfigFile('system.yml');
         $owner = fileowner($configFile);
+
         if ($owner === false) {
             throw new \Exception("Couldn't get user from file " . $configFile);
         }
-        $userData = posix_getpwuid($owner);
-        $allowedUsers[] = $userData['name'];
+        if(function_exists('posix_getpwuid')){
+            $userData = posix_getpwuid($owner);
+            $allowedUsers[] = $userData['name'];
 
-        $scriptExecutingUserData = posix_getpwuid(posix_geteuid());
-        $scriptExecutingUser = $scriptExecutingUserData['name'];
+            $scriptExecutingUserData = posix_getpwuid(posix_geteuid());
+            $scriptExecutingUser = $scriptExecutingUserData['name'];
 
-        if (!in_array($scriptExecutingUser, $allowedUsers)) {
-            throw new \Exception("The current system user is not allowed to execute this script. Allowed users: '" . implode(',', $allowedUsers) ."' Executing user: '$scriptExecutingUser'.");
+            if (!in_array($scriptExecutingUser, $allowedUsers)) {
+                throw new \Exception("The current system user is not allowed to execute this script. Allowed users: '" . implode(',', $allowedUsers) ."' Executing user: '$scriptExecutingUser'.");
+            }
         }
+
     }
 
     /**
