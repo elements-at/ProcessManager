@@ -105,7 +105,7 @@ class RestController extends FrontendController
             }
         }
 
-        $result = Helper::executeJob($request->get('id'), $callbackSettings, $user->getId());
+        $result = Helper::executeJob($config->getId(), $callbackSettings, $user->getId());
         unset($result['executedCommand']);
 
         return $this->json($result);
