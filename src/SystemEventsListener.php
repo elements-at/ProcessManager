@@ -41,7 +41,7 @@ class SystemEventsListener implements EventSubscriberInterface
      */
     public function onConsoleError(ConsoleErrorEvent $e)
     {
-        if (!ElementsProcessManagerBundle::isInstalled()) {
+        if (!\Pimcore::isInstalled() || !ElementsProcessManagerBundle::isInstalled()) {
             return;
         }
 
@@ -58,7 +58,7 @@ class SystemEventsListener implements EventSubscriberInterface
      */
     public function onConsoleTerminate(ConsoleTerminateEvent $e)
     {
-        if (!ElementsProcessManagerBundle::isInstalled()) {
+        if (!\Pimcore::isInstalled() || !ElementsProcessManagerBundle::isInstalled()) {
             return;
         }
 
