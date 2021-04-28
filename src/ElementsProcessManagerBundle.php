@@ -230,7 +230,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return $path;
     }
 
-    protected function getComposerPackageName()
+    protected function getComposerPackageName(): string
     {
         return 'elements/process-manager-bundle';
     }
