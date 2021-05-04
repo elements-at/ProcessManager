@@ -26,7 +26,6 @@ The bundle consists of 6 main components.
 
 | Class| Description |
 | ----- | ----------- |
-| \Elements\Bundle\ProcessManagerBundle\Executor\CliCommand | Executes a custom cli command  |
 |\Elements\Bundle\ProcessManagerBundle\Executor\PimcoreCommand |  Executes a pimcore command |
 |\Elements\Bundle\ProcessManagerBundle\Executor\ClassMethod  | Initializes a Class and calls a method  |
 
@@ -35,6 +34,8 @@ The bundle consists of 6 main components.
 | Class| Description |
 | ----- | ----------- |
 | \Elements\Bundle\ProcessManagerBundle\Executor\Action\Download| Provide a download after a job has finished  |
+| \Elements\Bundle\ProcessManagerBundle\Executor\Action\OpenItem| Adds a button to open an item (object/document/asset) after a job has finished  |
+| \Elements\Bundle\ProcessManagerBundle\Executor\Action\JsEvent| Executes a custom JavaScript event after a job has finished  |
 
 
 ### Callback Classes
@@ -50,5 +51,6 @@ The bundle consists of 6 main components.
 | \Elements\Bundle\ProcessManagerBundle\Executor\Logger\File | Logs the messages to a file. If no file path is specified, the logs are written to  /website/var/log/process-manager/(MonitoringItem-ID).log |
 |\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console |  The messages are logged to the php stdout (for cli execution) |
 |\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Application  | The messages are logged to the Application-Logger. The name of the Configuration is used as component name  |
+|\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Email  | The messages are sent per email to the recipient (one email with all logs)|
 
 If "Simple log format" is checked, the Context-Information is omitted (cleaner log messages -> useful for File and Console Logger)

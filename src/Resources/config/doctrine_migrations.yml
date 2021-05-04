@@ -1,0 +1,3 @@
+doctrine_migrations:
+    migrations_paths:
+        'Elements\Bundle\ProcessManagerBundle\Migrations': '%kernel.project_dir%/vendor/elements/process-manager-bundle/src/Migrations'

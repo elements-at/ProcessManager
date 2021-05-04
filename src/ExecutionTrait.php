@@ -297,7 +297,7 @@ trait ExecutionTrait
         $monitoringItem->setModificationDate(time())->save();
         if($statuses['summary']['failed']  && static::getChildProcessErrorHandling() == 'strict'){
             foreach([MonitoringItem::STATUS_RUNNING,MonitoringItem::STATUS_INITIALIZING,MonitoringItem::STATUS_UNKNOWN] as $status){
-                $items = $statuses['details'][$status];
+                $items = $statuses['details'][$status] ?? [];
                 foreach((array)$items as $entry){
                     $mItem = MonitoringItem::getById($entry['id']);
 

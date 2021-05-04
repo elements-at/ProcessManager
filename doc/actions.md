@@ -20,7 +20,7 @@ $downloadAction = new Action\Download();
 $downloadAction
     ->setAccessKey('myIcon')
     ->setLabel('Download Icon')
-    ->setFilePath('/web/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
+    ->setFilePath('/public/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
     ->setDeleteWithMonitoringItem(false);
 
 $openItemAction = new Action\OpenItem();
@@ -47,7 +47,7 @@ $downloadAction = new Action\Download();
 $downloadAction
     ->setAccessKey('myIcon')
     ->setLabel('Download Icon')
-    ->setFilePath('/web/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
+    ->setFilePath('/public/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
     ->setDeleteWithMonitoringItem(false);
 $monitoringItem->setActions([
     $downloadAction

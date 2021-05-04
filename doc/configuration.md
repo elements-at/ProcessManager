@@ -1,2 +1,30 @@
 ### Configuration
-The [default configuration file](../src/Resources/install/plugin-process-manager.php) gets copied to `<Pimcore root folder>/var/config/plugin-process-manager.php`. You can change those settings either directly in the file or by overriding it in a new file called `<Pimcore root folder>/app/config/pimcore/plugin-process-manager.php`. 
+A sample configuration could look like this.
+
+```yaml
+elements_process_manager:
+    archiveThresholdLogs: 14
+    processTimeoutMinutes : 60
+    disableShortcutMenu : false
+    additionalScriptExecutionUsers : ["www-data","stagingUser"]
+    reportingEmailAddresses : ["christian.kogler@elements.at"]
+    restApiUsers:
+        - {username: "tester" , apiKey: "1234"}
+        - {username: "tester2" , apiKey: "344"}
+
+services:
+    example:
+        class : Elements\Bundle\ProcessManagerBundle\Executor\Callback\General
+        arguments :
+            $name: "example"
+            $extJsClass: "pimcore.plugin.processmanager.executor.callback.example"
+            $jsFile: "/bundles/elementsprocessmanager/js/executor/callback/example.js"
+        tags:
+            - { name: "elements.processManager.executorCallbackClasses" }
+```
+
+You can execute 
+```command 
+bin/console config:dump-reference ElementsProcessManagerBundle
+```
+to dump the configuration.

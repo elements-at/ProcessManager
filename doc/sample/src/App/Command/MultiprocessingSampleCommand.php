@@ -39,6 +39,7 @@ class MultiprocessingSampleCommand extends AbstractCommand
         }else{
             $this->executeParent($input,$output,$monitoringItem); //main process
         }
+        return 0;
     }
 
     /**
@@ -67,15 +68,17 @@ class MultiprocessingSampleCommand extends AbstractCommand
 
         $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Processing Data')->save();
         foreach($workload as $i => $data){
-            $object = \AppBundle\Model\DataObject\Product::getById($data['id']);
+
+            #$object = \AppBundle\Model\DataObject\Product::getById($data['id']);
+            $object = new \stdClass();
 
             if($data['id'] == 88){
                 #    throw new \Exception('Oh something happened with 88');
             }
             if($object){
-                $monitoringItem->setMessage('Updating object ID:' . $object->getId())->setCurrentWorkload($i+1)->save();
-                $object->setName($data['name'].' MID: ' . $monitoringItem->getId() ,'en');
-                $object->save();
+                $monitoringItem->setMessage('Updating object ID:' . $data['id'])->setCurrentWorkload($i+1)->save();
+                #$object->setName($data['name'].' MID: ' . $monitoringItem->getId() ,'en');
+                #$object->save();
                 sleep(1); //just for demo
             }
         }

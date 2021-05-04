@@ -24,18 +24,21 @@ When you execute the "regular job", you can select these settings with the "Pred
 ![callbackPredefined](img/selectPredefined.png)
 # Creating your own callbacks
 
-To create a callback you have to add a definition in the /app/config/pimcore/plugin-process-manager.php (section "executorCallbackClasses")
+To create a callback you have to add a Service definition like this:
 
-
-```php
-[
-            "name" => "exportProducts",
-            "class" => "\\Elements\\Bundle\\ProcessManagerBundle\\Executor\\Callback\\General",
-            "extJsClass" => "pimcore.plugin.PLUGINNAME.processmanager.executor.callback.exportProducts",
-]
+```yaml
+services:
+    example:
+        class : Elements\Bundle\ProcessManagerBundle\Executor\Callback\General
+        arguments :
+            $name: "example"
+            $extJsClass: "pimcore.plugin.processmanager.executor.callback.example"
+            $jsFile: "/bundles/elementsprocessmanager/js/executor/callback/example.js"
+        tags:
+            - { name: "elements.processManager.executorCallbackClasses" }
 ```
-Most of the time you will add a definition like the one above and just alter the "extJsClass" + "name".
-The "name" should be unique and the "extJsClass" have to be loaded by your own extension. 
+
+Just replace "example" with a unique identifier of your callback window.
 
 The ExtJs Class should extend the pimcore.plugin.processmanager.executor.callback.abstractCallback and implement a "getFormItems" method which returns the configuration fields.
 Please take a look at the [callback/example.js](../src/Resources/public/js/executor/callback/example.js) file which should give you a good starting point.

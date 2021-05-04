@@ -15,8 +15,6 @@
 
 namespace App\Command;
 
-use AppBundle\Model\Product\Car;
-use Carbon\Carbon;
 use Elements\Bundle\ProcessManagerBundle\MetaDataFile;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;

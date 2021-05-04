@@ -46,20 +46,16 @@ Please set up the Cronjob which checks/executes the processes.
 To update the bundle please use the following command:
 
 ```
-composer update elements/process-manager-bundle; bin/console pimcore:bundle:update ElementsProcessManagerBundle
+composer update elements/process-manager-bundle
+./bin/console doctrine:migrations:migrate --prefix=Elements\\Bundle\\ProcessManagerBundle 
 ```
 
-If you want that the migrations of the ProcessManagerBundle are automatically executed when you do a "composer update elements/process-manager-bundle;",  please add  
-"Elements\\Bundle\\ProcessManagerBundle\\Composer::executeMigrationsUp" 
-to your **project composer.json**
+If you want, that the migrations of the ProcessManagerBundle be executed automatically, please add the following
+line to your **project composer.json**
 ```
   "scripts": {
-    "post-create-project-cmd": "Pimcore\\Composer::postCreateProject",
-    "post-install-cmd": [
-       //...,
-    ],
     "post-update-cmd": [
        //...,
-      "Elements\\Bundle\\ProcessManagerBundle\\Composer::executeMigrationsUp"
+      "./bin/console doctrine:migrations:migrate --prefix=Elements\\Bundle\\ProcessManagerBundle --no-interaction"
     ],
 ```

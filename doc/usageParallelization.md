@@ -3,7 +3,7 @@
 The Processmanager allows you to execute multiple child processes. Before you use the multiprocessing option please make sure
 that you have read the [Basic usage guide](/doc/usage.md).
 
-To get started please take a look at the [Sample Command](/doc/sample/src/AppBundle/Command/MultiprocessingSampleCommand.php) which shows how to use the feature.
+To get started please take a look at the [Sample Command](sample/src/App/Command/MultiprocessingSampleCommand.php) which shows how to use the feature.
 
 When a child process is executed the parameter "--monitoring-item-parent-id" is passed so you have to support this parameter in your command.
 Depending on the paremeter you can execute different methods... it's up to you. 
