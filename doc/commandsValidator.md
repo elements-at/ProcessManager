@@ -12,6 +12,6 @@ If you want that all commands are available, change the $strategy to "all". Then
         public: true
         arguments:
             $strategy: "default
-            $whiteList: ["router:match","valis:command"]
+            $whiteList: ["router:match","valid:command"]
             $blackList: ["process-manager:maintenance","do-no-execute:command"]
 ```
