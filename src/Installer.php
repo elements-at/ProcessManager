@@ -17,7 +17,6 @@ namespace Elements\Bundle\ProcessManagerBundle;
 
 use Elements\Bundle\ProcessManagerBundle\Migrations\Version20210428000000;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
-use Pimcore\Model\Translation\Admin;
 use Pimcore\Model\User\Permission\Definition;
 use Elements\Bundle\ProcessManagerBundle\Enums;
 

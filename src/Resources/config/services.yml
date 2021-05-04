@@ -31,7 +31,7 @@ services:
         arguments :
             $strategy: "default"
             $whiteList : []
-            $blackList : []
+            $blackList : ["process-manager:maintenance"]
 
     Elements\Bundle\ProcessManagerBundle\SystemEventsListener: ~
 
