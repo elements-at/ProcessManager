@@ -31,7 +31,7 @@ class MaintenanceTask implements TaskInterface
             return;
         }
 
-        $config = ElementsProcessManagerBundle::getConfig();
+        $config = ElementsProcessManagerBundle::getConfiguration();
         if ($config['general']['executeWithMaintenance']) {
             ElementsProcessManagerBundle::initProcessManager(
                 null,

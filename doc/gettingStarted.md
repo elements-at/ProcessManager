@@ -1,10 +1,10 @@
 ### Getting started (basics)
 
 **In short:** 
-The [ProcessManagerSampleCommandSimple](sample/src/AppBundle/Command/ProcessManagerSampleCommandSimple.php) is a very simple example on
+The [ProcessManagerSampleCommandSimple](sample/src/App/Command/ProcessManagerSampleCommandSimple.php) is a very simple example on
 how you should use the bundle. If you are new to this Bundle just copy this file to your project command space  
 and set up the command in the ProcessManager.
-The [ProcessManagerSampleCommandAdvanced](sample/src/AppBundle/Command/ProcessManagerSampleCommandAdvanced.php) is a more advanced example.
+The [ProcessManagerSampleCommandAdvanced](sample/src/App/Command/ProcessManagerSampleCommandAdvanced.php) is a more advanced example.
 
 Details: When a script is executed via the Pimcore admin interface a monitoring item is created and the id of the monitoring item is passed to the cli script (Param: monitoring-item-id).
 You will have to retrieve this id in your script and call the initProcessManager() function of the \Elements\Bundle\ProcessManagerBundle\ExecutionTrait. 

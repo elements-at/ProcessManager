@@ -16,6 +16,7 @@
 namespace Elements\Bundle\ProcessManagerBundle\Executor;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
+use Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator;
 use Pimcore\Tool\Console;
 
 class PimcoreCommand extends AbstractExecutor
@@ -40,11 +41,17 @@ class PimcoreCommand extends AbstractExecutor
         }
 
         if($monitoringItem){
-            $application = new \Pimcore\Console\Application(\Pimcore::getContainer()->get('kernel'));
+            $commands = \Pimcore::getKernel()->getContainer()->get(CommandsValidator::class)->getValidCommands();
+
+            if(!array_key_exists($this->getValues()['command'],$commands)){
+                throw new \Exception("Invalid command - not in valid commands");
+            }
             /**
              * @var \Pimcore\Console\AbstractCommand $commandObject
              */
-            $commandObject = $application->find($this->getValues()['command']);
+            $commandObject = $commands[$this->getValues()['command']];
+
+
             if($commandObject->getDefinition()->hasOption('monitoring-item-id')){
                 $command .= ' --monitoring-item-id='.$monitoringItem->getId();
             }

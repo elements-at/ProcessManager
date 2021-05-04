@@ -13,7 +13,7 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace AppBundle\Command;
+namespace App\Command;
 
 use AppBundle\Model\Product\Car;
 use Carbon\Carbon;
@@ -45,10 +45,11 @@ class ProcessManagerSampleCommandSimple extends AbstractCommand
     {
         $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
 
+        $monitoringItem->getLogger()->debug("Callback settings: " . print_r($monitoringItem->getCallbackSettings(),true));
         $metDataFileObject = MetaDataFile::getById('spample-id');
 
         $start = \Carbon\Carbon::now();
-        if($ts = $metDataFileObject->getData()['lastRun']){
+        if($ts = $metDataFileObject->getData()['lastRun'] ?? null){
             $lastRun = \Carbon\Carbon::createFromTimestamp($ts);
         }else{
             $lastRun = \Carbon\Carbon::now();
@@ -72,7 +73,7 @@ class ProcessManagerSampleCommandSimple extends AbstractCommand
         $downloadAction
             ->setAccessKey('myIcon')
             ->setLabel('Download Icon')
-            ->setFilePath('/web/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
+            ->setFilePath('/public/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
             ->setDeleteWithMonitoringItem(false);
 
         $monitoringItem->setActions([
@@ -83,5 +84,6 @@ class ProcessManagerSampleCommandSimple extends AbstractCommand
         $metDataFileObject->setData(['lastRun' => $start->getTimestamp()])->save();
 
         $monitoringItem->setMessage('Job finished')->setCompleted();
+        return 0;
     }
 }

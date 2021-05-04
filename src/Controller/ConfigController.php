@@ -24,7 +24,7 @@ use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Elements\Bundle\ProcessManagerBundle\Enums;
 /**
  * @Route("/admin/elementsprocessmanager/config")
  */
@@ -71,7 +71,7 @@ class ConfigController extends AdminController
      */
     public function listAction(Request $request)
     {
-        $this->checkPermission('plugin_pm_permission_view');
+        $this->checkPermission(Enums\Permissions::VIEW);
         $data = [];
         $list = new Configuration\Listing();
         $list->setOrder('DESC');
@@ -125,7 +125,7 @@ class ConfigController extends AdminController
      */
     public function saveAction(Request $request)
     {
-        $this->checkPermission('plugin_pm_permission_configure');
+        $this->checkPermission(Enums\Permissions::CONFIGURE);
 
         $data = json_decode($request->get('data'), true);
 
@@ -187,7 +187,7 @@ class ConfigController extends AdminController
      */
     public function deleteAction(Request $request)
     {
-        $this->checkPermission('plugin_pm_permission_configure');
+        $this->checkPermission(Enums\Permissions::CONFIGURE);
 
         $config = Configuration::getById($request->get('id'));
         if ($config instanceof Configuration) {
@@ -225,7 +225,7 @@ class ConfigController extends AdminController
      */
     public function executeAction(Request $request)
     {
-        $this->checkPermission('plugin_pm_permission_execute');
+        $this->checkPermission(Enums\Permissions::EXECUTE);
         $callbackSettings = $request->get('callbackSettings') ? json_decode($request->get('callbackSettings'), true) : [];
         $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getAdminUser()->getId());
 

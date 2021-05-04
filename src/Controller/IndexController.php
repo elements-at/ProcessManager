@@ -18,7 +18,7 @@ namespace Elements\Bundle\ProcessManagerBundle\Controller;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Elements\Bundle\ProcessManagerBundle\Updater;
+use Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +26,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\GridConfig;
-
+use \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\Enums;
 /**
  * @Route("/admin/elementsprocessmanager/index")
  */
@@ -39,53 +40,20 @@ class IndexController extends AdminController
      *
      * @return JsonResponse
      */
-    public function getPluginConfigAction(Request $request)
+    public function getPluginConfigAction(Request $request, CommandsValidator $commandsValidator)
     {
-        $this->checkPermission('plugin_pm_permission_view');
-        $data = [];
+        $this->checkPermission(Enums\Permissions::VIEW);
 
-        $pluginConfig = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getConfig();
+        $bundleConfig = ElementsProcessManagerBundle::getConfiguration();
+        $data = $bundleConfig->getClassTypes();
 
-        $data['jsSettings'] = (array) ($pluginConfig['jsSettings'] ?? []);
-
-        $classTypeMapping = [
-            'executorClasses' => '\Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor',
-            'executorActionClasses' => '\Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction',
-            'executorCallbackClasses' => '\Elements\Bundle\ProcessManagerBundle\Executor\Callback\AbstractCallback',
-            'executorLoggerClasses' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger',
-        ];
-        foreach ($classTypeMapping as $classType => $abstractClassType) {
-            if (empty($data[$classType])) {
-                $data[$classType] = [];
-            }
-            foreach ((array)$pluginConfig[$classType] as $config) {
-                $class = $config['class'];
-                if (\Pimcore\Tool::classExists($class)) {
-                    $o = new $class($config);
-                    if ($o instanceof $abstractClassType) {
-                        $data[$classType][$o->getName()]['name'] = $o->getName();
-                        $data[$classType][$o->getName()]['class'] = '\\'.get_class($o);
-                        $data[$classType][$o->getName()]['config'] = $o->getConfig();
-                        $data[$classType][$o->getName()]['extJsClass'] = $o->getExtJsClass();
-                    }
-                }
-            }
-        }
-
-        $pimcoreCommands = [];
-
-        $application = new \Pimcore\Console\Application($this->get('kernel'));
-        $commands = $application->all();
+        $commands = (array)$commandsValidator->getValidCommands();
         foreach ($commands as $key => $command) {
             $tmp = ['description' => $command->getDescription(), 'options' => $command->getDefinition()->getOptions()];
-
-            if (!in_array($key, ['help', 'list', 'update'])) {
-                $pimcoreCommands[$key] = $tmp;
-            }
+            $commands[$key] = $tmp;
         }
 
-        ksort($pimcoreCommands);
-        $data['pimcoreCommands'] = $pimcoreCommands;
+        $data['pimcoreCommands'] = $commands;
 
         $data['roles'] = [];
 
@@ -100,7 +68,7 @@ class IndexController extends AdminController
 
         $shortCutMenu = [];
 
-        if(empty($pluginConfig['general']['disableShortcutMenu'])) {
+        if($bundleConfig->getDisableShortcutMenu() == false) {
             $list = new Configuration\Listing();
             $list->setUser($this->getAdminUser());
             $list->setOrderKey('name');

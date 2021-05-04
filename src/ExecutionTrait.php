@@ -69,6 +69,9 @@ trait ExecutionTrait
     public static function initProcessManager($monitoringId, $options = [])
     {
         if (!ElementsProcessManagerBundle::getMonitoringItem(false)) {
+            if(!array_key_exists("autoCreate",$options)){
+                $options['autoCreate'] = false;
+            }
             $monitoringItem = null;
             if ($monitoringId) {
                 $monitoringItem = MonitoringItem::getById($monitoringId);
@@ -145,7 +148,7 @@ trait ExecutionTrait
                     ->setTotalSteps($options['totalSteps'] ?? 1)->setStatus(MonitoringItem::STATUS_RUNNING)->save();
             }
         }
-        self::checkExecutingUser((array)(ElementsProcessManagerBundle::getConfig()['general']['additionalScriptExecutionUsers'] ?? []));
+        self::checkExecutingUser(ElementsProcessManagerBundle::getConfiguration()->getAdditionalScriptExecutionUsers());
 
         return ElementsProcessManagerBundle::getMonitoringItem();
     }

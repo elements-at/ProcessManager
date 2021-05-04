@@ -69,6 +69,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
             }
         }
 
+        $this->model->setData($items);
         return $items;
     }
 

@@ -25,7 +25,7 @@ use Pimcore\Tool\Frontend;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Elements\Bundle\ProcessManagerBundle\Enums;
 /**
  * @Route("/webservice/elementsprocessmanager/rest")
  */
@@ -38,10 +38,10 @@ class RestController extends FrontendController
             return $this->json(['success' => false, 'message' => 'User not found']);
         }
 
-        $config = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getConfig();
+        $config = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getConfiguration();
         $validApiUser = false;
 
-        foreach((array)$config['restApiUsers'] as $entry){
+        foreach($config->getRestApiUsers() as $entry){
             if($entry['username'] == $user->getName()){
                 if($request->get('apiKey') == $entry['apiKey']){
                     $validApiUser = true;
@@ -53,7 +53,7 @@ class RestController extends FrontendController
         if($validApiUser == false){
             return $this->json(['success' => false, 'message' => 'The user is not a valid api user']);
         }
-        if(!$user->getPermission('plugin_pm_permission_execute') || !$user->getPermission('plugin_pm_permission_view')){
+        if(!$user->getPermission(Enums\Permissions::EXECUTE) || !$user->getPermission(Enums\Permissions::VIEW)){
             return $this->json(['success' => false, 'message' => 'Missing permissions for user']);
         }
 
@@ -130,57 +130,12 @@ class RestController extends FrontendController
 
         $list->setCondition(' id = ?', [$request->get('id')]);
 
-        $monitoringItem = $list->load()[0];
+        $monitoringItem = $list->current();
         if (!$monitoringItem) {
             return $this->json(['success' => false, 'message' => 'The monitoring Item was not found.']);
         }
         $monitoringItem->getLogger()->notice('Checked by rest webservice User ID: ' . $user->getId());
 
         return $this->json(['success' => true, 'data' => $monitoringItem->getForWebserviceExport()]);
-    }
-
-    /**
-     * @Route("/test")
-     *
-     * @param Request $request
-     *
-     * @return ViewModel
-     */
-    public function testAction(Request $request)
-    {
-        $this->testJson = '
-            {
-                "firstName" : "christian",
-                "lastName" : "kogler"
-            }
-        ';
-
-        $this->testXML = '';
-
-        $viewData = [];
-
-        if ($this->getRequest()->isPost()) {
-            $url = \Pimcore\Tool::getHostUrl() . '/webservice/elementsprocessmanager/rest/execute?id=' . $request->get('id') . '&apikey=' . $request->get('apikey');
-            $client = \Pimcore\Tool::getHttpClient();
-            $client->setUri($url);
-            $params = [
-                'id' => $request->get('id'),
-                'name' => $request->get('name'),
-                'callbackSettings' => $request->get('callbackSettings')
-            ];
-            $client->setParameterPost($params);
-            $result = $client->request($client::POST)->getBody();
-            $viewData['result'] = $result;
-        }
-
-        $configs = new Configuration\Listing();
-
-        $options = [];
-        foreach ($configs->load() as $config) {
-            $options[$config->getId()] = $config->getId() . ' - ' . $config->getName();
-        }
-        $viewData['options'] = $options;
-
-        return new ViewModel($viewData);
     }
 }

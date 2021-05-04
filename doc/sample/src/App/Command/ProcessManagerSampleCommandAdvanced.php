@@ -13,7 +13,7 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace AppBundle\Command;
+namespace App\Command;
 
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -111,7 +111,7 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
         $downloadAction
             ->setAccessKey('myIcon')
             ->setLabel('Download Icon')
-            ->setFilePath('/web/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
+            ->setFilePath('/public/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
             ->setDeleteWithMonitoringItem(false);
 
         $openItemAction = new Action\OpenItem();

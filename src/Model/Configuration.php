@@ -290,7 +290,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     {
         if ($this->getCronJob()) {
             if (Tool::classExists('\Cron\CronExpression')) {
-                $cron = \Cron\CronExpression::factory($this->getCronJob());
+                $cron = new \Cron\CronExpression($this->getCronJob());
                 $lastExecution = $this->getLastCronJobExecution();
                 if (!$lastExecution) {
                     $lastExecution = $this->getModificationDate();

@@ -23,13 +23,13 @@ use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
-use Pimcore\Controller\Configuration\TemplatePhp;
 use Pimcore\Templating\Model\ViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Routing\Annotation\Route;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-
+use Elements\Bundle\ProcessManagerBundle\Enums;
 /**
  * @Route("/admin/elementsprocessmanager/monitoring-item")
  */
@@ -44,7 +44,7 @@ class MonitoringItemController extends AdminController
      */
     public function listAction(Request $request)
     {
-        $this->checkPermission('plugin_pm_permission_view');
+        $this->checkPermission(Enums\Permissions::VIEW);
         $data = [];
         $list = new MonitoringItem\Listing();
         $list->setOrder('DESC');
@@ -192,7 +192,7 @@ class MonitoringItemController extends AdminController
         ];
 
         try {
-            $this->checkPermission('plugin_pm_permission_view');
+            $this->checkPermission(Enums\Permissions::VIEW);
         }catch (\Exception $e){
             return $this->adminJson($data);
         }
@@ -307,7 +307,7 @@ class MonitoringItemController extends AdminController
         $tmp['progress'] = '-';
         if ($item->getCurrentWorkload() && $item->getTotalWorkload()) {
             $progress = $item->getProgressPercentage();
-            $tmp['progress'] = '<div class="x-progress x-progress-default x-border-box" style="width:100%;"><div class="x-progress-text x-progress-text-back">'.$progress.'%</div><div class="x-progress-bar x-progress-bar-default" style="width:'.$progress.'%"><div class="x-progress-text"><div>'.$progress.'%</div></div></div></div>';
+            $tmp['progress'] = '<div class="x-progress x-progress-default x-border-box" style="width:100%;"><div class="x-progress-text x-progress-text-back" ></div><div class="x-progress-bar x-progress-bar-default" style="width:'.$progress.'%;min-width: 35px; "><div class="x-progress-text" style="text-align:left;margin-left: 5px;"><div>'.$progress.'%</div></div></div></div>';
         }
 
         $tmp['progressPercentage'] = (float)$item->getProgressPercentage();
@@ -362,14 +362,14 @@ class MonitoringItemController extends AdminController
 
     /**
      * @Route("/log-file-logger")
-     * @TemplatePhp()
      *
      * @param Request $request
      *
-     * @return ViewModel
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function logFileLoggerAction(Request $request)
+    public function logFileLoggerAction(Request $request, Profiler $profiler)
     {
+        $profiler->disable();
         $viewData = [];
         $monitoringItem = MonitoringItem::getById($request->get('id'));
 
@@ -398,7 +398,7 @@ class MonitoringItemController extends AdminController
 
         if (is_readable($logFile)) {
             $data = file_get_contents($logFile);
-            if($config['disableFileProcessing']){
+            if(array_key_exists("disableFileProcessing",$config) && $config['disableFileProcessing']){
                 return new \Symfony\Component\HttpFoundation\Response($data);
             }
 
@@ -440,10 +440,7 @@ class MonitoringItemController extends AdminController
 
         $viewData['data'] = $data;
         $viewData['monitoringItem'] = $monitoringItem;
-
-        $viewModel = new ViewModel($viewData);
-
-        return $viewModel;
+        return $this->render('@ElementsProcessManager/MonitoringItem/logFileLogger.html.twig', $viewData);
     }
 
     /**

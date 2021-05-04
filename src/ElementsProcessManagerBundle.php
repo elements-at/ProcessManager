@@ -20,6 +20,8 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Elements\Bundle\ProcessManagerBundle\DependencyInjection\Compiler;
 
 class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 {
@@ -50,11 +52,11 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 
     protected static $monitoringItem;
 
-    const PLUGIN_NAME = 'ProcessManager';
+    const BUNDLE_NAME = 'ElementsProcessManagerBundle';
 
-    const TABLE_NAME_CONFIGURATION = 'plugin_process_manager_configuration';
-    const TABLE_NAME_MONITORING_ITEM = 'plugin_process_manager_monitoring_item';
-    const TABLE_NAME_CALLBACK_SETTING = 'plugin_process_manager_callback_setting';
+    const TABLE_NAME_CONFIGURATION = 'bundle_process_manager_configuration';
+    const TABLE_NAME_MONITORING_ITEM = 'bundle_process_manager_monitoring_item';
+    const TABLE_NAME_CALLBACK_SETTING = 'bundle_process_manager_callback_setting';
     const MONITORING_ITEM_ENV_VAR = 'monitoringItemId';
 
     /**
@@ -72,7 +74,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
      */
     public function getJsPaths()
     {
-        return [
+        $files = [
             '/bundles/elementsprocessmanager/js/startup.js',
             '/bundles/elementsprocessmanager/js/window/detailwindow.js',
             '/bundles/elementsprocessmanager/js/helper/form.js',
@@ -86,8 +88,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             '/bundles/elementsprocessmanager/js/executor/class/command.js',
             '/bundles/elementsprocessmanager/js/executor/class/classMethod.js',
             '/bundles/elementsprocessmanager/js/executor/class/pimcoreCommand.js',
-            '/bundles/elementsprocessmanager/js/executor/class/exportToolkit.js',
-            '/bundles/elementsprocessmanager/js/executor/class/phing.js',
 
             '/bundles/elementsprocessmanager/js/executor/action/abstractAction.js',
             '/bundles/elementsprocessmanager/js/executor/action/download.js',
@@ -103,23 +103,35 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             '/bundles/elementsprocessmanager/js/executor/callback/abstractCallback.js',
             '/bundles/elementsprocessmanager/js/executor/callback/example.js',
             '/bundles/elementsprocessmanager/js/executor/callback/default.js',
-            '/bundles/elementsprocessmanager/js/executor/callback/executionNote.js',
-            '/bundles/elementsprocessmanager/js/executor/callback/phing.js',
             '/bundles/elementsprocessmanager/js/window/activeProcesses.js',
-
-
         ];
+
+        $callbackClasses = ElementsProcessManagerBundle::getConfiguration()->getClassTypes()["executorCallbackClasses"];
+        foreach($callbackClasses as $e){
+            if($file = $e["jsFile"]){
+                $files[] = $file;
+            }
+        }
+        return $files;
     }
 
     /**
-     * If the bundle has an installation routine, an installer is responsible of handling installation related tasks
-     *
-     * @return InstallerInterface|null
+     * @inheritDoc
      */
     public function getInstaller()
     {
-        return $this->container->get(Installer::class);
+        $this->container->get(Installer::class);
     }
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container)
+    {
+        $container
+            ->addCompilerPass(new Compiler\ExecutorDefinitionPass());
+    }
+
 
     public static function shutdownHandler($arguments)
     {
@@ -167,11 +179,14 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         }
     }
 
-    public static function getConfig()
+    /**
+     * @return BundleConfiguration
+     */
+    public static function getConfiguration()
     {
         if (is_null(self::$_config)) {
-            $configFile = \Pimcore\Config::locateConfigFile('plugin-process-manager.php');
-            self::$_config = include $configFile;
+            $configArray = \Pimcore::getKernel()->getContainer()->getParameter('elements_process_manager');
+            self::$_config = new BundleConfiguration($configArray);
         }
 
         return self::$_config;
@@ -220,16 +235,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return self::$monitoringItem;
     }
 
-    public static function getPluginWebsitePath()
-    {
-        $path = PIMCORE_PRIVATE_VAR . '/bundles/elementsprocessmanager/';
-        if (!is_dir($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        return $path;
-    }
-
     protected function getComposerPackageName(): string
     {
         return 'elements/process-manager-bundle';
@@ -237,7 +242,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 
     public function getNiceName()
     {
-        return self::PLUGIN_NAME;
+        return self::BUNDLE_NAME;
     }
 
 }

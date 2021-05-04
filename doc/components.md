@@ -29,7 +29,6 @@ The bundle consists of 6 main components.
 | \Elements\Bundle\ProcessManagerBundle\Executor\CliCommand | Executes a custom cli command  |
 |\Elements\Bundle\ProcessManagerBundle\Executor\PimcoreCommand |  Executes a pimcore command |
 |\Elements\Bundle\ProcessManagerBundle\Executor\ClassMethod  | Initializes a Class and calls a method  |
-|\Elements\Bundle\ProcessManagerBundle\Executor\ExportToolkit | Provides a list of ExportToolkit Configurations which can be executed | 
 
 ### Action Classes
 

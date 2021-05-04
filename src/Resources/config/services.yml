@@ -7,6 +7,8 @@ services:
         autoconfigure: true
         public: false
 
+
+
     Elements\Bundle\ProcessManagerBundle\Installer:
         public: true
         arguments:
@@ -16,4 +18,62 @@ services:
     Elements\Bundle\ProcessManagerBundle\Command\:
         resource: '../../Command'
 
+    Elements\Bundle\ProcessManagerBundle\Service\:
+        resource: '../../Service'
+
+    Elements\Bundle\ProcessManagerBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator:
+        public: true
+        arguments :
+            $strategy: "default"
+            $whiteList : []
+            $blackList : []
+
     Elements\Bundle\ProcessManagerBundle\SystemEventsListener: ~
+
+    ##Executor classes
+    Elements\Bundle\ProcessManagerBundle\Executor\PimcoreCommand:
+        tags:
+            - { name: "elements.processManager.executorClasses" }
+    Elements\Bundle\ProcessManagerBundle\Executor\ClassMethod:
+        tags:
+            - { name: "elements.processManager.executorClasses" }
+
+    ##Logger classes
+    Elements\Bundle\ProcessManagerBundle\Executor\Logger\File:
+        tags:
+            - { name: "elements.processManager.executorLoggerClasses" }
+    Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console:
+        tags:
+            - { name: "elements.processManager.executorLoggerClasses" }
+    Elements\Bundle\ProcessManagerBundle\Executor\Logger\Application:
+        tags:
+            - { name: "elements.processManager.executorLoggerClasses" }
+    Elements\Bundle\ProcessManagerBundle\Executor\Logger\EmailSummary:
+        tags:
+            - { name: "elements.processManager.executorLoggerClasses" }
+
+    ##Action classes
+    Elements\Bundle\ProcessManagerBundle\Executor\Action\Download:
+        tags:
+            - { name: "elements.processManager.executorActionClasses" }
+    Elements\Bundle\ProcessManagerBundle\Executor\Action\OpenItem:
+        tags:
+            - { name: "elements.processManager.executorActionClasses" }
+    Elements\Bundle\ProcessManagerBundle\Executor\Action\JsEvent:
+        tags:
+            - { name: "elements.processManager.executorActionClasses" }
+
+    ##Callback classes
+    executionNote:
+        class : Elements\Bundle\ProcessManagerBundle\Executor\Callback\General
+        arguments :
+            $name : "executionNote"
+            $extJsClass : "pimcore.plugin.processmanager.executor.callback.executionNote"
+            $jsFile : "/bundles/elementsprocessmanager/js/executor/callback/executionNote.js"
+        tags:
+            - { name: "elements.processManager.executorCallbackClasses" }

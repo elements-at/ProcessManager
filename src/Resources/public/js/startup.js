@@ -67,9 +67,8 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                 this.addShortcutMenu();
                 this.initActiveProcesses();
 
-                if(this.config.jsSettings.devMode){
-                    this.showProcessManager({activeTab: 1});
-                }
+                //just for testing
+                //this.showProcessManager({activeTab: 1});
             }.bind(this)
         });
     },

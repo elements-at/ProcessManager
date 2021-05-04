@@ -94,11 +94,17 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                         icon: "/bundles/pimcoreadmin/img/flat-color-icons/settings.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
+                            console.log(processmanagerPlugin.config.executorCallbackClasses);
 
                             var conf = processmanagerPlugin.config.executorCallbackClasses[rec.get('type')];
-                            var obj =  eval('new ' + conf.extJsClass);
-                            obj.setRecord(rec);
-                            obj.openSaveSettings();
+                            if(!conf){
+                                alert("config not found for " + rec.get('type'));
+                            }else{
+                                var obj =  eval('new ' + conf.extJsClass);
+                                obj.setRecord(rec);
+                                obj.openSaveSettings();
+                            }
+
                         }.bind(this)
                     }
                 ]

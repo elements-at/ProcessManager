@@ -85,7 +85,7 @@ class MetaDataFile
      */
     public static function getById($identifier)
     {
-        if (!self::$instances[$identifier]) {
+        if (isset(self::$instances[$identifier]) == false) {
             $tmp = new static();
             $tmp->setIdentifier($identifier);
 

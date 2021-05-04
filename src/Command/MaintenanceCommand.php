@@ -59,9 +59,10 @@ class MaintenanceCommand extends AbstractCommand
         $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'), $options);
         $this->doUniqueExecutionCheck(null, ['command' => $this->getCommand($options)]);
 
-        self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfig()['general']['additionalScriptExecutionUsers']);
+        self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfiguration()->getAdditionalScriptExecutionUsers());
 
         $maintenance = new Maintenance($this->templatingEngine);
         $maintenance->execute();
+        return 0;
     }
 }

@@ -1,10 +1,5 @@
-<?php
-
-$data = $this->data;
-
-if (!$this->getParam('ajax')) {
-
-    ?>
+{% set ajaxRequest = app.request.get("ajax") %}
+{% if ajaxRequest == false %}
     <html>
     <head>
         <title>Logs</title>
@@ -68,74 +63,66 @@ if (!$this->getParam('ajax')) {
     <body>
 
     <div id="content">
-<?php }
-if (!$this->monitoringItem->getPid()) {
-    ?>
-    <h1>Process Finished</h1>
-<?php } ?>
 
-<?php if ($this->getParam('ajax') && !$this->monitoringItem->getPid()) { ?>
-    <script type="text/javascript">
+{% endif %}
 
-        $('#autorefresh').attr('checked', false);
-    </script>
+    {% if monitoringItem.getPid() == false %}
+        <h1>Process Finished</h1>
+    {% endif %}
+
+        {% if ajaxRequest and monitoringItem.getPid() == false %}
+            <script type="text/javascript">
+                $('#autorefresh').attr('checked', false);
+            </script>
+        {% endif %}
+    <pre>{{ data }}</pre>
+
+{%  if ajaxRequest == false %}
+</div>
 
 
-<?php }
-
-echo "<pre>";
-print_r($data);
-echo "</pre>";
-?>
-
-<?php
-if (!$this->getParam('ajax')) { ?>
+<form method="" class="reload">
+    {% if monitoringItem.getPid() %}
+    <div class="reloadWrapper">
+        <input type="checkbox" value="refresh" name="refresh" id="autorefresh"
+        {% if monitoringItem.getPid() %} checked="checked" {% endif %} /> <label for="autorefresh"> Auto refresh |</label>
     </div>
+    {% endif %}
+    <div class="loggerData">
+        <b>LogLevel:</b> {{ logLevel }}| <b>Log file:</b> {{ logFile }}
+    </div>
+</form>
+
+{% if monitoringItem.getPid() %}
+<script type="text/javascript">
+    var timer = null;
 
 
-    <form method="" class="reload">
-        <?php if ($this->monitoringItem->getPid()) { ?>
-            <div class="reloadWrapper">
-                <input type="checkbox" value="refresh" name="refresh" id="autorefresh"
-                       <?php if ($this->monitoringItem->getPid()){ ?>checked="checked"<?php } ?>/> <label
-                        for="autorefresh"> Auto refresh |</label>
-            </div>
-        <?php } ?>
-        <div class="loggerData">
-            <b>LogLevel:</b> <?= $this->logLevel ?> | <b>Log file:</b> <?= $this->logFile ?>
-        </div>
-    </form>
+    $(function () {
+        if ($('#autorefresh').is(':checked')) {
+            startRefresh();
+        }
 
-<?php if ($this->monitoringItem->getPid()){ ?>
-    <script type="text/javascript">
-        var timer = null;
-
-
-        $(function () {
-            if ($('#autorefresh').is(':checked')) {
+        $('#autorefresh').change(function () {
+            if (!this.checked) {
+                clearTimeout(timer);
+            } else {
                 startRefresh();
             }
-
-            $('#autorefresh').change(function () {
-                if (!this.checked) {
-                    clearTimeout(timer);
-                } else {
-                    startRefresh();
-                }
-            });
         });
+    });
 
 
-        function startRefresh() {
-            timer = setTimeout(startRefresh, 1000);
-            $.get(location.href + '&ajax=1', function (data) {
-                $('#content').html(data);
-                $(window).scrollTop($(document).height());
-            });
-        }
-    </script>
-<?php } ?>
+    function startRefresh() {
+        timer = setTimeout(startRefresh, 1000);
+        $.get(location.href + '&ajax=1', function (data) {
+            $('#content').html(data);
+            $(window).scrollTop($(document).height());
+        });
+    }
+</script>
+{% endif %}
 
-    </body>
-    </html>
-<?php } ?>
+</body>
+</html>
+{% endif %}

@@ -71,7 +71,7 @@ class Maintenance
         $items = $list->load();
         $reportItems = $itemsAlive = [];
 
-        $config = ElementsProcessManagerBundle::getConfig();
+        $config = ElementsProcessManagerBundle::getConfiguration();
 
         foreach ($items as $item) {
             if (!$item->getCommand()) { //manually created - do not check
@@ -79,7 +79,7 @@ class Maintenance
             } else {
                 if ($item->isAlive()) {
                     $diff = time() - $item->getModificationDate();
-                    $minutes = $config['general']['processTimeoutMinutes'] ?: 15;
+                    $minutes = $config->getProcessTimeoutMinutes();
                     if ($diff > (60 * $minutes)) {
                         $item->getLogger()->error('Process was checked by ProcessManager maintenance. Considered as hanging process - TimeDiff: ' . $diff . ' seconds.');
                         $reportItems[] = $item;
@@ -102,27 +102,28 @@ class Maintenance
         }
 
         if ($reportItems) {
-            $config = ElementsProcessManagerBundle::getConfig();
+            $config = ElementsProcessManagerBundle::getConfiguration();
             $mail = new \Pimcore\Mail();
             $mail->setSubject('ProcessManager - failed processes (' . \Pimcore\Tool::getHostUrl().')');
 
-            $html = $this->renderingEngine->render('ElementsProcessManagerBundle::report-email.html.php', [
-                'reportItems' => $reportItems
+            $html = $this->renderingEngine->render('@ElementsProcessManager/reportEmail.html.twig', [
+                'totalItemsCount' => count($reportItems),
+                'reportItems' => array_slice($reportItems,0,5)
             ]);
 
-            $mail->setBodyHtml($html);
+            $mail->setHtmlBody($html);
 
-            $recipients = $config['email']['recipients'];
-            if (is_string($recipients) && !empty($recipients)) {
-                $recipients = array_filter(explode(';', $config['email']['recipients']));
-            }
-
-            $recipients = array_filter($recipients);
-
+            $recipients = $config->getReportingEmailAddresses();
             if ($recipients) {
-
                 foreach($recipients as $emailAdr){
-                    $mail->addTo($emailAdr);
+                    try {
+                        $mail->addTo($emailAdr);
+                    }catch (\Exception $e){
+                        $logger = \Pimcore\Log\ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
+                        $message = "Can't add E-Mail address : " . $e->getMessage();
+                        $logger->emergency($message);
+                        \Pimcore\Logger::emergency($message);
+                    }
                 }
 
                 try {
@@ -197,9 +198,9 @@ class Maintenance
         $this->monitoringItem->setCurrentStep(3)->setMessage('Clearing monitoring logs')->save();
         $logger = $this->monitoringItem->getLogger();
 
-        $treshold = ElementsProcessManagerBundle::getConfig()['general']['archive_treshold_logs'];
-        if ($treshold) {
-            $timestamp = Carbon::createFromTimestamp(time())->subDay($treshold)->getTimestamp();
+        $threshold = ElementsProcessManagerBundle::getConfiguration()->getArchiveThresholdLogs();
+        if ($threshold) {
+            $timestamp = Carbon::createFromTimestamp(time())->subDay($threshold)->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
             $items = $list->load();
@@ -209,7 +210,7 @@ class Maintenance
                 $item->delete();
             }
         } else {
-            $logger->notice('No treshold defined -> nothing to do.');
+            $logger->notice('No threshold defined -> nothing to do.');
         }
 
         $logger->debug('Start clearing ProcessManager maintenance items');

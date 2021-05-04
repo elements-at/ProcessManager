@@ -21,15 +21,19 @@ abstract class AbstractCallback
 
     public $name = '';
 
+    protected string $jsFile ="";
     protected $config = [];
 
     /**
      * AbstractCallback constructor.
      *
-     * @param null | array $config
      */
-    public function __construct($config)
+    public function __construct(string $name, string $extJsClass, string $jsFile = "", array $config = [])
     {
+        $this->setName($name);
+        $this->setExtJsClass($extJsClass);
+        $this->setJsFile($jsFile);
+
         if (is_array($config)) {
             foreach ($config as $key => $value) {
                 $setter = 'set'.ucfirst($key);
@@ -91,4 +95,24 @@ abstract class AbstractCallback
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getJsFile(): string
+    {
+        return $this->jsFile;
+    }
+
+    /**
+     * @param string $jsFile
+     * @return $this
+     */
+    public function setJsFile($jsFile)
+    {
+        $this->jsFile = $jsFile;
+        return $this;
+    }
+
+
 }

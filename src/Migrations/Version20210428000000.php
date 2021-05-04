@@ -4,25 +4,30 @@ namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Doctrine\DBAL\Schema\Schema;
-use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
+use Pimcore\Migrations\BundleAwareMigration;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version00000016 extends AbstractPimcoreMigration
+class Version20210428000000 extends BundleAwareMigration
 {
-    /**
-     * @param Schema $schema
-     */
-    public function up(Schema $schema)
+    protected function getBundleName(): string
     {
-        \Pimcore\Model\User\Permission\Definition::create('plugin_pm_permission_delete_monitoring_item');
+        return ElementsProcessManagerBundle::BUNDLE_NAME;
     }
 
     /**
      * @param Schema $schema
      */
-    public function down(Schema $schema)
+    public function up(Schema $schema): void
     {
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    public function down(Schema $schema): void
+    {
+
     }
 }
