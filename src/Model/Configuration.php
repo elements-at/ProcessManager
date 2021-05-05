@@ -362,7 +362,8 @@ class Configuration extends \Pimcore\Model\AbstractModel
         $list = new Configuration\Listing();
         $list->setCondition($propertyName.' = ?', [$arguments[0]]);
 
-        if ($limit = $arguments[1]['limit']) {
+        $limit = $arguments[1]['limit'] ?? false;
+        if ($limit) {
             $list->setLimit($limit);
         }
         $result = $list->load();
