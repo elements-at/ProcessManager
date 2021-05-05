@@ -19,6 +19,7 @@ use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Symfony\Component\Process\Process;
 use function Symfony\Component\Debug\Tests\testHeader;
 
 /**
@@ -952,7 +953,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $pid = $this->getPid();
         if($pid){
             $this->setPid(null)->setStatus(self::STATUS_FAILED)->save();
-            $res = \Pimcore\Tool\Console::exec('kill -9 '.$pid);
+            $process = Process::fromShellCommandline('kill -9 '.$pid);
+            $process->run();
             return !$this->isAlive();
         }
     }
