@@ -27,7 +27,7 @@ are available (custom settings which the user can define for runtime execution) 
 * [Meta data files](./doc/metaDataFile.md)
 * [Rest API](./doc/restApi.md)
 * [How to use - Parallelization](./doc/usageParallelization.md)
-* [Migration from Pimcore 4 to Pimcore 5](./doc/migration.md)
+* [Migration from Pimcore 6 to Pimcore X](./doc/migration.md)
 
 ***First impressions:***
 
