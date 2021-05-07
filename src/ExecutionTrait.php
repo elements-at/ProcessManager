@@ -265,6 +265,7 @@ trait ExecutionTrait
         }
         $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Starting child processes')->save();
 
+        $i = 0; 
         foreach($workloadChunks as $i => $package){
 
             if($startAfterPackage && $startAfterPackage > ($i+1)){
