@@ -55,7 +55,7 @@ class MaintenanceCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $options = ElementsProcessManagerBundle::$maintenanceOptions;
+        $options = ElementsProcessManagerBundle::getMaintenanceOptions();
         $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'), $options);
         $this->doUniqueExecutionCheck(null, ['command' => $this->getCommand($options)]);
 

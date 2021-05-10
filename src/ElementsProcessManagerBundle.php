@@ -17,6 +17,7 @@ namespace Elements\Bundle\ProcessManagerBundle;
 
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
@@ -29,24 +30,28 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     use PackageVersionTrait;
     use StateHelperTrait;
 
-    public static $maintenanceOptions = [
-        'autoCreate' => true,
-        'name' => 'ProcessManager maintenance',
-        'loggers' => [
-            [
-                'logLevel' => 'DEBUG',
-                'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console',
-                'simpleLogFormat' => true
-            ],
-            [
-                'logLevel' => 'DEBUG',
-                'filepath' => '/var/logs/process-manager-maintenance.log',
-                'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\File',
-                'simpleLogFormat' => true,
-                'maxFileSizeMB' => 50
+    public static function getMaintenanceOptions(){
+
+        $logDir = str_replace(PIMCORE_PROJECT_ROOT,"",self::getLogDir());
+        return [
+            'autoCreate' => true,
+            'name' => 'ProcessManager maintenance',
+            'loggers' => [
+                [
+                    'logLevel' => 'DEBUG',
+                    'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console',
+                    'simpleLogFormat' => true
+                ],
+                [
+                    'logLevel' => 'DEBUG',
+                    'filepath' => $logDir . 'process-manager-maintenance.log',
+                    'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\File',
+                    'simpleLogFormat' => true,
+                    'maxFileSizeMB' => 50
+                ]
             ]
-        ]
-    ];
+        ];
+    }
 
     protected static $_config = null;
 
@@ -194,7 +199,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 
     public static function getLogDir()
     {
-        $dir = PIMCORE_PRIVATE_VAR . '/logs/process-manager/';
+        $dir = PIMCORE_LOG_DIRECTORY . '/process-manager/';
         if (!is_dir($dir)) {
             \Pimcore\File::mkdir($dir);
         }

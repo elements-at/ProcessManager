@@ -35,7 +35,7 @@ class MaintenanceTask implements TaskInterface
         if ($config['general']['executeWithMaintenance']) {
             ElementsProcessManagerBundle::initProcessManager(
                 null,
-                ElementsProcessManagerBundle::$maintenanceOptions
+                ElementsProcessManagerBundle::getMaintenanceOptions()
             );
             $maintenance = new \Elements\Bundle\ProcessManagerBundle\Maintenance($this->renderingEngine);
             $maintenance->execute();
