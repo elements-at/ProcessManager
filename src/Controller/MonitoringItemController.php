@@ -26,6 +26,7 @@ use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Pimcore\Templating\Model\ViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Routing\Annotation\Route;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Enums;
@@ -366,8 +367,9 @@ class MonitoringItemController extends AdminController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function logFileLoggerAction(Request $request)
+    public function logFileLoggerAction(Request $request, Profiler $profiler)
     {
+        $profiler->disable();
         $viewData = [];
         $monitoringItem = MonitoringItem::getById($request->get('id'));
 
