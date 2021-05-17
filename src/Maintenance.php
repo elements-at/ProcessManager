@@ -111,7 +111,7 @@ class Maintenance
                 'reportItems' => array_slice($reportItems,0,5)
             ]);
 
-            $mail->setHtmlBody($html);
+            $mail->html($html);
 
             $recipients = $config->getReportingEmailAddresses();
             if ($recipients) {
