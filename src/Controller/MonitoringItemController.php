@@ -367,9 +367,11 @@ class MonitoringItemController extends AdminController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function logFileLoggerAction(Request $request, Profiler $profiler)
+    public function logFileLoggerAction(Request $request, ?Profiler $profiler)
     {
-        $profiler->disable();
+        if(null !== $profiler) {
+            $profiler->disable();
+        }
         $viewData = [];
         $monitoringItem = MonitoringItem::getById($request->get('id'));
 
