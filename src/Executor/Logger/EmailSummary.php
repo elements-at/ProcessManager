@@ -84,7 +84,7 @@ class EmailSummary extends AbstractLogger
                     $mail->addTo($email);
                 }
 
-                $mail->setTextBody($loggerConfig['text']."\n\n\nProcess ID: ".$monitoringItem->getId()."\nERROR LOG:\n" . file_get_contents($logFile));
+                $mail->text($loggerConfig['text']."\n\n\nProcess ID: ".$monitoringItem->getId()."\nERROR LOG:\n" . file_get_contents($logFile));
                 $mail->send();
             }
             unlink($logFile);
