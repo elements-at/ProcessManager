@@ -18,33 +18,33 @@ are available (custom settings which the user can define for runtime execution) 
 - Support multiprocessing (execute multiple processes parallel)
 
 ## Topics
-* [Installation & updates](docnstallationAndUpdates.md)
-* [Configuration](doconfiguration.md)
-* [Getting started (basics)](docettingStarted.md)
-* [Commands validator](docommandsValidator.md)
-* [Callbacks (Configuration windows)](docallbacks.md)
-* [Actions](docctions.md)
-* [Meta data files](docetaDataFile.md)
-* [Rest API](docestApi.md)
-* [How to use - Parallelization](docsageParallelization.md)
-* [Migration from Pimcore 6 to Pimcore X](docigration.md)
+* [Installation & updates](./doc/installationAndUpdates.md)
+* [Configuration](./doc/configuration.md)
+* [Getting started (basics)](./doc/gettingStarted.md)
+* [Commands validator](./doc/commandsValidator.md)
+* [Callbacks (Configuration windows)](./doc/callbacks.md)
+* [Actions](./doc/actions.md)
+* [Meta data files](./doc/metaDataFile.md)
+* [Rest API](./doc/restApi.md)
+* [How to use - Parallelization](./doc/usageParallelization.md)
+* [Migration from Pimcore 6 to Pimcore X](./doc/migration.md)
 
 ***First impressions:***
 
 Job execution by user:
-![process-manager-log](docmg/process-manager-active-processes.png)
+![process-manager-log](./doc/img/process-manager-active-processes.png)
 
 Job execution state:
-![process-manager-log](docmg/process-manager-log.png)
+![process-manager-log](./doc/img/process-manager-log.png)
 
 Job configuration:
-![process-manager-job-management](docmg/process-manager-settings.png)
+![process-manager-job-management](./doc/img/process-manager-settings.png)
 
 Define Loggers per process / job:
-![process-manager-job-management](docmg/loggers.png)
+![process-manager-job-management](./doc/img/loggers.png)
 
 Callback settings (user defined runtime settings):
-![callback-settings](docmg/callback-settings.jpg)
+![callback-settings](./doc/img/callback-settings.jpg)
 
 
 
