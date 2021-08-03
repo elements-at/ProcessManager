@@ -3,7 +3,7 @@
 The Process Manager also provides a rest service to start jobs...
 If you want to use the Rest Service you have to define the Pimcore users which should be allowed to execute/list... jobs in the "plugin-process-manager.php" config file.
 Therefore add an array "restApiUsers" to the config.
-A example is shown [here](./configuration.md)
+A example is shown [here](configuration.md)
 
 
  You have to pass the "username" and "apiKey" parameter on each request. 

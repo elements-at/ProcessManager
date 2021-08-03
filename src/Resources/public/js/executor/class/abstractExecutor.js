@@ -248,10 +248,15 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         var actions = this.getActionsValues();
         var loggers = this.getLoggersValues();
 
-        if (!values.name) {
+        if (!values.id) {
+            alert('Please provide an id');
+            return;
+        }
+        if (!values.name ) {
             alert('Please provide a name');
             return;
         }
+
 
         var data = Ext.encode({
             values: values,
@@ -411,6 +416,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
 
     getDefaultItems: function () {
         var items = [];
+        items.push(this.getTextField('id', {mandatory: true}));
         items.push(this.getTextField('name', {mandatory: true}));
         items.push(this.getTextField('group'));
         items.push(this.getTextArea('description'));

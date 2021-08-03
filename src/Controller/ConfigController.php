@@ -155,12 +155,17 @@ class ConfigController extends AdminController
         $executorClass->setLoggers($data['loggers']);
 
         // $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);
-        if (!$request->get('id')) {
+        $request_configuration = $request->request->get('id');
+        $configuration = Configuration::getById($request->get('id'));
+
+        if ($request_configuration == ""){ // Does the id exist?
             $configuration = new Configuration();
             $configuration->setActive(true);
-        } else {
-            $configuration = Configuration::getById($request->get('id'));
         }
+        if ($configuration->getId() != $request_configuration && Configuration::getById($request_configuration) != null){ // Is there an update call on an already used id?
+            throw new \Exception("Cannot create or update command, the chosen id already exists!");
+        }
+
         foreach ($values as $key => $v) {
             $setter = 'set' . ucfirst($key);
             if (method_exists($configuration, $setter)) {
@@ -170,7 +175,7 @@ class ConfigController extends AdminController
         $configuration->setExecutorClass($executorConfig['class']);
         $configuration->setExecutorSettings($executorClass->getStorageValue());
         try {
-            $configuration->save();
+            $configuration->save(['oldId' => $request_configuration]);
         } catch (\Exception $e) {
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
