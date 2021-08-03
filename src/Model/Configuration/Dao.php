@@ -48,18 +48,19 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
     /**
      * @return $this->model
      */
-    public function save()
+    public function save($params = [])
     {
         $data = $this->getValidStorageValues();
         if($data['keepVersions'] === ''){
             $data['keepVersions'] = null;
         }
         if (!$data['id']) {
-            unset($data['id']);
+            throw new \Exception("A valid Command has to have an id associated with it!");
+        } else if ($params['oldId'] != ""){
+            $this->db->update($this->getTableName(), $data, ['id' => $params['oldId']]);
+        }
+        else {
             $this->db->insert($this->getTableName(), $data);
-            $this->model->setId($this->db->lastInsertId($this->getTableName()));
-        } else {
-            $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
         }
 
         return $this->getById($this->model->getId());
