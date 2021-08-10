@@ -288,11 +288,11 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                     if (record.get('retry')) {
                         let data =  '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" title="Restart" /></a>';
                         if(record.get('callbackSettingsString') != '[]'){
-                            data +=  '<a href="#" onClick="processmanagerPlugin.monitoringReopenCallback(' + record.get('configurationId') +',' + record.get('id')+ ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/go.svg" height="18" title="Reopen" /></a>';
+                            data +=  '<a href="#" onClick="processmanagerPlugin.monitoringReopenCallback(\'' + record.get('configurationId') +'\',' + record.get('id')+ ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/go.svg" height="18" title="Reopen" /></a>';
                         }
                         return data;
                     } else {
-                        return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg" height="18" title="Stop"/></a>';
+                        return '<a href="#" onClick="processmanagerPlugin.monitoringItemCancel(\'' + record.get('id') + '\')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/cancel.svg" height="18" title="Stop"/></a>';
                     }
                     return '';
                 }

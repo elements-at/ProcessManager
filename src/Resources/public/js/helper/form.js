@@ -362,6 +362,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
 
         var composite = Ext.create('Ext.form.FieldContainer', {
             layout: 'hbox',
+            hidden : config.hidden || false,
             items: [
                 this['formElement' + fieldName],
                 {

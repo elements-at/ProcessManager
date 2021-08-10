@@ -310,9 +310,17 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             var id = this.record.get('id');
         }
 
+        let callbackSettings = Ext.encode(data);
+
+        if(typeof this.formPanel == "undefined"){ //if directly added via custom JS without callback window
+            if(this.config.monitoringItemData && this.config.monitoringItemData.callbackSettings){
+                callbackSettings = Ext.encode(this.config.monitoringItemData.callbackSettings);
+            }
+        }
+
         var params = {
             id: id,
-            callbackSettings: Ext.encode(data)
+            callbackSettings: callbackSettings
         };
 
         if(this.window){
