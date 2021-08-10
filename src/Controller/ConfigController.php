@@ -74,8 +74,8 @@ class ConfigController extends AdminController
         $this->checkPermission(Enums\Permissions::VIEW);
         $data = [];
         $list = new Configuration\Listing();
-        $list->setOrder('DESC');
-        $list->setOrderKey('id');
+        $list->setOrder('ASC');
+        $list->setOrderKey('name');
         $list->setLimit($request->get('limit', 25));
         $list->setOffset($request->get('start'));
 
