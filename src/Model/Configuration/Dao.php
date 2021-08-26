@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration;
@@ -41,25 +41,35 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
             foreach ($items as $item) {
                 $item->delete();
             }
-            $this->db->query('DELETE FROM ' . $this->getTableName().' where id='. $this->model->getId());
+            $this->db->query('DELETE FROM ' . $this->getTableName() . ' where id=' . $this->model->getId());
         }
     }
 
     /**
      * @return $this->model
      */
-    public function save()
+    public function save($params = [])
     {
         $data = $this->getValidStorageValues();
-        if($data['keepVersions'] === ''){
+
+        if ($data['keepVersions'] === '') {
             $data['keepVersions'] = null;
         }
         if (!$data['id']) {
-            unset($data['id']);
-            $this->db->insert($this->getTableName(), $data);
-            $this->model->setId($this->db->lastInsertId($this->getTableName()));
+            throw new \Exception("A valid Command has to have an id associated with it!");
+        }
+        if ($data['oldId']) {
+            if ($params['oldId'] != "") {
+                $this->db->update($this->getTableName(), $data, ['id' => $params['oldId']]);
+            } else {
+                $this->db->insert($this->getTableName(), $data);
+            }
         } else {
-            $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
+            if ($id = $this->getById($id = $this->model->getId())) {
+                $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
+            } else {
+                $this->db->insert($this->getTableName(), $data);
+            }
         }
 
         return $this->getById($this->model->getId());

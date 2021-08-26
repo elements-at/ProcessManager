@@ -129,12 +129,12 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
     },
 
 
-    getCallbackSelect : function () {
-        var store = [['','']];
+    getCallbackSelect: function () {
+        var store = [['', '']];
 
         for (var key in processmanagerPlugin.config.executorCallbackClasses) {
             if (processmanagerPlugin.config.executorCallbackClasses.hasOwnProperty(key)) {
-                store.push([processmanagerPlugin.config.executorCallbackClasses[key].extJsClass,t('plugin_pm_' + processmanagerPlugin.config.executorCallbackClasses[key].name)]);
+                store.push([processmanagerPlugin.config.executorCallbackClasses[key].extJsClass, t('plugin_pm_' + processmanagerPlugin.config.executorCallbackClasses[key].name)]);
             }
         }
 
@@ -147,13 +147,13 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
             value: this.getFieldValue('callback'),
             store: store,
             mode: "local",
-            width : "100%",
+            width: "100%",
             triggerAction: "all",
-            onChange : function (newVal, oldVal) {
+            onChange: function (newVal, oldVal) {
                 var parts = newVal.split("\.");
                 this.predefinedCallbackStore.load({
-                    params : {
-                        type: parts[parts.length-1]
+                    params: {
+                        type: parts[parts.length - 1]
                     }
                 });
                 this.formPanel.getForm().findField("defaultPreDefinedConfig").setValue(null);
@@ -163,19 +163,19 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         return this.callback;
     },
 
-    getCallbackPredefinedConfig : function () {
+    getCallbackPredefinedConfig: function () {
 
         var callbackType = '';
 
-        if(this.getFieldValue('callback')){
+        if (this.getFieldValue('callback')) {
             var val = this.getFieldValue('callback');
             var parts = val.split("\.");
-            callbackType = parts[parts.length-1];
+            callbackType = parts[parts.length - 1];
         }
 
         /* mandant */
         this.predefinedCallbackStore = new Ext.data.Store({
-            autoLoad : true,
+            autoLoad: true,
             proxy: {
                 url: '/admin/elementsprocessmanager/callback-settings/list',
                 type: 'ajax',
@@ -183,17 +183,17 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
                     type: 'json',
                     rootProperty: "data"
                 },
-                extraParams : {
-                    type : callbackType
+                extraParams: {
+                    type: callbackType
                 }
             }
         });
 
         this.defaultPreDefinedConfig = this.getSelectField("defaultPreDefinedConfig", {
             store: this.predefinedCallbackStore,
-            hidden : !callbackType,
-            displayField : "name",
-            valueField :  "id"
+            hidden: !callbackType,
+            displayField: "name",
+            valueField: "id"
         });
 
         return this.defaultPreDefinedConfig;
@@ -248,6 +248,10 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         var actions = this.getActionsValues();
         var loggers = this.getLoggersValues();
 
+        if (!values.id) {
+            alert('Please provide an id');
+            return;
+        }
         if (!values.name) {
             alert('Please provide a name');
             return;
@@ -271,8 +275,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
                         pimcore.helpers.showNotification(t("success"), t("plugin_pm_config_saved_success"), "success");
                         this.closeWindow();
                         Ext.getCmp('plugin_pm_config_list_panel').store.reload();
-                    }
-                    else {
+                    } else {
                         pimcore.helpers.showNotification(t("error"), t("plugin_pm_config_saved_error"), "error", t(rdata.message));
                     }
                 } catch (e) {
@@ -411,6 +414,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
 
     getDefaultItems: function () {
         var items = [];
+        items.push(this.getTextField('id', {mandatory: true}));
         items.push(this.getTextField('name', {mandatory: true}));
         items.push(this.getTextField('group'));
         items.push(this.getTextArea('description'));
