@@ -147,7 +147,7 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
         });
 
         items.push({
-            xtype: "numberfield",
+            xtype: "textfield",
             fieldLabel: "CID",
             name: "cid",
             readOnly: true,
