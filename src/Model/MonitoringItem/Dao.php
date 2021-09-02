@@ -64,8 +64,11 @@ class Dao extends AbstractDao
         }else{
             $db = $this->db;
         }
-
-
+        
+        /* refresh db connection if connection has been lost (happens when db connection has been idle for too long) */
+        if(FALSE == $db->ping()){
+            $db = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
+        }
 
         $data = $this->getValidStorageValues();
         if (!$preventModificationDateUpdate) {
