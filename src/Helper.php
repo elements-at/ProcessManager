@@ -60,7 +60,7 @@ class Helper
                         $monitoringItem->setPublished(false);
                     }
                     $monitoringItem->setGroup($executorData['values']['group']);
-                    $monitoringItem->setDeleteAfterHours(isset($executorData['values']['deleteAfterHours']) ?: null);
+                    $monitoringItem->setDeleteAfterHours((int)$executorData['values']['deleteAfterHours'] ?? null);
                 }
             }
 
