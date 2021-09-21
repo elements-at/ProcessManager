@@ -15,6 +15,7 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 
+use Doctrine\DBAL\Connection;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
@@ -50,6 +51,8 @@ class Dao extends Model\Listing\Dao\AbstractDao
     public function loadIdList()
     {
         $condition = $this->getCondition();
+        $conditionVariables = $this->model->getConditionVariables();
+        $types = [];
         if ($user = $this->model->getUser()) {
             if ($ids = Helper::getAllowedConfigIdsByUser($user)) {
                 if ($condition) {
@@ -57,10 +60,12 @@ class Dao extends Model\Listing\Dao\AbstractDao
                 } else {
                     $condition .= ' WHERE ';
                 }
-                $condition .= ' id IN(' . implode(',', $ids).')';
+                $condition .= ' id IN(:ids)';
+                $conditionVariables["ids"] = $ids;
+                $types["ids"] = Connection::PARAM_STR_ARRAY;
             }
         }
 
-        return $this->db->fetchCol('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $this->model->getConditionVariables());
+        return $this->db->fetchCol('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables,$types);
     }
 }
