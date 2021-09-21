@@ -60,9 +60,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
                 } else {
                     $condition .= ' WHERE ';
                 }
-                $condition .= ' id IN(:ids)';
-                $conditionVariables["ids"] = $ids;
-                $types["ids"] = Connection::PARAM_STR_ARRAY;
+                $condition .= ' id IN('. implode(",",wrapArrayElements($ids,"'")).')';
             }
         }
 

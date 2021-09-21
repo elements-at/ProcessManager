@@ -48,7 +48,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
                     } else {
                         $condition .= ' WHERE ';
                     }
-                    $condition .= ' configurationId IN(' . implode(', ', $ids).')';
+                    $condition .= ' configurationId IN(' . wrapArrayElements($ids,"'").')';
                 }
             }
         }
