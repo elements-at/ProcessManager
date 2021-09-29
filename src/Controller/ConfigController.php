@@ -117,7 +117,7 @@ class ConfigController extends AdminController
     }
 
     /**
-     * @Route("/save")
+     * @Route("/save", methods={"POST"})
      *
      * @param Request $request
      *
