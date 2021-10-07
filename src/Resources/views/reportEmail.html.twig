@@ -62,7 +62,7 @@
                 </td>
             <td>{{ monitoringItem.getMessage() }}</td>
             <td>{{ monitoringItem.getCommand() }}</td>
-            <td style="white-space: nowrap">{{ monitoringItem.getModificationDate() | date("Y-m-d H:i:s") }}</td>
+            <td style="white-space: nowrap">{{ ('@'~monitoringItem.getModificationDate()) | date("Y-m-d H:i:s") }}</td>
         </tr>
     {% endfor %}
     {%  if totalItemsCount > reportItems|length  %}
