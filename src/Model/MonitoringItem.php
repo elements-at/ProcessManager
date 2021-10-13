@@ -550,6 +550,14 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this->command;
     }
 
+    protected function pidExists($pid) : bool {
+        if(function_exists("posix_getpgid")){
+            return posix_getpgid($pid);
+        }else{
+            return file_exists('/proc/'.$pid);
+        }
+    }
+
     /** Returns true if the item died unexpectetly
      * @return bool
      */
@@ -558,7 +566,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         if ($pid = $this->getPid()) {
             $checks = 0;
             while(in_array(self::getById($this->getId())->getStatus(),[self::STATUS_INITIALIZING,self::STATUS_UNKNOWN])){ //check for state because shortly after the background execution the process is alive...
-                if(posix_getpgid($pid) == false){
+                if($this->pidExists($pid) == false){
                     $this->setPid(null)->getLogger()->debug('PID' . $pid.' does not exist - removing pid');
                     $this->save();
                     return false;
@@ -570,7 +578,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
                 }
             }
 
-            return posix_getpgid($pid) ? true: false ;
+            return $this->pidExists($pid) ? true: false ;
         }else{
             return false;
         }
