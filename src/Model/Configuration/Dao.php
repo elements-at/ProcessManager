@@ -34,14 +34,20 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
 
     public function delete()
     {
-        if ($this->model->getId()) {
-            $list = new MonitoringItem\Listing();
-            $list->setCondition('configurationId = ?', [$this->model->getId()]);
-            $items = $list->load();
+        $id = $this->model->getId();
+
+        if ($id) {
+            $items = (new MonitoringItem\Listing())
+                ->setCondition('configurationId = ?', [$id])
+                ->load();
+
             foreach ($items as $item) {
                 $item->delete();
             }
-            $this->db->query('DELETE FROM ' . $this->getTableName() . ' where id=' . $this->model->getId());
+
+            $this->db
+                ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
+                ->execute([$id]);
         }
     }
 
