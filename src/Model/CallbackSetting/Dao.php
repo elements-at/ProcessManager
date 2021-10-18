@@ -60,8 +60,13 @@ class Dao extends AbstractDao
 
     public function delete()
     {
-        if ($this->model->getId()) {
-            $this->db->query('DELETE FROM '.$this->getTableName().' where id='.$this->model->getId());
+        $id = $this->model->getId();
+
+        if ($id) {
+            $this->db
+                ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
+                ->execute([$id]);
+
             $this->model = null;
         }
     }
