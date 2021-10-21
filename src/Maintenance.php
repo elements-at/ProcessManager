@@ -55,7 +55,7 @@ class Maintenance
             $ts = time()-$item->getModificationDate();
             $modDate = \Carbon\Carbon::createFromTimestamp($item->getModificationDate());
             $diff = $modDate->diffInHours(\Carbon\Carbon::now());
-            $item->getLogger()->debug('Delete item ' . $item->getId() .' because it expired. Hours diff: ' . $diff);
+            $item->getLogger()->debug('Delete item ' . $item->getId() .' Name: '. $item->getName(). ' because it expired. Hours diff: ' . $diff);
             $item->delete();
         }
     }
