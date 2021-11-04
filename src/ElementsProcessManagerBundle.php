@@ -125,7 +125,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
      */
     public function getInstaller()
     {
-        return $this->container->get(Installer::class);
+        return \Pimcore::getContainer()->get(Installer::class);
     }
 
     /**
