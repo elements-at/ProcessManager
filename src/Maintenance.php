@@ -98,6 +98,7 @@ class Maintenance
                         $itemsAlive[] = false;
                     }
                 }
+                $item->getLogger()->closeLoggerHandlers();
             }
         }
 

@@ -31,4 +31,16 @@ class Logger extends \Pimcore\Log\ApplicationLogger
             }
         }
     }
+
+    public function closeLoggerHandlers() : void {
+
+        /**
+         * @var \Monolog\Logger $logger
+         */
+        foreach($this->loggers as $logger){
+            foreach($logger->getHandlers() ?? [] as $handler){
+                $handler->close();
+            }
+        }
+    }
 }

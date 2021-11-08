@@ -50,6 +50,10 @@ class File extends AbstractLogger
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
             $logFile = $this->getLogFile($config, $monitoringItem);
 
+            if(!array_key_exists('maxFileSizeMB',$config)){
+                $config['maxFileSizeMB'] = null;
+            }
+
             if (php_sapi_name() === 'cli' && $config['maxFileSizeMB'] && is_readable($logFile)) {
                 $logFileSize = round(filesize($logFile) / 1024 / 1024);
 
@@ -87,7 +91,7 @@ class File extends AbstractLogger
      */
     public function getLogFile($config, $monitoringItem)
     {
-        if ($v = $config['filepath']) {
+        if ($v = $config['filepath'] ?? null) {
             $logFile = PIMCORE_PROJECT_ROOT.$v;
         } else {
             $logFile = $monitoringItem->getLogFile();
