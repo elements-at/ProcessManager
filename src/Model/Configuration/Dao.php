@@ -64,7 +64,7 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
         if (!$data['id']) {
             throw new \Exception("A valid Command has to have an id associated with it!");
         }
-        if (isset($data['oldId'])) {
+        if (isset($params['oldId'])) {
             if ($params['oldId'] != "") {
                 $this->db->update($this->getTableName(), $data, ['id' => $params['oldId']]);
             } else {
