@@ -221,6 +221,11 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         var value = this.getFieldValue(fieldName);
         if(value == ''){
             value = null;
+        }else{
+            value = value.split(",");
+            for (let i = 0; i < value.length; i++) {
+                value[i] = parseInt(value[i]);
+            }
         }
         this.roles = Ext.create('Ext.ux.form.MultiSelect', this.mergeConfigs({
             name: fieldName,
