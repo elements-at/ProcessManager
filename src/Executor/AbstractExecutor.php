@@ -159,6 +159,8 @@ abstract class AbstractExecutor implements \JsonSerializable
         $data['executorConfig'] = $executorConfig;
 
         $data['values'] = $this->getValues();
+        $data['values']['id'] = $this->getConfig()->getId();
+
         $data['loggers'] = $this->getLoggers();
         $data['actions'] = $this->getActions();
 
