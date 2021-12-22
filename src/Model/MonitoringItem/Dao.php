@@ -85,7 +85,9 @@ class Dao extends AbstractDao
 
     public function delete()
     {
-        if ($this->model->getId()) {
+        $id = $this->model->getId();
+
+        if ($id) {
             foreach ((array)$this->model->getActions() as $action) {
                 if ($class = $action['class']) {
                     /**
@@ -96,10 +98,14 @@ class Dao extends AbstractDao
                 }
             }
 
-            $this->db->query('DELETE FROM '.$this->getTableName().' where id='.$this->model->getId());
+            $this->db
+                ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
+                ->execute([$id]);
+
             if ($logFile = $this->model->getLogFile()) {
                 @unlink($logFile);
             }
+
             $this->model = null;
         }
     }
