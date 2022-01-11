@@ -31,7 +31,7 @@ Change the Version of the ProcessManger to v4.x
 And run the update commands
 ```console
 composer update elements/process-manager-bundle
-bin/console pimcore:bundle:update ElementsProcessManagerBundle
+./bin/console doctrine:migrations:migrate --prefix=Elements\\Bundle\\ProcessManagerBundle 
 ```
 #### Breaking changes
 
