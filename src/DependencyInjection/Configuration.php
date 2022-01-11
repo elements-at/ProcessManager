@@ -57,7 +57,6 @@ class Configuration implements ConfigurationInterface
                     ->end()
 
                 ->arrayNode("additionalScriptExecutionUsers")
-                    ->defaultValue(["sdfasdfad@asdfasdf.com"])
                     ->scalarPrototype()->end()
                     ->info("Defines additional system users which are allowed to execute the php scripts")
                     ->end()
