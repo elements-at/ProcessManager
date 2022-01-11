@@ -25,6 +25,6 @@ services:
 
 You can execute 
 ```command 
-bin/console config:dump-reference ElementsProcessManagerBundle
+bin/console debug:config ElementsProcessManagerBundle
 ```
 to dump the configuration.
