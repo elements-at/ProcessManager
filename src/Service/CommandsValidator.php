@@ -3,6 +3,7 @@
 namespace Elements\Bundle\ProcessManagerBundle\Service;
 
 use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+use Symfony\Component\Console\Command\LazyCommand;
 
 class CommandsValidator
 {
@@ -61,6 +62,9 @@ class CommandsValidator
 
     protected function classUsesTraits($class, $autoload = true)
     {
+        if ($class instanceof LazyCommand) {
+            $class = $class->getCommand();
+        }
         $traits = [];
 
         // Get traits of all parent classes
