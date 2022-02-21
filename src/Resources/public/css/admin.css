@@ -177,3 +177,7 @@ a.process-manager-details-link {
     position: relative;
     top: 4px;
 }
+
+#pimcore_plugin_pm_panel {
+    background: none !important;
+}
