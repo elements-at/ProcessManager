@@ -95,7 +95,7 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
             items: [
                 headerText,
                 progressPanel,
-                 actionBtnsPanel
+                actionBtnsPanel
             ],
         });
 
@@ -105,7 +105,16 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
         this.displayList.push(panel);
         if (this.toast != null) {
             this.toast.insert(0,panel);
+
             this.toast.show();
+
+            //workaround for toast appearing at a random location after adding a process:
+            //after showing, set the postion to the bottom right
+            let width = $(window).width();
+            let height = $(window).height();
+            let toastSize = this.toast.getSize();
+            //does only seem to work without animation if animations are disabled for the toast
+            this.toast.setPosition(width-toastSize.width,height-toastSize.height,false);
         }
 
     },
@@ -184,8 +193,8 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
 
     _updateActionBtns: function(actionBtnsPanel, item) {
 
-       actionBtnsPanel.items.removeAll(); //do not remove them as it causes flickering
-       actionBtnsPanel.update();
+        actionBtnsPanel.items.removeAll(); //do not remove them as it causes flickering
+        actionBtnsPanel.update();
 
         if(item.actionItems.length){
             for(let i = 0; i < item.actionItems.length; i++){
@@ -208,7 +217,7 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
 
     _updatePanelTitle : function(data){
         if(this.toast){
-          //  let title = t('plugin_pm_process_list_title') + ' <small id="processManagerActiveText">(' + data.active +' from  ' + data.total +' active)</small> ';
+            //  let title = t('plugin_pm_process_list_title') + ' <small id="processManagerActiveText">(' + data.active +' from  ' + data.total +' active)</small> ';
             //this.toast.setTitle(title);
             //do not use setTitle as it causes scrolling
             let el = document.getElementById('processManagerActiveText');
@@ -255,6 +264,7 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
                             title: t('plugin_pm_process_list_title') + ' <small id="processManagerActiveText"></small>',
                             width: 700,
                             autoScroll : false,
+                            animate: false,
                             maxHeight:400,
                             autoShow: true,
                             closeAction : 'hide', //do not destroy as we get errors when panel disappears and a new process is started - seems to be a bug in Ext.Toast
