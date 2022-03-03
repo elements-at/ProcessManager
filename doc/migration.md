@@ -19,9 +19,9 @@ bin/console pimcore:bundle:update ElementsProcessManagerBundle
 
 Rename DataBase Tables 
 
-plugin_process_manager_configuration to bundle_process_manager_configuration
-plugin_process_manager_monitoring_item to bundle_process_manager_monitoring_item
-plugin_process_manager_callback_setting to bundle_process_manager_callback_setting
+* `plugin_process_manager_configuration` to `bundle_process_manager_configuration`
+* `plugin_process_manager_monitoring_item` to `bundle_process_manager_monitoring_item`
+* `plugin_process_manager_callback_setting` to `bundle_process_manager_callback_setting`
 
 Change the Version of the ProcessManger to v4.x
 ```console
