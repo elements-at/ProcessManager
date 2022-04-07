@@ -91,7 +91,7 @@ class MonitoringItemController extends AdminController
         if (!$request->get('showHidden') || $request->get('showHidden') == 'false') {
             $filterConditionArray =  QueryParams::getFilterCondition($request->get('filter'), ['id', 'o_id', 'pid'], false, $callbacks);
 
-            if ($filterConditionArray && $filterConditionArray['id']) {
+            if ($filterConditionArray && isset($filterConditionArray['id'])) {
             } else {
                 if ($condition) {
                     $condition .= ' AND published=1';
