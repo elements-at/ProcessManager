@@ -75,7 +75,7 @@
                 $('#autorefresh').attr('checked', false);
             </script>
         {% endif %}
-    <pre>{{ data }}</pre>
+    <pre>{{ data | raw }}</pre>
 
 {%  if ajaxRequest == false %}
 </div>
