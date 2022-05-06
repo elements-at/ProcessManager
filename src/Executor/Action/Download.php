@@ -45,6 +45,12 @@ class Download extends AbstractAction
     public $deleteWithMonitoringItem = false;
 
     /**
+     * @var bool
+     */
+    public $isAbsoluteFilePath = false;
+
+
+    /**
      * @return bool
      */
     public function getDeleteWithMonitoringItem(): bool
@@ -116,8 +122,30 @@ class Download extends AbstractAction
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isAbsoluteFilePath(): bool
+    {
+        return $this->isAbsoluteFilePath;
+    }
 
+    /**
+     * @param bool $isAbsoluteFilePath
+     * @return $this
+     */
+    public function setIsAbsoluteFilePath(bool $isAbsoluteFilePath): Download
+    {
+        $this->isAbsoluteFilePath = $isAbsoluteFilePath;
+        return $this;
+    }
 
+    protected function buildFilePath($actionData) {
+        $filePath = $actionData['filepath'];
+        $isAbsoluteFilePath = $actionData['isAbsoluteFilePath'] ?? $this->isAbsoluteFilePath();
+        $file = $isAbsoluteFilePath ? $filePath : PIMCORE_PROJECT_ROOT.$filePath;
+        return $file;
+    }
 
     /**
      * @param $monitoringItem MonitoringItem
@@ -127,7 +155,7 @@ class Download extends AbstractAction
      */
     protected function downloadFileExists($monitoringItem, $actionData){
         if ($actionData['filepath']) {
-            $file = PIMCORE_PROJECT_ROOT.$actionData['filepath'];
+            $file = $this->buildFilePath($actionData);
         } else {
             $file = $monitoringItem->getLogFile();
         }
@@ -165,7 +193,7 @@ class Download extends AbstractAction
      */
     public function execute($monitoringItem, $actionData)
     {
-        $file = PIMCORE_PROJECT_ROOT.$actionData['filepath'];
+        $file = $this->buildFilePath($actionData);
         if (is_readable($file)) {
             $response = new BinaryFileResponse($file);
             $response->headers->set('Content-Type', finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file), true);
@@ -184,7 +212,7 @@ class Download extends AbstractAction
     public function preMonitoringItemDeletion($monitoringItem, $actionData)
     {
         if ($actionData['deleteWithMonitoringItem'] == true || $actionData['deleteWithMonitoringItem'] == "on") {
-            $file = \PIMCORE_PROJECT_ROOT.$actionData['filepath'];
+            $file = $this->buildFilePath($actionData['filepath']);
             if (is_readable($file) && is_file($file)) {
                 unlink($file);
             }
@@ -212,6 +240,7 @@ class Download extends AbstractAction
             'label' => $this->getLabel(),
             'filepath' => $this->getFilePath(),
             'deleteWithMonitoringItem' => $this->getDeleteWithMonitoringItem(),
+            'isAbsoluteFilePath' => $this->isAbsoluteFilePath(),
             'class' => self::class,
         ];
     }
