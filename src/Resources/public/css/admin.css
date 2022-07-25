@@ -120,6 +120,11 @@
     display: none;
 }
 
+/* dark background under tabs */
+#pimcore_panel_tabs-body .x-tab-bar-body {
+    background-color: #3c3f41;
+}
+
 .pm_tooltip_icon {
     position: relative;
     left:3px;
