@@ -121,8 +121,8 @@
 }
 
 /* dark background under tabs */
-#pimcore_panel_tabs-body .x-tab-bar-body {
-    background-color: #3c3f41;
+#pimcore_plugin_pm_panel-bodyWrap .x-tab-bar-body {
+    background-color: #393C3F;
 }
 
 .pm_tooltip_icon {
