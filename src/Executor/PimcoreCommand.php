@@ -32,7 +32,7 @@ class PimcoreCommand extends AbstractExecutor
      */
     public function getCommand($callbackSettings = [], $monitoringItem = null)
     {
-        $options = $this->getValues()['commandOptions'];
+        $options = $this->getValues()['commandOptions'] ?? '';
         $options = str_replace('|', '', trim($options));
         $command = Console::getPhpCli() . ' ' . realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' ' . $this->getValues()['command'];
 
