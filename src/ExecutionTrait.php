@@ -85,6 +85,11 @@ trait ExecutionTrait
             if ($options['autoCreate'] && !$monitoringItem) {
                 $options['command'] = self::getCommand($options);
 
+                if(!array_key_exists('name',$options)){
+                    $commandParts = explode_and_trim(" ",$options['command']);
+                    $options['name'] = $commandParts[1] ?? '';
+                }
+
                 $monitoringItem = new MonitoringItem();
                 $monitoringItem->setValues($options);
 
@@ -267,7 +272,7 @@ trait ExecutionTrait
         }
         $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Starting child processes')->save();
 
-        $i = 0; 
+        $i = 0;
         foreach($workloadChunks as $i => $package){
 
             if($startAfterPackage && $startAfterPackage > ($i+1)){
