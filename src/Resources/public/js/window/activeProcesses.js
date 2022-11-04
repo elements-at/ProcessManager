@@ -110,8 +110,8 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
 
             //workaround for toast appearing at a random location after adding a process:
             //after showing, set the postion to the bottom right
-            let width = $(window).width();
-            let height = $(window).height();
+            let width = window.innerWidth;
+            let height = window.innerHeight;
             let toastSize = this.toast.getSize();
             //does only seem to work without animation if animations are disabled for the toast
             this.toast.setPosition(width-toastSize.width,height-toastSize.height,false);
