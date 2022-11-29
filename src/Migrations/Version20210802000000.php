@@ -21,12 +21,19 @@ class Version20210802000000 extends BundleAwareMigration
      */
     public function up(Schema $schema): void
     {
+        $configurationTable = $schema->getTable('bundle_process_manager_configuration');
+
         $this->addSql('ALTER TABLE `bundle_process_manager_configuration` MODIFY COLUMN `id` varchar(190)');
-        $this->addSql('ALTER TABLE `bundle_process_manager_configuration` ADD UNIQUE INDEX `id` (`id`)');
+        if(!$configurationTable->hasIndex('id')){
+            $this->addSql('ALTER TABLE `bundle_process_manager_configuration` ADD UNIQUE INDEX `id` (`id`)');
+        }
+
         $this->addSql('ALTER TABLE `bundle_process_manager_configuration` DROP PRIMARY KEY');
         $this->addSql('ALTER TABLE `bundle_process_manager_configuration` ADD PRIMARY KEY (`id`)');
         $this->addSql('ALTER TABLE `bundle_process_manager_monitoring_item` MODIFY COLUMN `configurationId` varchar(190)');
-        $this->addSql('ALTER TABLE `bundle_process_manager_configuration` DROP KEY `name`');
+        if($configurationTable->hasIndex('name')){
+            $this->addSql('ALTER TABLE `bundle_process_manager_configuration` DROP KEY `name`');
+        }
     }
 
     /**
