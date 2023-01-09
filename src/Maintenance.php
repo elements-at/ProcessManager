@@ -104,18 +104,18 @@ class Maintenance
 
         if ($reportItems) {
             $config = ElementsProcessManagerBundle::getConfiguration();
-            $mail = new \Pimcore\Mail();
-            $mail->setSubject('ProcessManager - failed processes (' . \Pimcore\Tool::getHostUrl().')');
-
-            $html = $this->renderingEngine->render('@ElementsProcessManager/reportEmail.html.twig', [
-                'totalItemsCount' => count($reportItems),
-                'reportItems' => array_slice($reportItems,0,5)
-            ]);
-
-            $mail->html($html);
-
             $recipients = $config->getReportingEmailAddresses();
             if ($recipients) {
+                $mail = new \Pimcore\Mail();
+                $mail->setSubject('ProcessManager - failed processes (' . \Pimcore\Tool::getHostUrl().')');
+
+                $html = $this->renderingEngine->render('@ElementsProcessManager/reportEmail.html.twig', [
+                    'totalItemsCount' => count($reportItems),
+                    'reportItems' => array_slice($reportItems,0,5)
+                ]);
+
+                $mail->html($html);
+
                 foreach($recipients as $emailAdr){
                     try {
                         $mail->addTo($emailAdr);
