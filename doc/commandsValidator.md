@@ -11,7 +11,7 @@ If you want that all commands are available, change the $strategy to "all". Then
     Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator:
         public: true
         arguments:
-            $strategy: "default
+            $strategy: "default"
             $whiteList: ["router:match","valid:command"]
             $blackList: ["process-manager:maintenance","do-no-execute:command"]
 ```
