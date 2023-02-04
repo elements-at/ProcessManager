@@ -153,7 +153,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
 
     getFieldLabel : function (fieldName, config) {
         config = defaultValue(config,{});
-        var fieldLabel = t('plugin_pm_' + fieldName);
+        let fieldLabel = config.label ? config.label : t('plugin_pm_' + fieldName);
         if(config.mandatory){
             this.mandatoryFields.push(fieldName);
             fieldLabel += ' <span style="color:#f00;">*</span>';
