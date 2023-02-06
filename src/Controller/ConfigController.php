@@ -19,6 +19,7 @@ use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
+use Elements\Bundle\ProcessManagerBundle\Service\UploadManger;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -228,11 +229,21 @@ class ConfigController extends AdminController
      *
      * @return JsonResponse
      */
-    public function executeAction(Request $request)
+    public function executeAction(Request $request, UploadManger $uploadManger)
     {
         $this->checkPermission(Enums\Permissions::EXECUTE);
         $callbackSettings = $request->get('callbackSettings') ? json_decode($request->get('callbackSettings'), true) : [];
-        $result = Helper::executeJob($request->get('id'), $callbackSettings, $this->getAdminUser()->getId());
+
+        $result = Helper::executeJob(
+            $request->get('id'),
+            $callbackSettings,
+            $this->getAdminUser()->getId(),
+            [],
+            null,
+            function ($monitoringItem, $executor) use ($request, $uploadManger) {
+                $uploadManger->saveUploads($request, $monitoringItem);
+            }
+        );
 
         return $this->adminJson($result);
     }

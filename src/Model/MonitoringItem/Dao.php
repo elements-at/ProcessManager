@@ -19,6 +19,7 @@ use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
+use Elements\Bundle\ProcessManagerBundle\Service\UploadManger;
 
 /**
  * Class Dao
@@ -64,7 +65,7 @@ class Dao extends AbstractDao
         }else{
             $db = $this->db;
         }
-        
+
         /* refresh db connection if connection has been lost (happens when db connection has been idle for too long) */
         if(FALSE == $db->ping()){
             $db = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
@@ -108,6 +109,8 @@ class Dao extends AbstractDao
             if ($logFile = $this->model->getLogFile()) {
                 @unlink($logFile);
             }
+
+            recursiveDelete(UploadManger::getUploadDir($id));
 
             $this->model = null;
         }

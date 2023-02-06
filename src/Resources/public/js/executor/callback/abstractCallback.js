@@ -320,35 +320,34 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
 
         var params = {
             id: id,
-            callbackSettings: callbackSettings
+            callbackSettings: callbackSettings,
+            csrfToken: pimcore.settings['csrfToken']
         };
 
-        if(this.window){
-            if(!this.callbackWindowKeepOpen){
-                this.closeWindow();
-            }
-        }
-
-        Ext.Ajax.request({
+        this.formPanel.getForm().submit({
             url: this.executionUrl,
             method: 'post',
             params: params,
             failure: function (response) {
                 alert('Error at execution');
             }.bind(this),
-            success: function (response) {
-                var data = Ext.decode(response.responseText);
+            success: function (re,result) {
+                var data = Ext.decode(result.response.responseText);
                 if (data.success) {
                     processmanagerPlugin.activeProcesses.refreshTask.start();
-                    /*pimcore.helpers.showNotification(t("success"), t("plugin_pm_start_success"), "success");
-                    */
                 } else {
                     pimcore.helpers.showNotification(t("error"), t("plugin_pm_start_error"), "error", data.message);
                 }
-                if (this.store) {
-                    this.store.reload();
+                if (typeof this.grid != "undefined") {
+                    this.grid.store.reload();
                 }
-            }.bind(this.grid)
+
+                if(this.window){
+                    if(!this.callbackWindowKeepOpen){
+                        this.closeWindow();
+                    }
+                }
+            }.bind(this)
         });
     },
 

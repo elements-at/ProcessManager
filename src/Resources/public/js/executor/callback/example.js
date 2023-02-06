@@ -39,6 +39,13 @@ pimcore.plugin.processmanager.executor.callback.example = Class.create(pimcore.p
         //Checkbox
         items.push(this.getCheckbox('myCheckbox', config));
 
+
+        //File upload field
+        items.push(this.getUploadField('priceListFile',{
+            label : t("file"),
+            mandatory : true
+        }));
+
         //Select field
         var selectConfig = config;
         selectConfig.store = [
