@@ -1,6 +1,7 @@
 pimcore.registerNS("pimcore.plugin.processmanager.helper.form");
 pimcore.plugin.processmanager.helper.form = Class.create({
 
+    mandatoryString : '<span style="color:#f00;">*</span>',
     specialFormFields : [],
     mandatoryFields : [],
     labelWidth : 120,
@@ -45,6 +46,34 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             afterLabelTextTpl: this.getTooltip(config.tooltip),
             value: val
         },config);
+    },
+
+    getUploadField : function (fieldName, config){
+        config = defaultValue(config,{});
+        let allowBlank = true;
+        if(config.mandatory){
+            allowBlank = false;
+        }
+        this.specialFormFields.push({
+            name : fieldName,
+            type : 'upload'
+        });
+        return this.mergeConfigs({
+            xtype: 'fileuploadfield',
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
+            emptyText: t("select_a_file"),
+            fieldLabel: this.getFieldLabel(fieldName , config),
+            width: '100%',
+            name: fieldName,
+            allowBlank: allowBlank,
+            buttonText: "",
+            buttonConfig: {
+                iconCls: 'pimcore_icon_upload'
+            },
+            listeners: {
+
+            }
+        }, config);
     },
 
     getLocaleSelection : function (fieldName,config) {
@@ -156,7 +185,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         let fieldLabel = config.label ? config.label : t('plugin_pm_' + fieldName);
         if(config.mandatory){
             this.mandatoryFields.push(fieldName);
-            fieldLabel += ' <span style="color:#f00;">*</span>';
+            fieldLabel += ' ' + this.mandatoryString;
         }
         return fieldLabel;
     },
@@ -742,9 +771,21 @@ pimcore.plugin.processmanager.helper.form = Class.create({
 
     alertFormErrors :function (fields) {
         for(var i = 0; i < fields.length; i++){
-            fields[i] = ' "' + this.getFieldLabel(fields[i]) + '"';
+            let field = this.formPanel.getForm().findField(fields[i]);
+            let fieldLabel = '';
+            if(field){
+                fieldLabel = field.fieldLabel.replace(' ' + this.mandatoryString,"");
+            }else{
+                fieldLabel = this.getFieldLabel(fields[i]);
+            }
+
+            fields[i] = ' "' + fieldLabel + '"';
         }
         Ext.MessageBox.alert(t('plugin_pm_error_form_validation'), t('plugin_pm_error_form_fields') + '<br/><b>' + fields.join(', ') + '</b>');
+    },
+
+    getStorageValueUpload : function (name) {
+        return this.formPanel.getForm().findField(name).getSubmitValue();
     },
 
     getStorageValueDate : function (name) {
