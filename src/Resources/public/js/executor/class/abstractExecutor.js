@@ -421,6 +421,7 @@ pimcore.plugin.processmanager.executor.class.abstractExecutor = Class.create(pim
         items.push(this.getTextField('group'));
         items.push(this.getTextArea('description'));
         items.push(this.getRoleSelection('restrictToRoles'));
+        items.push(this.getPermissionSelection('restrictToPermissions'));
 
         if (processmanagerPlugin.config.executorCallbackClasses) {
             items.push(this.getCallbackSelect());

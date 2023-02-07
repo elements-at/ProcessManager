@@ -274,6 +274,41 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         return this.roles;
     },
 
+    getPermissionSelection: function (fieldName, config) {
+        config = defaultValue(config,{});
+        let permissions = processmanagerPlugin.config.permissions;
+
+        let value = this.getFieldValue(fieldName);
+
+        if(typeof value == "undefined" || value == ''){
+            value = null;
+        }else{
+            value = value.split(",");
+            for (let i = 0; i < value.length; i++) {
+                value[i] = value[i];
+            }
+        }
+        this.roles = Ext.create('Ext.ux.form.MultiSelect', this.mergeConfigs({
+            name: fieldName,
+            triggerAction:"all",
+            editable:false,
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
+            fieldLabel: this.getFieldLabel(fieldName, config),
+            width:'100%',
+            height : defaultValue(config.height,100),
+            store: Ext.create('Ext.data.JsonStore', {
+                fields: ["key","category"],
+                data: permissions
+            }),
+            displayField: "name",
+            valueField: "key",
+            afterLabelTextTpl: this.getTooltip(config.tooltip),
+            value: value
+        },config));
+
+        return this.roles;
+    },
+
     getHref : function (fieldName, config) {
         config = defaultValue(config,{});
         this.specialFormFields.push({

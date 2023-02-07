@@ -167,3 +167,4 @@
 "plugin_pm_eventData";"Event data"
 "plugin_pm_eventData_tooltip";"JSON string which is passed as event data"
 "plugin_pm_icon";"Icon"
+"plugin_pm_restrictToPermissions";"Restrict to permissions"

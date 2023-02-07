@@ -34,6 +34,8 @@ class Configuration extends \Pimcore\Model\AbstractModel
     public $active;
     public $keepVersions;
     public $restrictToRoles;
+    public $restrictToPermissions;
+
 
     protected $executorClassObject;
 
@@ -390,17 +392,35 @@ class Configuration extends \Pimcore\Model\AbstractModel
      */
     public function setRestrictToRoles($restrictToRoles)
     {
-        if (is_array($restrictToRoles)) {
-            $restrictToRoles = implode(',', $restrictToRoles);
-        }
-        if (is_string($restrictToRoles) && $restrictToRoles != '' && $restrictToRoles[0] != ',') {
-            $restrictToRoles = ','.$restrictToRoles;
-        }
-        if (substr($restrictToRoles, -1, 1) != ',' && $restrictToRoles != '') {
-            $restrictToRoles .= ',';
-        }
-        $this->restrictToRoles = $restrictToRoles;
+
+        $this->restrictToRoles = $this->implodeAsString($restrictToRoles);
 
         return $this;
+    }
+
+    protected function implodeAsString($value): string
+    {
+        if (is_array($value)) {
+            $value = implode(',', $value);
+        }
+        if (is_string($value) && $value != '' && $value[0] != ',') {
+            $value = ','.$value;
+        }
+        if (substr($value, -1, 1) != ',' && $value != '') {
+            $value .= ',';
+        }
+        return $value;
+    }
+
+
+    public function setRestrictToPermissions(array | string $restrictToPermissions) : self
+    {
+        $this->restrictToPermissions = $this->implodeAsString($restrictToPermissions);
+
+        return $this;
+    }
+
+    public function getRestrictToPermissions(): string {
+        return $this->restrictToPermissions;
     }
 }

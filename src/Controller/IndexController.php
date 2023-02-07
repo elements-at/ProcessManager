@@ -21,6 +21,7 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
+use Pimcore\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -40,7 +41,7 @@ class IndexController extends AdminController
      *
      * @return JsonResponse
      */
-    public function getPluginConfigAction(Request $request, CommandsValidator $commandsValidator)
+    public function getPluginConfigAction(Request $request, CommandsValidator $commandsValidator, Translator $translator)
     {
         $this->checkPermission(Enums\Permissions::VIEW);
 
@@ -65,6 +66,22 @@ class IndexController extends AdminController
                 'name' => $role->getName(),
             ];
         }
+
+
+        $data['permissions'] = [];
+        $list = new \Pimcore\Model\User\Permission\Definition\Listing();
+        $list->setOrder('ASC')->setOrderKey('key');
+        foreach ($list->load() as $permission) {
+            $data['permissions'][] = [
+                'key' => $permission->getKey(),
+                'name' => $translator->trans($permission->getKey(),[],'admin'). ' (' . $permission->getKey().')',
+                'category' => $permission->getCategory()
+            ];
+        }
+
+        usort($data['permissions'], function($a, $b) {
+            return strnatcasecmp($a['name'], $b['name']);
+        });
 
         $shortCutMenu = [];
 

@@ -104,6 +104,16 @@ class Helper
                 $c[] = 'restrictToRoles LIKE "%,' . $r . ',%" ';
             }
             $c = ' (restrictToRoles = "" OR (' . implode(' OR ', $c) . ')) ';
+
+            if ($user->getPermissions()){
+
+                $permissionConditions = [];
+                foreach($user->getPermissions() as $permission){
+                    $permissionConditions[] = 'restrictToPermissions LIKE "%,' . $permission . ',%" ';
+                }
+                $c .= ' AND (restrictToPermissions = "" OR (' . implode(' OR ', $permissionConditions) . ')) ';
+            }
+
             $ids = \Pimcore\Db::get()->fetchCol('SELECT id FROM ' . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
 
             return $ids;
