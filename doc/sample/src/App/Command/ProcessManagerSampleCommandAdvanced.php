@@ -15,32 +15,30 @@
 
 namespace App\Command;
 
+use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+use Elements\Bundle\ProcessManagerBundle\MonitoringTrait;
+use Monolog\Logger;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use \Elements\Bundle\ProcessManagerBundle\Executor\Action;
 
 class ProcessManagerSampleCommandAdvanced extends AbstractCommand
 {
-    use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+    use ExecutionTrait;
+    use MonitoringTrait;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('process-manager:sample-command-advanced')
             ->setDescription('Just an example - using the ProcessManager with steps and actions')
-            ->addOption(
-                'monitoring-item-id',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Contains the monitoring item if executed via the Pimcore backend'
-            );
+            ->addMonitoringItemIdOption();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
+        $this->initProcessManagerByInputOption($input);
 
         $classList = new \Pimcore\Model\DataObject\ClassDefinition\Listing();
         $classList->setLimit(1);
@@ -48,52 +46,51 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
 
         $monitoringItem = $this->getMonitoringItem();
         $totalSteps = count($classes) + 1;
-        $monitoringItem->setTotalSteps($totalSteps)->save();
+
+        $this->startSteps('Processing classes', $totalSteps);
 
         $data = [];
-        foreach ($classes as $i => $class) {
+        foreach ($classes as $class) {
             /**
-             * @var $list \Pimcore\Model\DataObject\Listing
+             * @var $list \Pimcore\Model\DataObject\Listing\Concrete
              * @var $class \Pimcore\Model\DataObject\ClassDefinition
-             * @var $o \Pimcore\Model\DataObject\AbstractObject
+             * @var $object \Pimcore\Model\DataObject\AbstractObject
              */
-            $monitoringItem->setCurrentStep($i + 1)->setMessage('Processing Object of class '.$class->getName())->save();
+            $this->updateStep('Processing Object of class ' . $class->getName());
             sleep(5);
-            $listName = '\Pimcore\Model\DataObject\\'.ucfirst($class->getName()).'\Listing';
+
+            $listName = '\Pimcore\Model\DataObject\\' . ucfirst($class->getName()) . '\Listing';
             $list = new $listName();
             $total = $list->getTotalCount();
             $perLoop = 50;
+
+            $this->startWorkload('Processing ' . $list->getClassName() . 's', $total);
 
             for ($k = 0, $kMax = ceil($total / $perLoop); $k < $kMax; $k++) {
                 $list->setLimit($perLoop);
                 $offset = $k * $perLoop;
                 $list->setOffset($offset);
 
-                $monitoringItem->setCurrentWorkload(($offset ?: 1))
-                    ->setTotalWorkload($total)
-                    ->setDefaultProcessMessage($class->getName())
-                    ->save();
+                $this->updateWorkload(current: ($offset ?: 1), logLevel: Logger::INFO, itemType: $class->getName());
                 sleep(2);
 
-                $monitoringItem->getLogger()->info($monitoringItem->getMessage());
                 $objects = $list->load();
-
-                foreach ($objects as $o) {
+                foreach ($objects as $object) {
                     $data[] = [
                         'ObjectType' => $class->getName(),
-                        'id' => $o->getId(),
-                        'modificationDate' => $o->getModificationDate(),
+                        'id' => $object->getId(),
+                        'modificationDate' => $object->getModificationDate(),
                     ];
-                    $monitoringItem->getLogger()->info('Processing Object with id: '.$o->getId());
+                    $monitoringItem->getLogger()->info('Processing Object with id: ' . $object->getId(), ['relatedObject' => $object]);
                 }
             }
 
-            $monitoringItem->setWorkloadCompleted()->save();
+            $this->completeWorkload();
             \Pimcore::collectGarbage();
         }
-        $monitoringItem->setCurrentStep($totalSteps)->setCurrentWorkload(0)->setTotalWorkload(0)->setMessage(
-            'creating csv file'
-        )->save();
+
+        $this->updateStep('creating csv file');
+        $this->startWorkload(null, 1);
 
         $csvFile = PIMCORE_SYSTEM_TEMP_DIRECTORY . '/process-manager-example.csv';
 
@@ -103,8 +100,7 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
             fputcsv($file, $row);
         }
         fclose($file);
-        $monitoringItem->setCurrentWorkload(1)->setTotalWorkload(1)->setMessage('csv file created')->save();
-
+        $this->updateWorkload('csv file created');
 
         //adding some actions programmatically
         $downloadAction = new Action\Download();
@@ -126,5 +122,6 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
         ]);
 
         $monitoringItem->setMessage('Job finished')->setCompleted();
+        return 0;
     }
 }
