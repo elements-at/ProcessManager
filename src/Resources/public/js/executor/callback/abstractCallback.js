@@ -324,31 +324,55 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
             csrfToken: pimcore.settings['csrfToken']
         };
 
-        this.formPanel.getForm().submit({
-            url: this.executionUrl,
-            method: 'post',
-            params: params,
-            failure: function (response) {
-                alert('Error at execution');
-            }.bind(this),
-            success: function (re,result) {
-                var data = Ext.decode(result.response.responseText);
-                if (data.success) {
-                    processmanagerPlugin.activeProcesses.refreshTask.start();
-                } else {
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pm_start_error"), "error", data.message);
-                }
-                if (typeof this.grid != "undefined") {
-                    this.grid.store.reload();
-                }
-
-                if(this.window){
-                    if(!this.callbackWindowKeepOpen){
-                        this.closeWindow();
+        // we have a callback form -> so we use form submit for file uploads
+        if (typeof this.formPanel == "object") {
+            this.formPanel.getForm().submit({
+                url: this.executionUrl,
+                method: 'post',
+                params: params,
+                failure: function (response) {
+                    alert('Error at execution');
+                }.bind(this),
+                success: function (re, result) {
+                    var data = Ext.decode(result.response.responseText);
+                    if (data.success) {
+                        processmanagerPlugin.activeProcesses.refreshTask.start();
+                    } else {
+                        pimcore.helpers.showNotification(t("error"), t("plugin_pm_start_error"), "error", data.message);
                     }
-                }
-            }.bind(this)
-        });
+                    if (typeof this.grid != "undefined") {
+                        this.grid.store.reload();
+                    }
+
+                    if (this.window) {
+                        if (!this.callbackWindowKeepOpen) {
+                            this.closeWindow();
+                        }
+                    }
+                }.bind(this)
+            });
+        } else {
+            //direct execution without a callback window
+            Ext.Ajax.request({
+                url: this.executionUrl,
+                method: 'post',
+                params: params,
+                failure: function (response) {
+                    alert('Error at execution');
+                }.bind(this),
+                success: function (response) {
+                    var data = Ext.decode(response.responseText);
+                    if (data.success) {
+                        processmanagerPlugin.activeProcesses.refreshTask.start();
+                    } else {
+                        pimcore.helpers.showNotification(t("error"), t("plugin_pm_start_error"), "error", data.message);
+                    }
+                    if (this.store) {
+                        this.store.reload();
+                    }
+                }.bind(this.grid)
+            });
+        }
     },
 
     getFormPanel: function () {
