@@ -120,7 +120,7 @@ class OpenItem extends AbstractAction
      */
     public function getGridActionHtml($monitoringItem, $actionData)
     {
-        if ($monitoringItem->getStatus() == $monitoringItem::STATUS_FINISHED) {
+        if ($monitoringItem->isFinished()) {
 
             $item = $this->getItem($monitoringItem,$actionData);
             if ($item) {
@@ -144,7 +144,7 @@ class OpenItem extends AbstractAction
         $data['item_exists'] = false;
         $data['item_type'] = null;
 
-        if ($monitoringItem->getStatus() == $monitoringItem::STATUS_FINISHED) {
+        if ($monitoringItem->isFinished()) {
             $item = $this->getItem($monitoringItem,$actionData);
             if($item) {
                 $data['item_exists'] = true;
