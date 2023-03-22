@@ -28,6 +28,7 @@ are available (custom settings which the user can define for runtime execution) 
 * [Rest API](./doc/restApi.md)
 * [How to use - Parallelization](./doc/usageParallelization.md)
 * [Batch command execution](./doc/batchCommandExecution.md)
+* [Dedicated CLI server using Symfony messenger](./doc/symfonyMessenger.md)
 * [Migration from Pimcore 6 to Pimcore X](./doc/migration.md)
 
 ***First impressions:***

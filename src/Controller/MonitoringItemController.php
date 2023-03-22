@@ -19,6 +19,7 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\Application;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\File;
+use Elements\Bundle\ProcessManagerBundle\Message\ExecuteCommandMessage;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
@@ -27,6 +28,7 @@ use Pimcore\Templating\Model\ViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Enums;
@@ -538,15 +540,18 @@ class MonitoringItemController extends AdminController
      *
      * @return JsonResponse
      */
-    public function restartAction(Request $request)
+    public function restartAction(Request $request, MessageBusInterface $messageBus)
     {
         try {
             $monitoringItem = MonitoringItem::getById($request->get('id'));
+            $monitoringItem->setMessengerPending(true);
             $monitoringItem->deleteLogFile()->resetState()->save();
             putenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR . '=' . $monitoringItem->getId());
-            $pid = \Pimcore\Tool\Console::execInBackground($monitoringItem->getCommand(), $monitoringItem->getLogFile());
-            $monitoringItem->setPid($pid)->save();
-            return $this->adminJson(['success' => true,'PID' => $pid]);
+
+            $message = new ExecuteCommandMessage($monitoringItem->getCommand(), $monitoringItem->getId(), $monitoringItem->getLogFile());
+            $messageBus->dispatch($message);
+;
+            return $this->adminJson(['success' => true]);
         } catch (\Exception $e) {
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
         }
