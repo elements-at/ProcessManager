@@ -100,8 +100,6 @@ class IndexController extends AdminController
             $data['shortCutMenu'] = $shortCutMenu ?: false;
         }
 
-        $data['allowErrorsOnFinish'] = $bundleConfig->getAllowErrorsOnFinish();
-
         return $this->adminJson($data);
     }
 

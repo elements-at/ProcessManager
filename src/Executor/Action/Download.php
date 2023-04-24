@@ -170,7 +170,7 @@ class Download extends AbstractAction
      */
     public function getGridActionHtml($monitoringItem, $actionData)
     {
-        if ($monitoringItem->isFinished()) {
+        if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
 
             $downloadFileExists = $this->downloadFileExists($monitoringItem,$actionData);
             if ($downloadFileExists) {
@@ -222,7 +222,7 @@ class Download extends AbstractAction
     public function toJson(MonitoringItem $monitoringItem, $actionData)
     {
         $data = parent::toJson($monitoringItem, $actionData);
-        if ($monitoringItem->isFinished()) {
+        if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
             $data['fileExists'] = $this->downloadFileExists($monitoringItem,$actionData);
         }else {
             $data['fileExists'] = false;

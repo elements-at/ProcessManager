@@ -20,19 +20,6 @@ class BundleConfiguration
     }
 
     /**
-     * @return bool
-     */
-    public function getAllowErrorsOnFinish()
-    {
-        return $this->config["allowErrorsOnFinish"];
-    }
-
-    public function getProcessTimeoutMinutes() : int
-    {
-        return $this->config["processTimeoutMinutes"];
-    }
-
-    /**
      * @return array
      */
     public function getClassTypes(){

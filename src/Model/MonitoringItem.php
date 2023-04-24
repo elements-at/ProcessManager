@@ -523,17 +523,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @return bool
-     */
-    public function isFinished()
-    {
-        $config = ElementsProcessManagerBundle::getConfiguration();
-        return (   ($this->status == self::STATUS_FINISHED)
-                || (   ($this->status == self::STATUS_FINISHED_WITH_ERROR)
-                    && $config->getAllowErrorsOnFinish()));
-    }
-
-    /**
      * @return mixed
      */
     public function getStatus()

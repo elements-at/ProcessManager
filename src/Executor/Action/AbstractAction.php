@@ -24,6 +24,8 @@ abstract class AbstractAction
     public $extJsClass = '';
 
     public $name = '';
+    
+    public $executeAtStates = ['finished'];
 
     protected $config = [];
 
@@ -71,6 +73,26 @@ abstract class AbstractAction
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExecuteAtStates()
+    {
+        return $this->executeAtStates;
+    }
+
+    /**
+     * @param array $executeAtStates
+     *
+     * @return $this
+     */
+    public function setExecuteAtStates($executeAtStates)
+    {
+        $this->executeAtStates = $executeAtStates;
 
         return $this;
     }
