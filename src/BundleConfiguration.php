@@ -19,6 +19,11 @@ class BundleConfiguration
         return $this->config["disableShortcutMenu"];
     }
 
+    public function getProcessTimeoutMinutes() : int
+    {
+        return $this->config["processTimeoutMinutes"];
+    }
+
     /**
      * @return array
      */
