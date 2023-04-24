@@ -26,6 +26,9 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    Elements\Bundle\ProcessManagerBundle\MessageHandler\:
+        resource: '../../MessageHandler'
+
     Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator:
         public: true
         arguments :

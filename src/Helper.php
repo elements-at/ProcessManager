@@ -15,6 +15,7 @@
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
+use Elements\Bundle\ProcessManagerBundle\Message\ExecuteCommandMessage;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
@@ -67,6 +68,7 @@ class Helper
             if($callback){
                 $callback($monitoringItem,$executor);
             }
+            $monitoringItem->setMessengerPending(true);
             $item = $monitoringItem->save();
 
             $command = $executor->getCommand($callbackSettings, $monitoringItem);
@@ -74,17 +76,16 @@ class Helper
             putenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR . '=' . $item->getId());
 
             if (!$executor->getIsShellCommand()) {
-                $monitoringItem->getLogger()->info('Execution Command: ' . $command . ' in Background');
                 $monitoringItem->setCommand($command)->save();
             } else {
                 $monitoringItem->setCommand($command)->save();
                 $command = $executor->getShellCommand($monitoringItem);
-
-                $monitoringItem->getLogger()->info('Execution Command: ' . $command . ' in Background');
             }
 
-            $pid = \Pimcore\Tool\Console::execInBackground($command);
-            $monitoringItem->setPid($pid)->save();
+
+            $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
+            $message = new ExecuteCommandMessage($command, $monitoringItem->getId());
+            $messageBus->dispatch($message);
 
             return ['success' => true, 'executedCommand' => $command, 'monitoringItemId' => $item->getId()];
         } catch (\Exception $e) {
