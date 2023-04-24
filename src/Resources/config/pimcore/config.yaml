@@ -1,0 +1,10 @@
+framework:
+    messenger:
+        transports:
+            elements_process_manager:
+                dsn: 'sync://'
+
+        routing:
+            Elements\Bundle\ProcessManagerBundle\Message\ExecuteCommandMessage: elements_process_manager
+            Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage: elements_process_manager
+            Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage: elements_process_manager
