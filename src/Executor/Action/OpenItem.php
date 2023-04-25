@@ -169,6 +169,7 @@ class OpenItem extends AbstractAction
             'label' => $this->getLabel(),
             'type' => $this->getType(),
             'itemId' => $this->getItemId(),
+            'executeAtStates' => $this->getExecuteAtStates(),
             'class' => self::class
         ];
     }

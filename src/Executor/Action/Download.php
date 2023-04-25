@@ -241,6 +241,7 @@ class Download extends AbstractAction
             'filepath' => $this->getFilePath(),
             'deleteWithMonitoringItem' => $this->getDeleteWithMonitoringItem(),
             'isAbsoluteFilePath' => $this->isAbsoluteFilePath(),
+            'executeAtStates' => $this->getExecuteAtStates(),
             'class' => self::class,
         ];
     }
