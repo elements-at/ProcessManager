@@ -17,6 +17,8 @@ namespace Elements\Bundle\ProcessManagerBundle\Model;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
+use Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage;
+use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Process\Process;
@@ -125,6 +127,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public $published = true;
 
+    public $messengerPending = false;
 
     /**
      * @var string
@@ -263,6 +266,24 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $this->published = $published;
 
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMessengerPending(): bool
+    {
+        return $this->messengerPending;
+    }
+
+    /**
+     * @param bool $messengerPending
+     * @return MonitoringItem
+     */
+    public function setMessengerPending(bool $messengerPending): MonitoringItem
+    {
+        $this->messengerPending = $messengerPending;
         return $this;
     }
 
@@ -550,35 +571,20 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this->command;
     }
 
-    protected function pidExists($pid) : bool {
-        if(function_exists("posix_getpgid")){
-            return posix_getpgid($pid);
-        }else{
-            return file_exists('/proc/'.$pid);
-        }
-    }
-
     /** Returns true if the item died unexpectetly
      * @return bool
      */
     public function isAlive()
     {
-        if ($pid = $this->getPid()) {
-            $checks = 0;
-            while(in_array(self::getById($this->getId())->getStatus(),[self::STATUS_INITIALIZING,self::STATUS_UNKNOWN])){ //check for state because shortly after the background execution the process is alive...
-                if($this->pidExists($pid) == false){
-                    $this->setPid(null)->getLogger()->debug('PID' . $pid.' does not exist - removing pid');
-                    $this->save();
-                    return false;
-                }
-                usleep(500000);
-                $checks++;
-                if($checks > 3){
-                    break; //just to make sure we do not end in a endlessloop
-                }
-            }
+        if($this->isMessengerPending()) {
+            return true;
+        }
+        if ($this->getPid()) {
+            $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
+            $message = new CheckCommandAliveMessage($this->getId());
+            $messageBus->dispatch($message);
 
-            return $this->pidExists($pid) ? true: false ;
+            return (bool)self::getById($this->getId())->getPid();
         }else{
             return false;
         }
@@ -960,10 +966,10 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function stopProcess(){
         $pid = $this->getPid();
         if($pid){
-            $this->setPid(null)->setStatus(self::STATUS_FAILED)->save();
-            $process = Process::fromShellCommandline('kill -9 '.$pid);
-            $process->run();
-            return !$this->isAlive();
+            $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
+            $message = new StopProcessMessage($this->getId());
+            $messageBus->dispatch($message);
+            return true;
         }
     }
 
