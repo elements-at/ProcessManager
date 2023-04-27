@@ -340,7 +340,7 @@ pimcore.plugin.processmanager.executor.callback.abstractCallback = Class.create(
                     } else {
                         pimcore.helpers.showNotification(t("error"), t("plugin_pm_start_error"), "error", data.message);
                     }
-                    if (typeof this.grid != "undefined") {
+                    if (this.grid != null) {
                         this.grid.store.reload();
                     }
 
