@@ -40,7 +40,7 @@ pimcore.plugin.processmanager.executor.action.download = new Class.create(pimcor
 
     executeActionForActiveProcessList : function(actionButtonPanel,actionData,monitoringItem,obj,index){
 
-        if(monitoringItem.status == 'finished'){
+        if(actionData.executeAtStates.includes(monitoringItem.status)){
 
             let text = actionData.label ? actionData.label : t('download');
             let disabled = false;

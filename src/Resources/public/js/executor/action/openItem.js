@@ -43,7 +43,7 @@ pimcore.plugin.processmanager.executor.action.openItem = new Class.create(pimcor
     },
 
     executeActionForActiveProcessList : function(actionButtonPanel,actionData,monitoringItem,obj,index){
-        if(monitoringItem.status == 'finished'){
+        if(actionData.executeAtStates.includes(monitoringItem.status)){
             let icons = {
                 document : "/bundles/pimcoreadmin/img/flat-white-icons/page.svg",
                 object : "/bundles/pimcoreadmin/img/flat-white-icons/object.svg",
