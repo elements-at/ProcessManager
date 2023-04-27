@@ -194,11 +194,7 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     },
 
     openLogId : function (id){
-        if (Ext.getCmp("pimcore_plugin_pm_panel")) {
-            Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(1);
-        } else {
-            processmanagerPlugin.showProcessManager({activeTab: 1});
-        }
+        processmanagerPlugin.showProcessManager({activeTab: 1});
 
         let pm = pimcore.globalmanager.get("plugin_pm_cnf");
 
