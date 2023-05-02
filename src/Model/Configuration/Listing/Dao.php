@@ -54,16 +54,15 @@ class Dao extends Model\Listing\Dao\AbstractDao
         $conditionVariables = $this->model->getConditionVariables();
         $types = [];
         if ($user = $this->model->getUser()) {
-            if ($ids = Helper::getAllowedConfigIdsByUser($user)) {
-                if ($condition) {
-                    $condition .= ' AND ';
-                } else {
-                    $condition .= ' WHERE ';
-                }
+            $ids = Helper::getAllowedConfigIdsByUser($user);
+            $condition .= $condition ? ' AND ' : ' WHERE ';
+            if ($ids) {
                 $condition .= ' id IN('. implode(",",wrapArrayElements($ids,"'")).')';
+            }else{
+                $condition .= 'id IS NULL';
             }
         }
 
-        return $this->db->fetchCol('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables,$types);
+        return $this->db->fetchFirstColumn('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables,$types);
     }
 }

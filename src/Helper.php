@@ -115,9 +115,9 @@ class Helper
                 $c .= ' AND (restrictToPermissions = "" OR (' . implode(' OR ', $permissionConditions) . ')) ';
             }
 
-            $ids = \Pimcore\Db::get()->fetchCol('SELECT id FROM ' . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
-
-            return $ids;
+            return \Pimcore\Db::get()->fetchFirstColumn('SELECT id FROM ' . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
+        } else{
+            return \Pimcore\Db::get()->fetchFirstColumn('SELECT id FROM ' . Configuration\Listing\Dao::getTableName());
         }
     }
 
