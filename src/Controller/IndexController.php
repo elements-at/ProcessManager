@@ -100,6 +100,10 @@ class IndexController extends AdminController
             $data['shortCutMenu'] = $shortCutMenu ?: false;
         }
 
+        if($data['shortCutMenu'] ?? null){
+            ksort($data['shortCutMenu'],SORT_LOCALE_STRING);
+        }
+
         return $this->adminJson($data);
     }
 
