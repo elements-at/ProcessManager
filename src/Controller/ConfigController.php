@@ -88,7 +88,7 @@ class ConfigController extends AdminController
 
         $list->setUser($this->getAdminUser());
 
-        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'))) {
+        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'),[])) {
             $list->setCondition($filterCondition);
         }
 

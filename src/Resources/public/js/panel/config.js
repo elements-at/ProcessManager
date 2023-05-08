@@ -48,11 +48,12 @@ pimcore.plugin.processmanager.panel.config = Class.create({
 
         var gridColumns = [];
 
-        gridColumns.push({header: "ID", width: 40, sortable: true, dataIndex: 'id', filter: 'numeric'});
+        gridColumns.push({header: "ID", width: 200, sortable: true, dataIndex: 'id', filter: 'string'});
         gridColumns.push(
             {
                 header: t("type"),
                 width: 200,
+                hidden: true,
                 sortable: false,
                 dataIndex: 'type',
                 renderer: function (value) {
