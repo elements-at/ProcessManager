@@ -16,37 +16,36 @@
 namespace Elements\Bundle\ProcessManagerBundle\Command;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 use Elements\Bundle\ProcessManagerBundle\Maintenance;
 use Pimcore\Console\AbstractCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment;
 
 class MaintenanceCommand extends AbstractCommand
 {
     protected static $defaultName = 'process-manager:maintenance';
 
-    use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+    protected static $defaultDescription = 'Executes regular maintenance tasks (Check Processes, execute cronjobs)';
+
+    use ExecutionTrait;
 
     protected $loggerInitialized = null;
 
-    public function __construct(private readonly EngineInterface $templatingEngine)
+    public function __construct(private readonly Environment $templatingEngine)
     {
         parent::__construct();
     }
 
     protected function configure()
     {
-        $this->setDescription('Executes regular maintenance tasks (Check Processes, execute cronjobs)')
-            ->addOption(
-                'monitoring-item-id', null,
-                InputOption::VALUE_REQUIRED,
-                'Contains the monitoring item if executed via the Pimcore backend'
-            );
+        $this->addOption('monitoring-item-id', null, InputOption::VALUE_REQUIRED, 'Contains the monitoring item if executed via the Pimcore backend');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $options = ElementsProcessManagerBundle::getMaintenanceOptions();
         $monitoringItem = static::initProcessManager($input->getOption('monitoring-item-id'), $options);
@@ -57,6 +56,6 @@ class MaintenanceCommand extends AbstractCommand
         $maintenance = new Maintenance($this->templatingEngine);
         $maintenance->execute();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

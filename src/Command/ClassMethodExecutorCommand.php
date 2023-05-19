@@ -16,7 +16,9 @@
 namespace Elements\Bundle\ProcessManagerBundle\Command;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 use Pimcore\Console\AbstractCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,19 +27,16 @@ class ClassMethodExecutorCommand extends AbstractCommand
 {
     protected static $defaultName = 'process-manager:class-method-executor';
 
-    use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+    protected static $defaultDescription = 'Initializes a class and executes a given method.';
+
+    use ExecutionTrait;
 
     protected function configure()
     {
-        $this->setDescription('Initializes a class and executes a given method.')
-            ->addOption(
-                'monitoring-item-id', null,
-                InputOption::VALUE_REQUIRED,
-                'Contains the monitoring item if executed via the Pimcore backend'
-            );
+        $this->addOption('monitoring-item-id', null, InputOption::VALUE_REQUIRED, 'Contains the monitoring item if executed via the Pimcore backend');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         static::initProcessManager($input->getOption('monitoring-item-id'));
         self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfiguration()->getAdditionalScriptExecutionUsers());
@@ -46,6 +45,6 @@ class ClassMethodExecutorCommand extends AbstractCommand
         $class = new $configValues['executorClass']();
         $class->{$configValues['executorMethod']}();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

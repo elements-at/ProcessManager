@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment;
 
 class Maintenance
 {
@@ -30,7 +30,7 @@ class Maintenance
 
     protected $renderingEngine;
 
-    public function __construct(EngineInterface $renderingEngine)
+    public function __construct(Environment $renderingEngine)
     {
         $this->renderingEngine = $renderingEngine;
     }

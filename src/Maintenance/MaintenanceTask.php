@@ -3,20 +3,21 @@
 namespace Elements\Bundle\ProcessManagerBundle\Maintenance;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\Maintenance;
 use Pimcore\Maintenance\TaskInterface;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment;
 
 class MaintenanceTask implements TaskInterface
 {
     /**
-     * @var EngineInterface
+     * @var Environment
      */
     protected $renderingEngine;
 
     /**
      * SystemEventsListener constructor.
      */
-    public function __construct(EngineInterface $renderingEngine)
+    public function __construct(Environment $renderingEngine)
     {
         $this->renderingEngine = $renderingEngine;
     }
@@ -33,7 +34,7 @@ class MaintenanceTask implements TaskInterface
                 null,
                 ElementsProcessManagerBundle::getMaintenanceOptions()
             );
-            $maintenance = new \Elements\Bundle\ProcessManagerBundle\Maintenance($this->renderingEngine);
+            $maintenance = new Maintenance($this->renderingEngine);
             $maintenance->execute();
         }
     }
