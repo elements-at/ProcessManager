@@ -45,13 +45,14 @@ class Maintenance
         $this->deleteExpiredMonitoringItems();
     }
 
-    protected function deleteExpiredMonitoringItems(){
+    protected function deleteExpiredMonitoringItems()
+    {
         $list = new Model\MonitoringItem\Listing();
         $list->setCondition('(status = "'.MonitoringItem::STATUS_FINISHED.'" OR status = "'.MonitoringItem::STATUS_FINISHED_WITH_ERROR.'") AND (deleteAfterHours > 0 AND (UNIX_TIMESTAMP()-(deleteAfterHours*3600)) > modificationDate)');
 
         $items = $list->load();
 
-        foreach($items as $item){
+        foreach($items as $item) {
             $ts = time()-$item->getModificationDate();
             $modDate = \Carbon\Carbon::createFromTimestamp($item->getModificationDate());
             $diff = $modDate->diffInHours(\Carbon\Carbon::now());
@@ -111,15 +112,15 @@ class Maintenance
 
                 $html = $this->renderingEngine->render('@ElementsProcessManager/reportEmail.html.twig', [
                     'totalItemsCount' => count($reportItems),
-                    'reportItems' => array_slice($reportItems,0,5)
+                    'reportItems' => array_slice($reportItems, 0, 5)
                 ]);
 
                 $mail->html($html);
 
-                foreach($recipients as $emailAdr){
+                foreach($recipients as $emailAdr) {
                     try {
                         $mail->addTo($emailAdr);
-                    }catch (\Exception $e){
+                    } catch (\Exception $e) {
                         $logger = \Pimcore\Log\ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
                         $message = "Can't add E-Mail address : " . $e->getMessage();
                         $logger->emergency($message);

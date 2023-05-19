@@ -21,7 +21,9 @@ use Monolog\Handler\StreamHandler;
 class Console extends AbstractLogger
 {
     protected $streamHandler = null;
+
     public $name = 'console';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.logger.console';
 
     /**

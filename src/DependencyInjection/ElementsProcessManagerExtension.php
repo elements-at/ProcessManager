@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-class ElementsProcessManagerExtension  extends ConfigurableExtension implements PrependExtensionInterface
+class ElementsProcessManagerExtension extends ConfigurableExtension implements PrependExtensionInterface
 {
     /**
      * @param ContainerBuilder $container
@@ -52,5 +52,4 @@ class ElementsProcessManagerExtension  extends ConfigurableExtension implements 
 
         $loader->load('services.yml');
     }
-
 }

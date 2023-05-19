@@ -22,6 +22,7 @@ use Pimcore\Tool\Console;
 class PimcoreCommand extends AbstractExecutor
 {
     protected $name = 'pimcoreCommand';
+
     protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.pimcoreCommand';
 
     /**
@@ -40,26 +41,26 @@ class PimcoreCommand extends AbstractExecutor
             $command .= ' ' . $options;
         }
 
-        if($monitoringItem){
+        if($monitoringItem) {
             $commands = \Pimcore::getKernel()->getContainer()->get(CommandsValidator::class)->getValidCommands();
 
-            if(!array_key_exists($this->getValues()['command'],$commands)){
-                throw new \Exception("Invalid command - not in valid commands");
+            if(!array_key_exists($this->getValues()['command'], $commands)) {
+                throw new \Exception('Invalid command - not in valid commands');
             }
             /**
              * @var \Pimcore\Console\AbstractCommand $commandObject
              */
             $commandObject = $commands[$this->getValues()['command']];
 
-
-            if($commandObject->getDefinition()->hasOption('monitoring-item-id')){
+            if($commandObject->getDefinition()->hasOption('monitoring-item-id')) {
                 $command .= ' --monitoring-item-id='.$monitoringItem->getId();
             }
 
-            if($monitoringItem->getParentId()){
+            if($monitoringItem->getParentId()) {
                 $command .= ' --monitoring-item-parent-id='.$monitoringItem->getParentId();
             }
         }
+
         return $command;
     }
 }

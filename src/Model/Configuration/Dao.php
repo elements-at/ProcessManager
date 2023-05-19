@@ -62,21 +62,22 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
             $data['keepVersions'] = null;
         }
         if (!$data['id']) {
-            throw new \Exception("A valid Command has to have an id associated with it!");
+            throw new \Exception('A valid Command has to have an id associated with it!');
         }
         if (isset($params['oldId'])) {
-            if ($params['oldId'] != "") {
+            if ($params['oldId'] != '') {
                 $this->db->update($this->getTableName(), $data, ['id' => $params['oldId']]);
             } else {
                 $this->db->insert($this->getTableName(), $data);
             }
-        }else{
-            if ($id = $this->getById($id = $this->model->getId())){
+        } else {
+            if ($id = $this->getById($id = $this->model->getId())) {
                 $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
             } else {
                 $this->db->insert($this->getTableName(), $data);
             }
         }
+
         return $this->getById($this->model->getId());
     }
 

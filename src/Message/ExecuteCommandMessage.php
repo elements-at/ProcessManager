@@ -8,7 +8,7 @@ class ExecuteCommandMessage
         private string $command,
         private int $monitoringItemId,
         private ?string $outputFile = null
-    ){
+    ) {
     }
 
     public function getCommand(): string

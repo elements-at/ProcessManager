@@ -22,20 +22,32 @@ use Pimcore\Tool;
 class Configuration extends \Pimcore\Model\AbstractModel
 {
     public $id;
-    public $name;
-    public $group;
-    public $description;
-    public $creationDate;
-    public $modificationDate;
-    public $executorClass;
-    public $executorSettings;
-    public $cronJob;
-    public $lastCronJobExecution;
-    public $active;
-    public $keepVersions;
-    public $restrictToRoles;
-    public $restrictToPermissions;
 
+    public $name;
+
+    public $group;
+
+    public $description;
+
+    public $creationDate;
+
+    public $modificationDate;
+
+    public $executorClass;
+
+    public $executorSettings;
+
+    public $cronJob;
+
+    public $lastCronJobExecution;
+
+    public $active;
+
+    public $keepVersions;
+
+    public $restrictToRoles;
+
+    public $restrictToPermissions;
 
     protected $executorClassObject;
 
@@ -409,18 +421,19 @@ class Configuration extends \Pimcore\Model\AbstractModel
         if (substr($value, -1, 1) != ',' && $value != '') {
             $value .= ',';
         }
+
         return $value;
     }
 
-
-    public function setRestrictToPermissions(array | string $restrictToPermissions) : self
+    public function setRestrictToPermissions(array | string $restrictToPermissions): self
     {
         $this->restrictToPermissions = $this->implodeAsString($restrictToPermissions);
 
         return $this;
     }
 
-    public function getRestrictToPermissions(): string {
+    public function getRestrictToPermissions(): string
+    {
         return $this->restrictToPermissions;
     }
 }

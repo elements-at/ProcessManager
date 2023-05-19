@@ -15,7 +15,6 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor;
 
-use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Tool\Console;
@@ -35,6 +34,7 @@ abstract class AbstractExecutor implements \JsonSerializable
     protected $actions = [];
 
     protected $isShellCommand = false;
+
     /**
      * @var Configuration
      */
@@ -46,7 +46,7 @@ abstract class AbstractExecutor implements \JsonSerializable
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getIsShellCommand()
     {
@@ -257,8 +257,8 @@ abstract class AbstractExecutor implements \JsonSerializable
     public function getStorageValue()
     {
         $actions = (array)$this->getActions();
-        foreach($actions as $i => $data){
-            if(is_object($data) && method_exists($data,'getStorageData')){
+        foreach($actions as $i => $data) {
+            if(is_object($data) && method_exists($data, 'getStorageData')) {
                 $actions[$i] = $data->getStorageData();
             }
         }

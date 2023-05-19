@@ -15,7 +15,6 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 
-use Doctrine\DBAL\Connection;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
@@ -57,12 +56,12 @@ class Dao extends Model\Listing\Dao\AbstractDao
             $ids = Helper::getAllowedConfigIdsByUser($user);
             $condition .= $condition ? ' AND ' : ' WHERE ';
             if ($ids) {
-                $condition .= ' id IN('. implode(",",wrapArrayElements($ids,"'")).')';
-            }else{
+                $condition .= ' id IN('. implode(',', wrapArrayElements($ids, "'")).')';
+            } else {
                 $condition .= 'id IS NULL';
             }
         }
 
-        return $this->db->fetchFirstColumn('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables,$types);
+        return $this->db->fetchFirstColumn('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables, $types);
     }
 }

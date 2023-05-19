@@ -15,13 +15,10 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Action;
 
-use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-
 class JsEvent extends AbstractAction
 {
     public $name = 'jsEvent';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.action.jsEvent';
 
     /**
@@ -54,11 +51,13 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $label
+     *
      * @return $this
      */
     public function setLabel($label)
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -72,11 +71,13 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $eventName
+     *
      * @return $this
      */
     public function setEventName($eventName)
     {
         $this->eventName = $eventName;
+
         return $this;
     }
 
@@ -90,11 +91,13 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $eventData
+     *
      * @return $this
      */
     public function setEventData($eventData)
     {
         $this->eventData = $eventData;
+
         return $this;
     }
 
@@ -108,14 +111,15 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $icon
+     *
      * @return $this
      */
     public function setIcon($icon)
     {
         $this->icon = $icon;
+
         return $this;
     }
-
 
     public function getGridActionHtml($monitoringItem, $actionData)
     {
@@ -134,6 +138,7 @@ class JsEvent extends AbstractAction
         $link = '<a href="javascript://" onClick="'.$js
             .'" class="process_manager_icon_download process_manager_action_js_event"'
             .'alt="'.$actionData['label'].'">'.$img.'</a>';
+
         return $link;
 
     }

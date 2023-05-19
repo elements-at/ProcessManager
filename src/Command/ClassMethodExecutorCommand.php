@@ -15,11 +15,11 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Command;
 
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 
 class ClassMethodExecutorCommand extends AbstractCommand
 {
@@ -45,6 +45,7 @@ class ClassMethodExecutorCommand extends AbstractCommand
         $configValues = $this->getMonitoringItem()->getConfigValues();
         $class = new $configValues['executorClass']();
         $class->{$configValues['executorMethod']}();
+
         return 0;
     }
 }

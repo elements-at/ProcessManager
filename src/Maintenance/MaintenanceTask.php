@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Elements\Bundle\ProcessManagerBundle\Maintenance;
-
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Pimcore\Maintenance\TaskInterface;
@@ -41,5 +39,4 @@ class MaintenanceTask implements TaskInterface
             $maintenance->execute();
         }
     }
-
 }

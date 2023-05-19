@@ -15,6 +15,8 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\Enums;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\Application;
@@ -24,14 +26,12 @@ use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
-use Pimcore\Templating\Model\ViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-use Elements\Bundle\ProcessManagerBundle\Enums;
+
 /**
  * @Route("/admin/elementsprocessmanager/monitoring-item")
  */
@@ -82,9 +82,9 @@ class MonitoringItemController extends AdminController
         }
 
         $condition = $list->getCondition();
-        if($filters = $request->get('filter')){
-            foreach(json_decode($filters,true) as $e){
-                if($e['property'] == 'id'){
+        if($filters = $request->get('filter')) {
+            foreach(json_decode($filters, true) as $e) {
+                if($e['property'] == 'id') {
                     $condition .= ' OR `parentId` = ' . (int)$e['value'].' ';
                 }
             }
@@ -120,17 +120,18 @@ class MonitoringItemController extends AdminController
      *
      * @return JsonResponse
      */
-    public function update(Request $request){
+    public function update(Request $request)
+    {
 
         $monitoringItem = MonitoringItem::getById($request->get('id'));
 
         $data = [];
 
-        if($monitoringItem){
-            if($monitoringItem->getExecutedByUser() == $this->getUser()->getId()){
-                foreach($request->request->all() as $key => $value){
-                    $setter = "set" . ucfirst($key);
-                    if(method_exists($monitoringItem,$setter)){
+        if($monitoringItem) {
+            if($monitoringItem->getExecutedByUser() == $this->getUser()->getId()) {
+                foreach($request->request->all() as $key => $value) {
+                    $setter = 'set' . ucfirst($key);
+                    if(method_exists($monitoringItem, $setter)) {
                         $monitoringItem->$setter($value);
                     }
                 }
@@ -139,24 +140,24 @@ class MonitoringItemController extends AdminController
             $data = $this->getItemData($monitoringItem);
         }
 
-        return $this->json(['success' => true,'data' => $data]);
+        return $this->json(['success' => true, 'data' => $data]);
 
     }
 
     /**
      * @return MonitoringItem\Listing
      */
-    protected function getProcessesForCurrentUser(){
+    protected function getProcessesForCurrentUser()
+    {
         $list = new MonitoringItem\Listing();
         $list->setOrder('DESC');
         $list->setOrderKey('id');
-        #$list->setLimit(10);
+        //$list->setLimit(10);
 
-        $list->setCondition('executedByUser = ? and parentId IS NULL AND published = 1 ',[$this->getUser()->getId()]);
+        $list->setCondition('executedByUser = ? and parentId IS NULL AND published = 1 ', [$this->getUser()->getId()]);
+
         return $list;
     }
-
-
 
     /**
      * @Route("/update-all-user-monitoring-items")
@@ -165,14 +166,15 @@ class MonitoringItemController extends AdminController
      *
      * @return JsonResponse
      */
-    public function updateAllUserMonitoringItems(Request $request){
+    public function updateAllUserMonitoringItems(Request $request)
+    {
 
         $list = $this->getProcessesForCurrentUser();
         $params = $request->request->all();
         /**
          * @var MonitoringItem $item
          */
-        foreach($list->load() as $item){
+        foreach($list->load() as $item) {
             $item->setValues($params)->save();
         }
 
@@ -186,7 +188,8 @@ class MonitoringItemController extends AdminController
      *
      * @return JsonResponse
      */
-    public function listProcessesForUser(Request $request){
+    public function listProcessesForUser(Request $request)
+    {
         $data = [
             'total' => 0,
             'active' => 0,
@@ -195,7 +198,7 @@ class MonitoringItemController extends AdminController
 
         try {
             $this->checkPermission(Enums\Permissions::VIEW);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->adminJson($data);
         }
 
@@ -203,9 +206,9 @@ class MonitoringItemController extends AdminController
 
         $data['total'] = $list->getTotalCount();
 
-        foreach($list->load() as $item){
+        foreach($list->load() as $item) {
             $tmp = $this->getItemData($item);
-            if($tmp['isAlive']){
+            if($tmp['isAlive']) {
                 $data['active']++;
             }
             $data['items'][] = $tmp;
@@ -214,9 +217,10 @@ class MonitoringItemController extends AdminController
         return $this->adminJson($data);
     }
 
-    protected function getItemData(MonitoringItem $item){
+    protected function getItemData(MonitoringItem $item)
+    {
         $tmp = $item->getObjectVars();
-        $tmp['messageShort'] = \Pimcore\Tool\Text::cutStringRespectingWhitespace($tmp['message'],30);
+        $tmp['messageShort'] = \Pimcore\Tool\Text::cutStringRespectingWhitespace($tmp['message'], 30);
         $tmp['steps'] = '-';
         if ($item->getTotalSteps() > 0 || $item->getCurrentStep()) {
             $tmp['steps'] = $item->getCurrentStep().'/'.$item->getTotalSteps();
@@ -251,14 +255,14 @@ class MonitoringItemController extends AdminController
         }
         $tmp['actionItems'] = [];
 
-        if($tmp['actions']){
-            $actionItems = json_decode($tmp['actions'],true);
+        if($tmp['actions']) {
+            $actionItems = json_decode($tmp['actions'], true);
 
-            foreach($actionItems as $i => $v){
-                if($class = $v['class']){
-                    if(\Pimcore\Tool::classExists($class)){
+            foreach($actionItems as $i => $v) {
+                if($class = $v['class']) {
+                    if(\Pimcore\Tool::classExists($class)) {
                         $o = new $class();
-                        $v['dynamicData'] = $o->toJson($item,$v);
+                        $v['dynamicData'] = $o->toJson($item, $v);
                     }
 
                     $actionItems[$i] = $v;
@@ -293,8 +297,8 @@ class MonitoringItemController extends AdminController
                 if ($config->getActive() == 0) {
                     $tmp['retry'] = 0;
                 } else {
-                        $uniqueExecution = $config->getExecutorClassObject()->getValues()['uniqueExecution'] ?? false;
-                        if ($uniqueExecution) {
+                    $uniqueExecution = $config->getExecutorClassObject()->getValues()['uniqueExecution'] ?? false;
+                    if ($uniqueExecution) {
                         $runningProcesses = $config->getRunningProcesses();
                         if (!empty($runningProcesses)) {
                             $tmp['retry'] = 0;
@@ -315,6 +319,7 @@ class MonitoringItemController extends AdminController
         $tmp['progressPercentage'] = (float)$item->getProgressPercentage();
         $tmp['callbackSettingsString'] = json_encode($item->getCallbackSettings());
         $tmp['callbackSettings'] = $item->getCallbackSettingsForGrid();
+
         return $tmp;
     }
 
@@ -347,6 +352,7 @@ class MonitoringItemController extends AdminController
                             if (!$config['logLevel']) {
                                 $config['logLevel'] = 'DEBUG';
                             }
+
                             break;
                         }
                     }
@@ -392,6 +398,7 @@ class MonitoringItemController extends AdminController
                         if (!$config['logLevel']) {
                             $config['logLevel'] = 'DEBUG';
                         }
+
                         break;
                     }
                 }
@@ -402,10 +409,9 @@ class MonitoringItemController extends AdminController
 
         if (is_readable($logFile)) {
             $data = file_get_contents($logFile);
-            if(array_key_exists("disableFileProcessing",$config) && $config['disableFileProcessing']){
+            if(array_key_exists('disableFileProcessing', $config) && $config['disableFileProcessing']) {
                 return new \Symfony\Component\HttpFoundation\Response($data);
             }
-
 
             $fileSizeMb = round(filesize($logFile) / 1024 / 1024);
 
@@ -444,6 +450,7 @@ class MonitoringItemController extends AdminController
 
         $viewData['data'] = $data;
         $viewData['monitoringItem'] = $monitoringItem;
+
         return $this->render('@ElementsProcessManager/MonitoringItem/logFileLogger.html.twig', $viewData);
     }
 
@@ -459,7 +466,7 @@ class MonitoringItemController extends AdminController
         $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
         $entry = MonitoringItem::getById($request->get('id'));
         if ($entry) {
-            if($entry->isAlive()){
+            if($entry->isAlive()) {
                 $entry->stopProcess();
             }
             $entry->delete();
@@ -515,6 +522,7 @@ class MonitoringItemController extends AdminController
     public function cancelAction(Request $request)
     {
         $monitoringItem = MonitoringItem::getById($request->get('id'));
+
         try {
             $pid = $monitoringItem->getPid();
             if ($pid) {
@@ -524,6 +532,7 @@ class MonitoringItemController extends AdminController
                 foreach($monitoringItem->getChildProcesses() as $child) {
                     $child->stopProcess();
                 }
+
                 return $this->adminJson(['success' => $status]);
             }
 
@@ -550,7 +559,7 @@ class MonitoringItemController extends AdminController
 
             $message = new ExecuteCommandMessage($monitoringItem->getCommand(), $monitoringItem->getId(), $monitoringItem->getLogFile());
             $messageBus->dispatch($message);
-;
+
             return $this->adminJson(['success' => true]);
         } catch (\Exception $e) {
             return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
@@ -564,15 +573,16 @@ class MonitoringItemController extends AdminController
      *
      * @return JsonResponse
      */
-    public function getByIdAction(Request $request){
+    public function getByIdAction(Request $request)
+    {
         $data = [];
 
         $item = MonitoringItem::getById($request->get('id'));
         $data = $item->getObjectVars();
         $data['callbackSettings'] = json_decode($data['callbackSettings']);
         $data['executorSettings']['values'] = [];
+
         return $this->adminJson($data);
 
     }
-
 }

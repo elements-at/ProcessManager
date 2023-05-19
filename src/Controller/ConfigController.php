@@ -15,6 +15,7 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
+use Elements\Bundle\ProcessManagerBundle\Enums;
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Helper;
@@ -25,7 +26,7 @@ use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Elements\Bundle\ProcessManagerBundle\Enums;
+
 /**
  * @Route("/admin/elementsprocessmanager/config")
  */
@@ -88,7 +89,7 @@ class ConfigController extends AdminController
 
         $list->setUser($this->getAdminUser());
 
-        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'),[])) {
+        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'), [])) {
             $list->setCondition($filterCondition);
         }
 
@@ -101,6 +102,7 @@ class ConfigController extends AdminController
             $tmp['extJsSettings'] = $executorClassObject->getExtJsSettings();
 
             $tmp['active'] = (int)$tmp['active'];
+
             try {
                 if ($item->getCronJob()) {
                     $nextRunTs = $item->getNextCronJobExecutionTimestamp();
@@ -143,7 +145,7 @@ class ConfigController extends AdminController
 
         $actions = [];
 
-        foreach($data['actions'] as $actionData){
+        foreach($data['actions'] as $actionData) {
             /**
              * @var $obj AbstractAction
              */
@@ -159,12 +161,12 @@ class ConfigController extends AdminController
         $request_configuration = $request->request->get('id');
         $configuration = Configuration::getById($request->get('id'));
 
-        if ($request_configuration == ""){ // Does the id exist?
+        if ($request_configuration == '') { // Does the id exist?
             $configuration = new Configuration();
             $configuration->setActive(true);
         }
-        if ($configuration->getId() != $request_configuration && Configuration::getById($request_configuration) != null){ // Is there an update call on an already used id?
-            throw new \Exception("Cannot create or update command, the chosen id already exists!");
+        if ($configuration->getId() != $request_configuration && Configuration::getById($request_configuration) != null) { // Is there an update call on an already used id?
+            throw new \Exception('Cannot create or update command, the chosen id already exists!');
         }
 
         foreach ($values as $key => $v) {
@@ -175,6 +177,7 @@ class ConfigController extends AdminController
         }
         $configuration->setExecutorClass($executorConfig['class']);
         $configuration->setExecutorSettings($executorClass->getStorageValue());
+
         try {
             $configuration->save(['oldId' => $request_configuration]);
         } catch (\Exception $e) {

@@ -17,12 +17,13 @@ namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 
 class File extends AbstractLogger
 {
     protected $streamHandler = null;
+
     public $name = 'file';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.logger.file';
 
     /**
@@ -37,6 +38,7 @@ class File extends AbstractLogger
         if (is_readable($logFile)) {
             $icon = ($loggerData['icon'] ?? null) ?: '/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg';
             $title = ($loggerData['title'] ?? null) ?: 'File Logger';
+
             return '<a href="#" onclick="var tmp = new pimcore.plugin.processmanager.executor.logger.file(); tmp.showLogs(' . $monitoringItem->getId() . ',' . (int)$loggerData['index'] . ');"><img src="' . $icon . '" alt="Download" height="18" title="' . $title . '"/></a>';
         }
     }
@@ -50,7 +52,7 @@ class File extends AbstractLogger
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
             $logFile = $this->getLogFile($config, $monitoringItem);
 
-            if(!array_key_exists('maxFileSizeMB',$config)){
+            if(!array_key_exists('maxFileSizeMB', $config)) {
                 $config['maxFileSizeMB'] = null;
             }
 

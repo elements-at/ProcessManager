@@ -26,7 +26,7 @@ class Helper
         try {
             $config = Configuration::getById($configId);
 
-            if(!$config){
+            if(!$config) {
                 $config = new Configuration();
                 $config->setExecutorClass(Executor\PimcoreCommand::class);
             }
@@ -37,6 +37,7 @@ class Helper
                 $running = $config->getRunningProcesses();
                 if (!empty($running)) {
                     $msg = "Can't start the process because " . count($running) . ' process is running (ID: ' . $running[0]->getId() . '). Please wait until this processes is finished.';
+
                     throw new \Exception($msg);
                 }
             }
@@ -65,8 +66,8 @@ class Helper
                 }
             }
 
-            if($callback){
-                $callback($monitoringItem,$executor);
+            if($callback) {
+                $callback($monitoringItem, $executor);
             }
             $monitoringItem->setMessengerPending(true);
             $item = $monitoringItem->save();
@@ -81,7 +82,6 @@ class Helper
                 $monitoringItem->setCommand($command)->save();
                 $command = $executor->getShellCommand($monitoringItem);
             }
-
 
             $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
             $message = new ExecuteCommandMessage($command, $monitoringItem->getId());
@@ -106,17 +106,17 @@ class Helper
             }
             $c = ' (restrictToRoles = "" OR (' . implode(' OR ', $c) . ')) ';
 
-            if ($user->getPermissions()){
+            if ($user->getPermissions()) {
 
                 $permissionConditions = [];
-                foreach($user->getPermissions() as $permission){
+                foreach($user->getPermissions() as $permission) {
                     $permissionConditions[] = 'restrictToPermissions LIKE "%,' . $permission . ',%" ';
                 }
                 $c .= ' AND (restrictToPermissions = "" OR (' . implode(' OR ', $permissionConditions) . ')) ';
             }
 
             return \Pimcore\Db::get()->fetchFirstColumn('SELECT id FROM ' . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
-        } else{
+        } else {
             return \Pimcore\Db::get()->fetchFirstColumn('SELECT id FROM ' . Configuration\Listing\Dao::getTableName());
         }
     }
@@ -126,24 +126,25 @@ class Helper
      *
      * @return MonitoringItem
      */
-    public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem, $preventModificationDateUpdate = false){
+    public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem, $preventModificationDateUpdate = false)
+    {
         $loggers = $monitoringItem->getLoggers();
 
-        foreach((array)$loggers as $i => $loggerConfig){
+        foreach((array)$loggers as $i => $loggerConfig) {
             $loggerClass = $loggerConfig['class'];
             if (!class_exists($loggerClass)) {
                 continue;
             }
             $logObj = new $loggerClass;
-            if(method_exists($logObj,'handleShutdown')){
-                $result = $logObj->handleShutdown($monitoringItem,$loggerConfig);
-                if($result){
-                    $loggers[$i] = array_merge($loggerConfig,$result);
+            if(method_exists($logObj, 'handleShutdown')) {
+                $result = $logObj->handleShutdown($monitoringItem, $loggerConfig);
+                if($result) {
+                    $loggers[$i] = array_merge($loggerConfig, $result);
                 }
             }
         }
         $monitoringItem->setLoggers($loggers)->save($preventModificationDateUpdate);
+
         return $monitoringItem;
     }
-
 }

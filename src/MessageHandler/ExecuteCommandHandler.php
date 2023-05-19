@@ -13,7 +13,7 @@ class ExecuteCommandHandler
     public function __invoke(ExecuteCommandMessage $message)
     {
         $pid = Console::execInBackground($message->getCommand(), $message->getOutputFile());
-        if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())){
+        if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())) {
             $monitoringItem
                 ->setMessengerPending(false)
                 ->setPid($pid)

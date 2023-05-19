@@ -57,17 +57,17 @@ class Dao extends AbstractDao
          * If we are in a transction we need to create a new connection and use this because otherwise
          * the satus won't be updated as the transaction isn't committed (e.g when a exception is thrown within a transaction)
          */
-        if(\Pimcore\Db::get()->isTransactionActive()){
-            if(!self::$dbTransactionFree){
+        if(\Pimcore\Db::get()->isTransactionActive()) {
+            if(!self::$dbTransactionFree) {
                 self::$dbTransactionFree = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
             }
             $db = self::$dbTransactionFree;
-        }else{
+        } else {
             $db = $this->db;
         }
 
-        /* refresh db connection if connection has been lost (happens when db connection has been idle for too long) */
-        if(FALSE == $db->ping()){
+        // refresh db connection if connection has been lost (happens when db connection has been idle for too long)
+        if(false == $db->ping()) {
             $db = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
         }
 

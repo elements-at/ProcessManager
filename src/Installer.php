@@ -18,12 +18,9 @@ namespace Elements\Bundle\ProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Migrations\Version20210428000000;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Model\User\Permission\Definition;
-use Elements\Bundle\ProcessManagerBundle\Enums;
 
 class Installer extends SettingsStoreAwareInstaller
 {
-
-
     protected array $permissions = [
         Enums\Permissions::VIEW,
         Enums\Permissions::CONFIGURE,
@@ -55,7 +52,8 @@ class Installer extends SettingsStoreAwareInstaller
     /**
      * @return \Pimcore\Db\Connection|\Pimcore\Db\ConnectionInterface
      */
-    protected function getDb(){
+    protected function getDb()
+    {
         return \Pimcore\Db::get();
     }
 
@@ -64,7 +62,7 @@ class Installer extends SettingsStoreAwareInstaller
         $db = $this->getDb();
 
         $db->query(
-            "CREATE TABLE IF NOT EXISTS `" . ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION . "` (
+            'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION . "` (
             `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             `creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
             `modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -86,7 +84,7 @@ class Installer extends SettingsStoreAwareInstaller
         ");
 
         $db->query(
-            "CREATE TABLE IF NOT EXISTS `" . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . "` (
+            'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . "` (
             `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `parentId` INT(11) NULL DEFAULT NULL,
             `creationDate` INT(11) UNSIGNED NOT NULL DEFAULT '0',
@@ -121,7 +119,7 @@ class Installer extends SettingsStoreAwareInstaller
         );
 
         $db->query(
-            "CREATE TABLE IF NOT EXISTS `" . ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING . "` (
+            'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING . "` (
             `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             `creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
             `modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -143,11 +141,11 @@ class Installer extends SettingsStoreAwareInstaller
             ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING
         ];
         foreach ($tables as $table) {
-            $this->getDb()->query("DROP TABLE IF EXISTS " . $table);
+            $this->getDb()->query('DROP TABLE IF EXISTS ' . $table);
         }
 
         foreach ($this->permissions as $permissionKey) {
-            $this->getDb()->query("DELETE FROM users_permission_definitions WHERE " . $this->getDb()->quoteIdentifier("key")." = :permission",["permission" => $permissionKey]);
+            $this->getDb()->query('DELETE FROM users_permission_definitions WHERE ' . $this->getDb()->quoteIdentifier('key').' = :permission', ['permission' => $permissionKey]);
         }
 
         parent::uninstall();

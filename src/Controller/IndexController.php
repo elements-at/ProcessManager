@@ -15,20 +15,21 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\Enums;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\GridConfig;
 use Pimcore\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\GridConfig;
-use \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-use Elements\Bundle\ProcessManagerBundle\Enums;
+
 /**
  * @Route("/admin/elementsprocessmanager/index")
  */
@@ -67,19 +68,18 @@ class IndexController extends AdminController
             ];
         }
 
-
         $data['permissions'] = [];
         $list = new \Pimcore\Model\User\Permission\Definition\Listing();
         $list->setOrder('ASC')->setOrderKey('key');
         foreach ($list->load() as $permission) {
             $data['permissions'][] = [
                 'key' => $permission->getKey(),
-                'name' => $translator->trans($permission->getKey(),[],'admin'). ' (' . $permission->getKey().')',
+                'name' => $translator->trans($permission->getKey(), [], 'admin'). ' (' . $permission->getKey().')',
                 'category' => $permission->getCategory()
             ];
         }
 
-        usort($data['permissions'], function($a, $b) {
+        usort($data['permissions'], function ($a, $b) {
             return strnatcasecmp($a['name'], $b['name']);
         });
 
@@ -100,8 +100,8 @@ class IndexController extends AdminController
             $data['shortCutMenu'] = $shortCutMenu ?: false;
         }
 
-        if($data['shortCutMenu'] ?? null){
-            ksort($data['shortCutMenu'],SORT_LOCALE_STRING);
+        if($data['shortCutMenu'] ?? null) {
+            ksort($data['shortCutMenu'], SORT_LOCALE_STRING);
         }
 
         return $this->adminJson($data);
@@ -204,13 +204,13 @@ class IndexController extends AdminController
      * @throws \Exception
      *
      */
-    public function getGridConfigsAction(Request $request ): JsonResponse
+    public function getGridConfigsAction(Request $request): JsonResponse
     {
         $result = [];
 
         $list = new GridConfig\Listing();
         $list->setOrderKey('name');
-        $list->setCondition('ownerId = ? OR shareGlobally =1',[$this->getAdminUser()->getId()]);
+        $list->setCondition('ownerId = ? OR shareGlobally =1', [$this->getAdminUser()->getId()]);
         $config = $list->load();
         foreach ($list as $c) {
             $result[] = ['id' => $c->getId(), 'name' => $c->getName()];

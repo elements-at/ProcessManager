@@ -48,7 +48,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
                     } else {
                         $condition .= ' WHERE ';
                     }
-                    $condition .= ' configurationId IN(' . implode(', ', wrapArrayElements($ids,"'")).')';
+                    $condition .= ' configurationId IN(' . implode(', ', wrapArrayElements($ids, "'")).')';
                 }
             }
         }
@@ -64,12 +64,13 @@ class Dao extends Model\Listing\Dao\AbstractDao
         $items = [];
         foreach ($ids as $id) {
             $item = MonitoringItem::getById($id);
-            if($item){//hack because somehow it can happen that we dont get a monitoring id if we are using multiprocessing and the element would be empty
+            if($item) {//hack because somehow it can happen that we dont get a monitoring id if we are using multiprocessing and the element would be empty
                 $items[] = $item;
             }
         }
 
         $this->model->setData($items);
+
         return $items;
     }
 

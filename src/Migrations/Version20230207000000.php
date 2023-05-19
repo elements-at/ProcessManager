@@ -2,8 +2,8 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
-use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Doctrine\DBAL\Schema\Schema;
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Pimcore\Migrations\BundleAwareMigration;
 
 class Version20230207000000 extends BundleAwareMigration

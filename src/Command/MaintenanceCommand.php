@@ -63,6 +63,7 @@ class MaintenanceCommand extends AbstractCommand
 
         $maintenance = new Maintenance($this->templatingEngine);
         $maintenance->execute();
+
         return 0;
     }
 }

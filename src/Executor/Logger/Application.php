@@ -20,7 +20,9 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 class Application extends AbstractLogger
 {
     protected $streamHandler = null;
+
     public $name = 'application';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.logger.application';
 
     /**
@@ -32,7 +34,7 @@ class Application extends AbstractLogger
     public function getGridLoggerHtml($monitoringItem, $loggerData)
     {
         return '<a href="#" onClick="processManagerApplicationLogger.showLogs('.$monitoringItem->getId(
-            ).','.(int)$loggerData['index'].');return false;" class=" " alt="Show logs"><img src="/bundles/pimcoreadmin/img/flat-color-icons/rules.svg" alt="Application Logger" height="18" title="Application Logger"/></a>';
+        ).','.(int)$loggerData['index'].');return false;" class=" " alt="Show logs"><img src="/bundles/pimcoreadmin/img/flat-color-icons/rules.svg" alt="Application Logger" height="18" title="Application Logger"/></a>';
     }
 
     public function createStreamHandler($config, $monitoringItem)

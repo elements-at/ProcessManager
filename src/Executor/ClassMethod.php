@@ -21,6 +21,7 @@ use Pimcore\Tool\Console;
 class ClassMethod extends AbstractExecutor
 {
     protected $name = 'classMethod';
+
     protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.classMethod';
 
     /**
@@ -33,9 +34,10 @@ class ClassMethod extends AbstractExecutor
     {
         $command =  Console::getPhpCli() . ' ' . realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' process-manager:class-method-executor -v';
 
-        if($monitoringItem){
+        if($monitoringItem) {
             $command .= ' --monitoring-item-id='.$monitoringItem->getId();
         }
+
         return $command;
     }
 }

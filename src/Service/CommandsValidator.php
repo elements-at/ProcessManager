@@ -10,27 +10,29 @@ class CommandsValidator
     protected string $strategy;
 
     protected array $whiteList = [];
+
     protected array $blackList = [];
 
-    public function __construct(string $strategy = "default", array $whiteList = [], array $blackList = [])
+    public function __construct(string $strategy = 'default', array $whiteList = [], array $blackList = [])
     {
         $this->setStrategy($strategy);
         $this->setWhiteList($whiteList);
         $this->setBlackList($blackList);
     }
 
-
     public function getValidCommands()
     {
 
         $application = new \Pimcore\Console\Application(\Pimcore::getKernel());
-        $commands = $this->{"getCommands" . ucfirst($this->getStrategy())}($application->all());
+        $commands = $this->{'getCommands' . ucfirst($this->getStrategy())}($application->all());
 
         ksort($commands);
+
         return $commands;
     }
 
-    protected function getCommandsAll($commands){
+    protected function getCommandsAll($commands)
+    {
         return $commands;
     }
 
@@ -48,6 +50,7 @@ class CommandsValidator
 
             if (in_array($name, $this->getWhiteList())) {
                 $validCommands[$name] = $command;
+
                 continue;
             }
 
@@ -78,7 +81,7 @@ class CommandsValidator
             $newTraits = class_uses(array_pop($traitsToSearch), $autoload);
             $traits = array_merge($newTraits, $traits);
             $traitsToSearch = array_merge($newTraits, $traitsToSearch);
-        };
+        }
 
         foreach ($traits as $trait => $same) {
             $traits = array_merge(class_uses($trait, $autoload), $traits);
@@ -97,11 +100,13 @@ class CommandsValidator
 
     /**
      * @param string $strategy
+     *
      * @return $this
      */
     public function setStrategy($strategy)
     {
         $this->strategy = $strategy;
+
         return $this;
     }
 
@@ -115,11 +120,13 @@ class CommandsValidator
 
     /**
      * @param array $whiteList
+     *
      * @return $this
      */
     public function setWhiteList($whiteList)
     {
         $this->whiteList = $whiteList;
+
         return $this;
     }
 
@@ -133,11 +140,13 @@ class CommandsValidator
 
     /**
      * @param array $blackList
+     *
      * @return $this
      */
     public function setBlackList($blackList)
     {
         $this->blackList = $blackList;
+
         return $this;
     }
 }

@@ -37,7 +37,6 @@ class UploadManger
         }
     }
 
-
     public static function getUploadDir($id): string
     {
         return \PIMCORE_SYSTEM_TEMP_DIRECTORY . '/process-manager-uploads/' . $id;

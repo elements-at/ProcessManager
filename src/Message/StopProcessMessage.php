@@ -6,7 +6,7 @@ class StopProcessMessage
 {
     public function __construct(
         private int $monitoringItemId,
-    ){
+    ) {
     }
 
     public function getMonitoringItemId(): int

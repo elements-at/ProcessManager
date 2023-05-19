@@ -15,14 +15,13 @@
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
+use Elements\Bundle\ProcessManagerBundle\DependencyInjection\Compiler;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Elements\Bundle\ProcessManagerBundle\DependencyInjection\Compiler;
 
 class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 {
@@ -30,9 +29,11 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     use PackageVersionTrait;
     use StateHelperTrait;
 
-    public static function getMaintenanceOptions(){
+    public static function getMaintenanceOptions()
+    {
 
-        $logDir = str_replace(PIMCORE_PROJECT_ROOT,"",self::getLogDir());
+        $logDir = str_replace(PIMCORE_PROJECT_ROOT, '', self::getLogDir());
+
         return [
             'autoCreate' => true,
             'name' => 'ProcessManager maintenance',
@@ -60,8 +61,11 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     const BUNDLE_NAME = 'ElementsProcessManagerBundle';
 
     const TABLE_NAME_CONFIGURATION = 'bundle_process_manager_configuration';
+
     const TABLE_NAME_MONITORING_ITEM = 'bundle_process_manager_monitoring_item';
+
     const TABLE_NAME_CALLBACK_SETTING = 'bundle_process_manager_callback_setting';
+
     const MONITORING_ITEM_ENV_VAR = 'monitoringItemId';
 
     /**
@@ -111,12 +115,13 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             '/bundles/elementsprocessmanager/js/window/activeProcesses.js',
         ];
 
-        $callbackClasses = ElementsProcessManagerBundle::getConfiguration()->getClassTypes()["executorCallbackClasses"];
-        foreach($callbackClasses as $e){
-            if($file = $e["jsFile"]){
+        $callbackClasses = ElementsProcessManagerBundle::getConfiguration()->getClassTypes()['executorCallbackClasses'];
+        foreach($callbackClasses as $e) {
+            if($file = $e['jsFile']) {
                 $files[] = $file;
             }
         }
+
         return $files;
     }
 
@@ -136,7 +141,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         $container
             ->addCompilerPass(new Compiler\ExecutorDefinitionPass());
     }
-
 
     public static function shutdownHandler($arguments)
     {
@@ -228,10 +232,10 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     public static function getMonitoringItem($createDummyObjectIfRequired = true)
     {
         if ($createDummyObjectIfRequired && !self::$monitoringItem) {
-            if(getenv(self::MONITORING_ITEM_ENV_VAR)){
+            if(getenv(self::MONITORING_ITEM_ENV_VAR)) {
                 self::$monitoringItem = MonitoringItem::getById(getenv(self::MONITORING_ITEM_ENV_VAR));
                 self::$monitoringItem->setStatus(MonitoringItem::STATUS_RUNNING)->save();
-            }else{
+            } else {
                 self::$monitoringItem = new MonitoringItem();
                 self::$monitoringItem->setIsDummy(true);
             }
@@ -249,5 +253,4 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     {
         return self::BUNDLE_NAME;
     }
-
 }

@@ -19,10 +19,8 @@ use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage;
 use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Process\Process;
-use function Symfony\Component\Debug\Tests\testHeader;
 
 /**
  * Class MonitoringItem
@@ -93,6 +91,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      * @var array
      */
     public $callbackSettings = [];
+
     /**
      * @var int
      */
@@ -164,14 +163,15 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param array $criticalErrorLevel
+     *
      * @return $this
      */
     public function setCriticalErrorLevel($criticalErrorLevel)
     {
         $this->criticalErrorLevel = $criticalErrorLevel;
+
         return $this;
     }
-
 
     /**
      * @return int
@@ -183,11 +183,13 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $deleteAfterHours
+     *
      * @return $this
      */
     public function setDeleteAfterHours($deleteAfterHours)
     {
         $this->deleteAfterHours = $deleteAfterHours;
+
         return $this;
     }
 
@@ -209,23 +211,25 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $parentId
+     *
      * @return $this
      */
     public function setParentId($parentId)
     {
         $this->parentId = $parentId;
+
         return $this;
     }
 
-
-
     /**
      * @param bool $hasCriticalError
+     *
      * @return $this
      */
     public function setHasCriticalError($hasCriticalError)
     {
         $this->hasCriticalError = $hasCriticalError;
+
         return $this;
     }
 
@@ -279,11 +283,13 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param bool $messengerPending
+     *
      * @return MonitoringItem
      */
     public function setMessengerPending(bool $messengerPending): MonitoringItem
     {
         $this->messengerPending = $messengerPending;
+
         return $this;
     }
 
@@ -585,7 +591,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
             $messageBus->dispatch($message);
 
             return (bool)self::getById($this->getId())->getPid();
-        }else{
+        } else {
             return false;
         }
     }
@@ -660,6 +666,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @deprecated Use setWorkloadCompleted() instead
+     *
      * @return $this
      */
     public function setWorloadCompleted()
@@ -962,40 +969,44 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return null;
     }
 
-
-    public function stopProcess(){
+    public function stopProcess()
+    {
         $pid = $this->getPid();
-        if($pid){
+        if($pid) {
             $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
             $message = new StopProcessMessage($this->getId());
             $messageBus->dispatch($message);
+
             return true;
         }
     }
 
-    public function getChildProcesses(){
+    public function getChildProcesses()
+    {
         $list = new MonitoringItem\Listing();
-        $list->setCondition('parentId = ?',[$this->getId()]);
+        $list->setCondition('parentId = ?', [$this->getId()]);
         $list->setOrder('id');
+
         return $list->load();
     }
 
-    public function getChildProcessesStatus(){
-        $summary = ['active' => 0, 'failed' => 0,'finished' => 0];
-        $details = ['active' => [], 'failed' => [],'finished' => []];
+    public function getChildProcessesStatus()
+    {
+        $summary = ['active' => 0, 'failed' => 0, 'finished' => 0];
+        $details = ['active' => [], 'failed' => [], 'finished' => []];
         $currentWorkload = 0;
 
-        foreach($this->getChildProcesses() as $child){
-            $details[$child->getStatus()][] = ['id' => $child->getId(),'message' => $child->getMessage(),'alive' => $child->isAlive()];
+        foreach($this->getChildProcesses() as $child) {
+            $details[$child->getStatus()][] = ['id' => $child->getId(), 'message' => $child->getMessage(), 'alive' => $child->isAlive()];
 
             $currentWorkload += $child->getCurrentWorkload();
 
-            if($child->getStatus() == self::STATUS_FINISHED){
+            if($child->getStatus() == self::STATUS_FINISHED) {
                 $summary['finished']++;
-            }else{
-                if($child->isAlive()){
+            } else {
+                if($child->isAlive()) {
                     $summary['active']++;
-                }else{
+                } else {
                     $summary['failed']++;
                 }
             }

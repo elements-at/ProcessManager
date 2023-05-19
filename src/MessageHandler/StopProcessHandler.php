@@ -2,10 +2,8 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\MessageHandler;
 
-use Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage;
 use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Pimcore\Tool\Console;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Process\Process;
 
@@ -14,7 +12,7 @@ class StopProcessHandler
 {
     public function __invoke(StopProcessMessage $message)
     {
-        if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())){
+        if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())) {
             if(!$pid = $monitoringItem->getPid()) {
                 return null;
             }
@@ -24,6 +22,4 @@ class StopProcessHandler
             $process->run();
         }
     }
-
-
 }

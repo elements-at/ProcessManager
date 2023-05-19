@@ -17,7 +17,6 @@ namespace Elements\Bundle\ProcessManagerBundle;
 
 class MetaDataFile
 {
-
     /**
      * @var array
      */
@@ -43,11 +42,13 @@ class MetaDataFile
 
     /**
      * @param string $identifier
+     *
      * @return $this
      */
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
+
         return $this;
     }
 
@@ -61,11 +62,13 @@ class MetaDataFile
 
     /**
      * @param array $data
+     *
      * @return $this
      */
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -74,6 +77,7 @@ class MetaDataFile
         $datFile = PIMCORE_PRIVATE_VAR . '/process-manager-meta-data-files/';
         \Pimcore\File::mkdir($datFile);
         $datFile .= "$identifier.json";
+
         return $datFile;
     }
 
@@ -81,6 +85,7 @@ class MetaDataFile
      * Unique identifier for the file
      *
      * @param $identifier
+     *
      * @return static
      */
     public static function getById($identifier)
@@ -102,9 +107,10 @@ class MetaDataFile
         return self::$instances[$identifier];
     }
 
-    public function delete(){
+    public function delete()
+    {
         $file = self::getFile($this->getIdentifier());
-        if(is_file($file)){
+        if(is_file($file)) {
             @unlink($file);
         }
     }
@@ -113,14 +119,12 @@ class MetaDataFile
     {
         $data = $this->getData();
         if (empty($data)) {
-            throw new \Exception("No data to save ");
+            throw new \Exception('No data to save ');
         }
-        $check = file_put_contents(self::getFile($this->getIdentifier()), json_encode($this->getData(),JSON_PRETTY_PRINT));
+        $check = file_put_contents(self::getFile($this->getIdentifier()), json_encode($this->getData(), JSON_PRETTY_PRINT));
 
         if (!$check) {
             throw new \Exception("Can't write file: " . $this->getIdentifier());
         }
     }
-
-
 }

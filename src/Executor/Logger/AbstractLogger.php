@@ -21,6 +21,7 @@ use Monolog\Handler\StreamHandler;
 abstract class AbstractLogger
 {
     const LOG_FORMAT_SIMPLE = "[%datetime%] %channel%.%level_name%: %message% \n";
+
     public $extJsClass = '';
 
     public $name = '';
