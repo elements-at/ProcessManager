@@ -16,15 +16,18 @@
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
 use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
-use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
+use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Controller\UserAwareController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(path: '/admin/elementsprocessmanager/callback-settings')]
-class CallbackSettingsController extends AdminController
+class CallbackSettingsController extends UserAwareController
 {
+    use JsonHelperTrait;
+
     /**
      * @return JsonResponse
      */
@@ -45,9 +48,9 @@ class CallbackSettingsController extends AdminController
                 ->setType($request->get('type'))
                 ->setSettings($request->get('settings'))->save();
 
-            return $this->adminJson(['success' => true, 'id' => $setting->getId()]);
+            return $this->jsonResponse(['success' => true, 'id' => $setting->getId()]);
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -61,9 +64,9 @@ class CallbackSettingsController extends AdminController
             $setting = CallbackSetting::getById($request->get('id'));
             $setting->delete();
 
-            return $this->adminJson(['success' => true]);
+            return $this->jsonResponse(['success' => true]);
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -78,12 +81,12 @@ class CallbackSettingsController extends AdminController
             if ($setting) {
                 $setting->setId(null)->setName('Copy - ' . $setting->getName())->save();
 
-                return $this->adminJson(['success' => true]);
+                return $this->jsonResponse(['success' => true]);
             } else {
                 throw new \Exception("CallbackSetting whith the id '" . $request->get('id') . "' doesn't exist.");
             }
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -117,6 +120,6 @@ class CallbackSettingsController extends AdminController
             $data[] = $tmp;
         }
 
-        return $this->adminJson(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
+        return $this->jsonResponse(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
     }
 }

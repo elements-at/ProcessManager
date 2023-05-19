@@ -24,8 +24,9 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Logger\File;
 use Elements\Bundle\ProcessManagerBundle\Message\ExecuteCommandMessage;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
+use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Controller\UserAwareController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
@@ -33,8 +34,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(path: '/admin/elementsprocessmanager/monitoring-item')]
-class MonitoringItemController extends AdminController
+class MonitoringItemController extends UserAwareController
 {
+    use JsonHelperTrait;
+
     /**
      * @return JsonResponse
      */
@@ -47,7 +50,7 @@ class MonitoringItemController extends AdminController
         $list->setOrder('DESC');
         $list->setOrderKey('id');
         $list->setLimit($request->get('limit', 25));
-        $list->setUser($this->getAdminUser());
+        $list->setUser($this->getPimcoreUser());
 
         $list->setOffset($request->get('start'));
 
@@ -105,7 +108,7 @@ class MonitoringItemController extends AdminController
             $data[] = $this->getItemData($item);
         }
 
-        return $this->adminJson(['success' => true, 'total' => $total, 'data' => $data]);
+        return $this->jsonResponse(['success' => true, 'total' => $total, 'data' => $data]);
     }
 
     /**
@@ -167,7 +170,7 @@ class MonitoringItemController extends AdminController
             $item->setValues($params)->save();
         }
 
-        return $this->adminJson(['success' => true]);
+        return $this->jsonResponse(['success' => true]);
     }
 
     /**
@@ -185,7 +188,7 @@ class MonitoringItemController extends AdminController
         try {
             $this->checkPermission(Enums\Permissions::VIEW);
         } catch (\Exception) {
-            return $this->adminJson($data);
+            return $this->jsonResponse($data);
         }
         $list = $this->getProcessesForCurrentUser();
         $data['total'] = $list->getTotalCount();
@@ -197,7 +200,7 @@ class MonitoringItemController extends AdminController
             $data['items'][] = $tmp;
         }
 
-        return $this->adminJson($data);
+        return $this->jsonResponse($data);
     }
 
     protected function getItemData(MonitoringItem $item)
@@ -344,9 +347,9 @@ class MonitoringItemController extends AdminController
             $result = $monitoringItem->getObjectVars();
             $result['logLevel'] = strtolower((string) $config['logLevel']);
 
-            return $this->adminJson(['success' => true, 'data' => $result]);
+            return $this->jsonResponse(['success' => true, 'data' => $result]);
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -449,10 +452,10 @@ class MonitoringItemController extends AdminController
             }
             $entry->delete();
 
-            return $this->adminJson(['success' => true]);
+            return $this->jsonResponse(['success' => true]);
         }
 
-        return $this->adminJson(['success' => false, 'message' => "Couldn't delete entry"]);
+        return $this->jsonResponse(['success' => false, 'message' => "Couldn't delete entry"]);
     }
 
     /**
@@ -476,9 +479,9 @@ class MonitoringItemController extends AdminController
                 $item->delete();
             }
 
-            return $this->adminJson(['success' => true]);
+            return $this->jsonResponse(['success' => true]);
         } else {
-            return $this->adminJson(
+            return $this->jsonResponse(
                 [
                     'success' => false,
                     'message' => 'No statuses -> didn\'t deleted logs. Please select at least one status',
@@ -505,12 +508,12 @@ class MonitoringItemController extends AdminController
                     $child->stopProcess();
                 }
 
-                return $this->adminJson(['success' => $status]);
+                return $this->jsonResponse(['success' => $status]);
             }
 
-            return $this->adminJson(['success' => true]);
+            return $this->jsonResponse(['success' => true]);
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -529,9 +532,9 @@ class MonitoringItemController extends AdminController
             $message = new ExecuteCommandMessage($monitoringItem->getCommand(), $monitoringItem->getId(), $monitoringItem->getLogFile());
             $messageBus->dispatch($message);
 
-            return $this->adminJson(['success' => true]);
+            return $this->jsonResponse(['success' => true]);
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -548,7 +551,7 @@ class MonitoringItemController extends AdminController
         $data['callbackSettings'] = json_decode((string) $data['callbackSettings'], null, 512, JSON_THROW_ON_ERROR);
         $data['executorSettings']['values'] = [];
 
-        return $this->adminJson($data);
+        return $this->jsonResponse($data);
 
     }
 }

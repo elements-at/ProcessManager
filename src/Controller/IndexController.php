@@ -21,8 +21,9 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator;
-use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
+use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Controller\UserAwareController;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\GridConfig;
 use Pimcore\Translation\Translator;
@@ -31,8 +32,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(path: '/admin/elementsprocessmanager/index')]
-class IndexController extends AdminController
+class IndexController extends UserAwareController
 {
+    use JsonHelperTrait;
+
     /**
      * @return JsonResponse
      */
@@ -80,7 +83,7 @@ class IndexController extends AdminController
 
         if($bundleConfig->getDisableShortcutMenu() == false) {
             $list = new Configuration\Listing();
-            $list->setUser($this->getAdminUser());
+            $list->setUser($this->getPimcoreUser());
             $list->setOrderKey('name');
             foreach ($list->load() as $config) {
                 $group = $config->getGroup() ?: 'default';
@@ -97,7 +100,7 @@ class IndexController extends AdminController
             ksort($data['shortCutMenu'], SORT_LOCALE_STRING);
         }
 
-        return $this->adminJson($data);
+        return  $this->jsonResponse($data);
     }
 
     /**
@@ -154,7 +157,7 @@ class IndexController extends AdminController
             }
         }
 
-        return $this->adminJson(['success' => true, 'data' => $result]);
+        return $this->jsonResponse(['success' => true, 'data' => $result]);
     }
 
     /**
@@ -186,7 +189,7 @@ class IndexController extends AdminController
         $result = [];
         $list = new GridConfig\Listing();
         $list->setOrderKey('name');
-        $list->setCondition('ownerId = ? OR shareGlobally =1', [$this->getAdminUser()->getId()]);
+        $list->setCondition('ownerId = ? OR shareGlobally =1', [$this->getPimcoreUser()->getId()]);
         $config = $list->load();
         foreach ($list as $c) {
             $result[] = ['id' => $c->getId(), 'name' => $c->getName()];

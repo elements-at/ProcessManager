@@ -21,15 +21,18 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Service\UploadManger;
-use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
+use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Controller\UserAwareController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(path: '/admin/elementsprocessmanager/config')]
-class ConfigController extends AdminController
+class ConfigController extends UserAwareController
 {
+    use JsonHelperTrait;
+
     /**
      * @return JsonResponse
      */
@@ -38,7 +41,7 @@ class ConfigController extends AdminController
     {
         try {
             $list = new Configuration\Listing();
-            $list->setUser($this->getAdminUser())->setCondition('id = ?', [$request->get('id')]);
+            $list->setUser($this->getPimcoreUser())->setCondition('id = ?', [$request->get('id')]);
             $config = $list->load()[0];
 
             $values = $config->getObjectVars();
@@ -56,7 +59,7 @@ class ConfigController extends AdminController
             ];
         }
 
-        return $this->adminJson($result);
+        return $this->jsonResponse($result);
     }
 
     /**
@@ -79,7 +82,7 @@ class ConfigController extends AdminController
             $list->setOrder($sortingSettings['order']);
         }
 
-        $list->setUser($this->getAdminUser());
+        $list->setUser($this->getPimcoreUser());
 
         if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'), [])) {
             $list->setCondition($filterCondition);
@@ -108,7 +111,7 @@ class ConfigController extends AdminController
             $data[] = $tmp;
         }
 
-        return $this->adminJson(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
+        return $this->jsonResponse(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
     }
 
     /**
@@ -170,10 +173,10 @@ class ConfigController extends AdminController
         try {
             $configuration->save(['oldId' => $request_configuration]);
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
 
-        return $this->adminJson(['success' => true, 'id' => $configuration->getId()]);
+        return $this->jsonResponse(['success' => true, 'id' => $configuration->getId()]);
     }
 
     /**
@@ -189,7 +192,7 @@ class ConfigController extends AdminController
             $config->delete();
         }
 
-        return $this->adminJson(['success' => true]);
+        return $this->jsonResponse(['success' => true]);
     }
 
     /**
@@ -202,9 +205,9 @@ class ConfigController extends AdminController
             $config = Configuration::getById($request->get('id'));
             $config->setActive((int)$request->get('value'))->save();
 
-            return $this->adminJson(['success' => true]);
+            return $this->jsonResponse(['success' => true]);
         } catch (\Exception $e) {
-            return $this->adminJson(['success' => false, 'message' => $e->getMessage()]);
+            return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -220,7 +223,7 @@ class ConfigController extends AdminController
         $result = Helper::executeJob(
             $request->get('id'),
             $callbackSettings,
-            $this->getAdminUser()->getId(),
+            $this->getPimcoreUser()->getId(),
             [],
             null,
             function ($monitoringItem, $executor) use ($request, $uploadManger) {
@@ -228,6 +231,6 @@ class ConfigController extends AdminController
             }
         );
 
-        return $this->adminJson($result);
+        return $this->jsonResponse($result);
     }
 }
