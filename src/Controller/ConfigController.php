@@ -35,8 +35,6 @@ class ConfigController extends AdminController
     /**
      * @Route("/get-by-id")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function getByIdAction(Request $request)
@@ -48,7 +46,7 @@ class ConfigController extends AdminController
 
             $values = $config->getObjectVars();
             if ($tmp = $values['executorSettings']) {
-                $values['executorSettings'] = json_decode($tmp, true);
+                $values['executorSettings'] = json_decode((string) $tmp, true, 512, JSON_THROW_ON_ERROR);
             }
             $result = [
                 'success' => true,
@@ -66,8 +64,6 @@ class ConfigController extends AdminController
 
     /**
      * @Route("/list")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -122,15 +118,13 @@ class ConfigController extends AdminController
     /**
      * @Route("/save", methods={"POST"})
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function saveAction(Request $request)
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
 
-        $data = json_decode($request->get('data'), true);
+        $data = json_decode((string) $request->get('data'), true, 512, JSON_THROW_ON_ERROR);
 
         $values = $data['values'];
         $executorConfig = $data['executorConfig'];
@@ -170,9 +164,9 @@ class ConfigController extends AdminController
         }
 
         foreach ($values as $key => $v) {
-            $setter = 'set' . ucfirst($key);
+            $setter = 'set' . ucfirst((string) $key);
             if (method_exists($configuration, $setter)) {
-                $configuration->$setter(trim($v));
+                $configuration->$setter(trim((string) $v));
             }
         }
         $configuration->setExecutorClass($executorConfig['class']);
@@ -189,8 +183,6 @@ class ConfigController extends AdminController
 
     /**
      * @Route("/delete")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -209,8 +201,6 @@ class ConfigController extends AdminController
     /**
      * @Route("/activate-disable")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function activateDisableAction(Request $request)
@@ -228,14 +218,12 @@ class ConfigController extends AdminController
     /**
      * @Route("/execute")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function executeAction(Request $request, UploadManger $uploadManger)
     {
         $this->checkPermission(Enums\Permissions::EXECUTE);
-        $callbackSettings = $request->get('callbackSettings') ? json_decode($request->get('callbackSettings'), true) : [];
+        $callbackSettings = $request->get('callbackSettings') ? json_decode((string) $request->get('callbackSettings'), true, 512, JSON_THROW_ON_ERROR) : [];
 
         $result = Helper::executeJob(
             $request->get('id'),

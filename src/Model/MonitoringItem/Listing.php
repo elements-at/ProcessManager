@@ -44,20 +44,15 @@ class Listing extends \Pimcore\Model\Listing\AbstractListing
         return true;
     }
 
-    /**
-     * @return null|\Pimcore\Model\User
-     */
-    public function getUser()
+    public function getUser(): ?\Pimcore\Model\User
     {
         return $this->user;
     }
 
     /**
-     * @param null|\Pimcore\Model\User $user
-     *
      * @return $this
      */
-    public function setUser($user)
+    public function setUser(?\Pimcore\Model\User $user)
     {
         $this->user = $user;
 

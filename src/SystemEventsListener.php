@@ -36,9 +36,6 @@ class SystemEventsListener implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param ConsoleErrorEvent $e
-     */
     public function onConsoleError(ConsoleErrorEvent $e)
     {
         if (!\Pimcore::isInstalled() || !ElementsProcessManagerBundle::isInstalled()) {
@@ -53,9 +50,6 @@ class SystemEventsListener implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param ConsoleTerminateEvent $e
-     */
     public function onConsoleTerminate(ConsoleTerminateEvent $e)
     {
         if (!\Pimcore::isInstalled() || !ElementsProcessManagerBundle::isInstalled()) {
@@ -73,7 +67,7 @@ class SystemEventsListener implements EventSubscriberInterface
                     if (is_numeric($versions)) {
                         $list = new MonitoringItem\Listing();
                         $list->setOrder('DESC')->setOrderKey('id')->setOffset((int)$versions)->setLimit(
-                            100000000000
+                            100_000_000_000
                         ); //a limit has to defined otherwise the offset wont work
                         $list->setCondition(
                             'status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? AND parentId IS NULL ',

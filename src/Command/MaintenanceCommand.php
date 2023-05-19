@@ -27,18 +27,11 @@ class MaintenanceCommand extends AbstractCommand
 {
     use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 
-    /**
-     * @var EngineInterface
-     */
-    private $templatingEngine;
-
     protected $loggerInitialized = null;
 
-    public function __construct(EngineInterface $templatingEngine)
+    public function __construct(private readonly EngineInterface $templatingEngine)
     {
         parent::__construct();
-
-        $this->templatingEngine = $templatingEngine;
     }
 
     protected function configure()
@@ -56,8 +49,8 @@ class MaintenanceCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $options = ElementsProcessManagerBundle::getMaintenanceOptions();
-        $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'), $options);
-        $this->doUniqueExecutionCheck(null, ['command' => $this->getCommand($options)]);
+        $monitoringItem = static::initProcessManager($input->getOption('monitoring-item-id'), $options);
+        static::doUniqueExecutionCheck(null, ['command' => static::getCommand($options)]);
 
         self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfiguration()->getAdditionalScriptExecutionUsers());
 

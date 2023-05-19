@@ -54,7 +54,7 @@ class Helper
             $monitoringItem->setParentId($parentMonitoringItemId);
 
             if ($executorSettings = $config->getExecutorSettings()) {
-                $executorData = json_decode($config->getExecutorSettings(), true);
+                $executorData = json_decode((string) $config->getExecutorSettings(), true, 512, JSON_THROW_ON_ERROR);
 
                 if ($executorData['values']) {
                     $hideMonitoringItem = $executorData['values']['hideMonitoringItem'] ?? false;
@@ -122,8 +122,6 @@ class Helper
     }
 
     /**
-     * @param MonitoringItem $monitoringItem
-     *
      * @return MonitoringItem
      */
     public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem, $preventModificationDateUpdate = false)
@@ -143,7 +141,7 @@ class Helper
                 }
             }
         }
-        $monitoringItem->setLoggers($loggers)->save($preventModificationDateUpdate);
+        $monitoringItem->setLoggers($loggers)->save();
 
         return $monitoringItem;
     }

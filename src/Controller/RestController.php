@@ -61,8 +61,6 @@ class RestController extends FrontendController
     /**
      * @Route("/execute")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function executeAction(Request $request)
@@ -91,11 +89,11 @@ class RestController extends FrontendController
         $callbackSettings = [];
 
         if ($val = $request->get('callbackSettings')) {
-            $callbackSettings = json_decode($val, true);
+            $callbackSettings = json_decode((string) $val, true, 512, JSON_THROW_ON_ERROR);
             if (!is_array($callbackSettings)) {
-                $xml = @simplexml_load_string($val);
+                $xml = @simplexml_load_string((string) $val);
                 if ($xml !== false) {
-                    $callbackSettings = json_decode(json_encode($xml), true);
+                    $callbackSettings = json_decode(json_encode($xml, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
                 }
             }
 
@@ -112,8 +110,6 @@ class RestController extends FrontendController
 
     /**
      * @Route("/monitoring-item-state")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */

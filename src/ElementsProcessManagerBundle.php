@@ -32,7 +32,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     public static function getMaintenanceOptions()
     {
 
-        $logDir = str_replace(PIMCORE_PROJECT_ROOT, '', self::getLogDir());
+        $logDir = str_replace(PIMCORE_PROJECT_ROOT, '', (string) self::getLogDir());
 
         return [
             'autoCreate' => true,
@@ -40,13 +40,13 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
             'loggers' => [
                 [
                     'logLevel' => 'DEBUG',
-                    'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console',
+                    'class' => '\\' . \Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console::class,
                     'simpleLogFormat' => true
                 ],
                 [
                     'logLevel' => 'DEBUG',
                     'filepath' => $logDir . 'process-manager-maintenance.log',
-                    'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\File',
+                    'class' => '\\' . \Elements\Bundle\ProcessManagerBundle\Executor\Logger\File::class,
                     'simpleLogFormat' => true,
                     'maxFileSizeMB' => 50
                 ]
@@ -58,15 +58,15 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
 
     protected static $monitoringItem;
 
-    const BUNDLE_NAME = 'ElementsProcessManagerBundle';
+    final public const BUNDLE_NAME = 'ElementsProcessManagerBundle';
 
-    const TABLE_NAME_CONFIGURATION = 'bundle_process_manager_configuration';
+    final public const TABLE_NAME_CONFIGURATION = 'bundle_process_manager_configuration';
 
-    const TABLE_NAME_MONITORING_ITEM = 'bundle_process_manager_monitoring_item';
+    final public const TABLE_NAME_MONITORING_ITEM = 'bundle_process_manager_monitoring_item';
 
-    const TABLE_NAME_CALLBACK_SETTING = 'bundle_process_manager_callback_setting';
+    final public const TABLE_NAME_CALLBACK_SETTING = 'bundle_process_manager_callback_setting';
 
-    const MONITORING_ITEM_ENV_VAR = 'monitoringItemId';
+    final public const MONITORING_ITEM_ENV_VAR = 'monitoringItemId';
 
     /**
      * @return array
@@ -133,9 +133,6 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return \Pimcore::getContainer()->get(Installer::class);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function build(ContainerBuilder $container)
     {
         $container
@@ -156,7 +153,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
                     $versions = $config->getKeepVersions();
                     if (is_numeric($versions)) {
                         $list = new MonitoringItem\Listing();
-                        $list->setOrder('DESC')->setOrderKey('id')->setOffset((int)$versions)->setLimit(100000000000); //a limit has to defined otherwise the offset wont work
+                        $list->setOrder('DESC')->setOrderKey('id')->setOffset((int)$versions)->setLimit(100_000_000_000); //a limit has to defined otherwise the offset wont work
                         $list->setCondition('status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? AND parentId IS NULL ', [$config->getId(), $monitoringItem->getPid()]);
 
                         $items = $list->load();
@@ -216,10 +213,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return 'Process Manager';
     }
 
-    /**
-     * @param mixed $monitoringItem
-     */
-    public static function setMonitoringItem($monitoringItem)
+    public static function setMonitoringItem(mixed $monitoringItem)
     {
         self::$monitoringItem = $monitoringItem;
     }

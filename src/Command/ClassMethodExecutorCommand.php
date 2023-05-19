@@ -39,10 +39,10 @@ class ClassMethodExecutorCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->initProcessManager($input->getOption('monitoring-item-id'));
+        static::initProcessManager($input->getOption('monitoring-item-id'));
         self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfiguration()->getAdditionalScriptExecutionUsers());
 
-        $configValues = $this->getMonitoringItem()->getConfigValues();
+        $configValues = static::getMonitoringItem()->getConfigValues();
         $class = new $configValues['executorClass']();
         $class->{$configValues['executorMethod']}();
 

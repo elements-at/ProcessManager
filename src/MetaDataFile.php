@@ -96,7 +96,7 @@ class MetaDataFile
 
             $file = self::getFile($identifier);
             if (file_exists($file)) {
-                $data = json_decode(file_get_contents($file), true);
+                $data = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
             } else {
                 $data = [];
             }

@@ -23,9 +23,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 class ElementsProcessManagerExtension extends ConfigurableExtension implements PrependExtensionInterface
 {
-    /**
-     * @param ContainerBuilder $container
-     */
     public function prepend(ContainerBuilder $container)
     {
         if ($container->hasExtension('doctrine_migrations')) {

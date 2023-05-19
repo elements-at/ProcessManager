@@ -38,9 +38,6 @@ class OpenItem extends AbstractAction
      */
     protected $itemId = null;
 
-    /**
-     * @return string
-     */
     public function getLabel(): string
     {
         return $this->label;
@@ -58,9 +55,6 @@ class OpenItem extends AbstractAction
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
@@ -78,9 +72,6 @@ class OpenItem extends AbstractAction
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getItemId(): int
     {
         return $this->itemId;
@@ -101,10 +92,8 @@ class OpenItem extends AbstractAction
     /**
      * @param $monitoringItem MonitoringItem
      * @param $actionData
-     *
-     * @return object | null
      */
-    protected function getItem($monitoringItem, $actionData)
+    protected function getItem($monitoringItem, $actionData): ?object
     {
         return \Pimcore\Model\Element\Service::getElementById($actionData['type'], $actionData['itemId']);
     }
@@ -134,7 +123,7 @@ class OpenItem extends AbstractAction
             if ($item) {
                 $icon = $this->getIcon($actionData['type']);
                 $type = $item->getType();
-                $method = 'pimcore.helpers.open'.ucfirst($actionData['type']);
+                $method = 'pimcore.helpers.open'.ucfirst((string) $actionData['type']);
                 $cssClass = 'process_manager_icon_action_open '.$actionData['type'].' ';
                 $s =  '<a href="#" onClick="'.$method.'('.$actionData['itemId'].',\''.$item->getType().'\');" class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
 

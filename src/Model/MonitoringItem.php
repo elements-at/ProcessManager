@@ -30,17 +30,17 @@ use Symfony\Component\Process\Process;
  */
 class MonitoringItem extends \Pimcore\Model\AbstractModel
 {
-    const STATUS_UNKNOWN = 'unknown';
+    final public const STATUS_UNKNOWN = 'unknown';
 
-    const STATUS_FINISHED = 'finished';
+    final public const STATUS_FINISHED = 'finished';
 
-    const STATUS_FINISHED_WITH_ERROR = 'finished_with_errors';
+    final public const STATUS_FINISHED_WITH_ERROR = 'finished_with_errors';
 
-    const STATUS_FAILED = 'failed';
+    final public const STATUS_FAILED = 'failed';
 
-    const STATUS_RUNNING = 'running';
+    final public const STATUS_RUNNING = 'running';
 
-    const STATUS_INITIALIZING = 'initializing';
+    final public const STATUS_INITIALIZING = 'initializing';
 
     /**
      * @var int
@@ -153,9 +153,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public $criticalErrorLevel = [];
 
-    /**
-     * @return array
-     */
     public function getCriticalErrorLevel(): array
     {
         return $this->criticalErrorLevel;
@@ -193,9 +190,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getHasCriticalError(): bool
     {
         return $this->hasCriticalError;
@@ -273,19 +267,11 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isMessengerPending(): bool
     {
         return $this->messengerPending;
     }
 
-    /**
-     * @param bool $messengerPending
-     *
-     * @return MonitoringItem
-     */
     public function setMessengerPending(bool $messengerPending): MonitoringItem
     {
         $this->messengerPending = $messengerPending;
@@ -367,7 +353,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $actions = $this->actions;
         if (is_string($actions)) {
-            $actions = json_decode($actions, true);
+            $actions = json_decode($actions, true, 512, JSON_THROW_ON_ERROR);
         }
 
         return $actions;
@@ -515,11 +501,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $message
-     *
      * @return $this
      */
-    public function setMessage($message, $logLevel = \Monolog\Logger::NOTICE)
+    public function setMessage(mixed $message, $logLevel = \Monolog\Logger::NOTICE)
     {
         $this->message = $message;
         if ($logLevel !== false) {
@@ -558,11 +542,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $command
-     *
      * @return $this
      */
-    public function setCommand($command)
+    public function setCommand(mixed $command)
     {
         $this->command = $command;
 
@@ -604,10 +586,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this->creationDate;
     }
 
-    /**
-     * @param mixed $creationDate
-     */
-    public function setCreationDate($creationDate)
+    public function setCreationDate(mixed $creationDate)
     {
         $this->creationDate = $creationDate;
 
@@ -622,10 +601,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this->modificationDate;
     }
 
-    /**
-     * @param mixed $modificationDate
-     */
-    public function setModificationDate($modificationDate)
+    public function setModificationDate(mixed $modificationDate)
     {
         $this->modificationDate = $modificationDate;
 
@@ -712,11 +688,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $configurationId
-     *
      * @return $this
      */
-    public function setConfigurationId($configurationId)
+    public function setConfigurationId(mixed $configurationId)
     {
         $this->configurationId = $configurationId;
 
@@ -732,11 +706,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $pid
-     *
      * @return $this
      */
-    public function setPid($pid)
+    public function setPid(mixed $pid)
     {
         $this->pid = $pid;
 
@@ -792,7 +764,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public function getCallbackSettings()
     {
-        return is_string($this->callbackSettings) ? json_decode($this->callbackSettings, true) : $this->callbackSettings;
+        return is_string($this->callbackSettings) ? json_decode($this->callbackSettings, true, 512, JSON_THROW_ON_ERROR) : $this->callbackSettings;
     }
 
     public function getCallbackSettingsForGrid()
@@ -860,11 +832,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $reportedDate
-     *
      * @return $this
      */
-    public function setReportedDate($reportedDate)
+    public function setReportedDate(mixed $reportedDate)
     {
         $this->reportedDate = $reportedDate;
 
@@ -927,7 +897,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $loggers = $this->loggers;
         if (is_string($loggers)) {
-            $loggers = json_decode($loggers, true);
+            $loggers = json_decode($loggers, true, 512, JSON_THROW_ON_ERROR);
         }
 
         return $loggers;
@@ -949,18 +919,15 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $data = $this->getObjectVars();
 
-        $data['callbackSettings'] = json_decode($data['callbackSettings'], true);
-        $data['actions'] = json_decode($data['actions'], true);
-        $data['loggers'] = json_decode($data['loggers'], true);
+        $data['callbackSettings'] = json_decode((string) $data['callbackSettings'], true, 512, JSON_THROW_ON_ERROR);
+        $data['actions'] = json_decode((string) $data['actions'], true, 512, JSON_THROW_ON_ERROR);
+        $data['loggers'] = json_decode((string) $data['loggers'], true, 512, JSON_THROW_ON_ERROR);
         unset($data['command']);
 
         return $data;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getProgressPercentage()
+    public function getProgressPercentage(): ?int
     {
         if ($this->getCurrentWorkload() && $this->getTotalWorkload()) {
             return round($this->getCurrentWorkload() / ($this->getTotalWorkload() / 100));

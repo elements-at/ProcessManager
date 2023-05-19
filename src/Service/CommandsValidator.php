@@ -90,9 +90,6 @@ class CommandsValidator
         return array_unique($traits);
     }
 
-    /**
-     * @return string
-     */
     public function getStrategy(): string
     {
         return $this->strategy;
@@ -110,9 +107,6 @@ class CommandsValidator
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getWhiteList(): array
     {
         return $this->whiteList;
@@ -130,9 +124,6 @@ class CommandsValidator
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getBlackList(): array
     {
         return $this->blackList;

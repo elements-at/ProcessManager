@@ -36,7 +36,7 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
         foreach ($this->model->getObjectVars() as $key => $value) {
             if (in_array($key, $this->validColumns)) {
                 if (is_object($value)) {
-                    $value = get_class($value);
+                    $value = $value::class;
                 } elseif(is_array($value)) {
                     foreach($value as $k => $v) {
                         if(is_object($v)) {
@@ -45,7 +45,7 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
                             }
                         }
                     }
-                    $value = json_encode($value);
+                    $value = json_encode($value, JSON_THROW_ON_ERROR);
 
                 } elseif (is_bool($value)) {
                     $value = (int)$value;

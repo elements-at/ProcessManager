@@ -50,9 +50,6 @@ class Download extends AbstractAction
      */
     public $isAbsoluteFilePath = false;
 
-    /**
-     * @return bool
-     */
     public function getDeleteWithMonitoringItem(): bool
     {
         return $this->deleteWithMonitoringItem;
@@ -70,9 +67,6 @@ class Download extends AbstractAction
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAccessKey(): string
     {
         return $this->accessKey;
@@ -90,9 +84,6 @@ class Download extends AbstractAction
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLabel(): string
     {
         return $this->label;
@@ -110,9 +101,6 @@ class Download extends AbstractAction
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFilePath(): string
     {
         return $this->filePath;
@@ -130,19 +118,11 @@ class Download extends AbstractAction
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isAbsoluteFilePath(): bool
     {
         return $this->isAbsoluteFilePath;
     }
 
-    /**
-     * @param bool $isAbsoluteFilePath
-     *
-     * @return $this
-     */
     public function setIsAbsoluteFilePath(bool $isAbsoluteFilePath): Download
     {
         $this->isAbsoluteFilePath = $isAbsoluteFilePath;
@@ -211,7 +191,7 @@ class Download extends AbstractAction
         if (is_readable($file)) {
             $response = new BinaryFileResponse($file);
             $response->headers->set('Content-Type', finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file), true);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($file));
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename((string) $file));
 
             return $response;
         } else {

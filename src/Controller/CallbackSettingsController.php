@@ -30,15 +30,13 @@ class CallbackSettingsController extends AdminController
     /**
      * @Route("/save")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function saveAction(Request $request)
     {
         try {
-            $values = json_decode($request->get('values'), true);
-            $settings = json_decode($request->get('settings'), true);
+            $values = json_decode((string) $request->get('values'), true, 512, JSON_THROW_ON_ERROR);
+            $settings = json_decode((string) $request->get('settings'), true, 512, JSON_THROW_ON_ERROR);
             if ($request->get('id')) {
                 $setting = CallbackSetting::getById($request->get('id'));
             } else {
@@ -59,8 +57,6 @@ class CallbackSettingsController extends AdminController
     /**
      * @Route("/delete")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function deleteAction(Request $request)
@@ -77,8 +73,6 @@ class CallbackSettingsController extends AdminController
 
     /**
      * @Route("/copy")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -100,8 +94,6 @@ class CallbackSettingsController extends AdminController
 
     /**
      * @Route("/list")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -127,7 +119,7 @@ class CallbackSettingsController extends AdminController
         $data = [];
         foreach ($list->load() as $item) {
             $tmp = $item->getObjectVars();
-            $tmp['extJsSettings'] = json_decode($tmp['settings'], true);
+            $tmp['extJsSettings'] = json_decode((string) $tmp['settings'], true, 512, JSON_THROW_ON_ERROR);
             $data[] = $tmp;
         }
 

@@ -4,11 +4,8 @@ namespace Elements\Bundle\ProcessManagerBundle;
 
 class BundleConfiguration
 {
-    protected array $config;
-
-    public function __construct($config)
+    public function __construct(protected $config)
     {
-        $this->config = $config;
     }
 
     /**

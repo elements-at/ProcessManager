@@ -49,10 +49,7 @@ class Installer extends SettingsStoreAwareInstaller
         return true;
     }
 
-    /**
-     * @return \Pimcore\Db\Connection|\Pimcore\Db\ConnectionInterface
-     */
-    protected function getDb()
+    protected function getDb(): \Pimcore\Db\Connection|\Pimcore\Db\ConnectionInterface
     {
         return \Pimcore\Db::get();
     }

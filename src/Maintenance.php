@@ -76,7 +76,7 @@ class Maintenance
 
         foreach ($items as $item) {
             if (!$item->getCommand()) { //manually created - do not check
-                $item->setReportedDate(1)->save(true);
+                $item->setReportedDate(1)->save();
             } else {
                 if ($item->isAlive()) {
                     $diff = time() - $item->getModificationDate();
@@ -90,7 +90,7 @@ class Maintenance
                     Helper::executeMonitoringItemLoggerShutdown($item, true);
                     if ($item->getStatus() == $item::STATUS_FINISHED) {
                         $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
-                        $item->setReportedDate(time())->save(true);
+                        $item->setReportedDate(time())->save();
                     } else {
                         $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus(), false)->setStatus($item::STATUS_FAILED);
                         $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
@@ -142,7 +142,7 @@ class Maintenance
          * @var $item MonitoringItem
          */
         foreach ($reportItems as $key => $item) {
-            $item->setReportedDate(time())->save($itemsAlive[$key]);
+            $item->setReportedDate(time())->save();
         }
         $this->monitoringItem->setStatus('Processes checked')->save();
     }
@@ -168,13 +168,13 @@ class Maintenance
                 $params = [];
                 //add default callback settings if defined
                 if ($settings = $config->getExecutorSettings()) {
-                    $settings = json_decode($settings, true);
+                    $settings = json_decode((string) $settings, true, 512, JSON_THROW_ON_ERROR);
                     if (isset($settings['values']['defaultPreDefinedConfig'])) {
                         $preDefinedConfigId = $settings['values']['defaultPreDefinedConfig'];
                         $callbackSetting = CallbackSetting::getById($preDefinedConfigId);
                         if ($callbackSetting) {
                             if ($v = $callbackSetting->getSettings()) {
-                                $params = json_decode($v, true);
+                                $params = json_decode($v, true, 512, JSON_THROW_ON_ERROR);
                             }
                         }
                     }
@@ -202,7 +202,7 @@ class Maintenance
 
         $threshold = ElementsProcessManagerBundle::getConfiguration()->getArchiveThresholdLogs();
         if ($threshold) {
-            $timestamp = Carbon::createFromTimestamp(time())->subDay($threshold)->getTimestamp();
+            $timestamp = Carbon::createFromTimestamp(time())->subDay()->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
             $items = $list->load();

@@ -19,13 +19,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ExecutorDefinitionPass implements CompilerPassInterface
 {
-    const SERVICE_TAG = 'pimcore.datahub.fileExport.exporter.type';
+    final public const SERVICE_TAG = 'pimcore.datahub.fileExport.exporter.type';
 
-    const VARIABLE = '$executor';
+    final public const VARIABLE = '$executor';
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function process(ContainerBuilder $container)
     {
 
@@ -41,7 +38,7 @@ class ExecutorDefinitionPass implements CompilerPassInterface
                     $tmp = [
                         'name' => $object->getName(),
                         'extJsClass' => $object->getExtJsClass(),
-                        'class' => get_class($object),
+                        'class' => $object::class,
                         'config' => $object->getConfig(),
                     ];
                     if($object instanceof Executor\Callback\AbstractCallback) {

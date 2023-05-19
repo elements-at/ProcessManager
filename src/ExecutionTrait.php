@@ -40,12 +40,9 @@ trait ExecutionTrait
         global $argv;
         $command = !empty($options['command']) ? $options['command'] : implode(' ', $argv);
 
-        return trim($command);
+        return trim((string) $command);
     }
 
-    /**
-     * @return string
-     */
     public static function getChildProcessErrorHandling(): string
     {
         return static::$childProcessErrorHandling;
@@ -111,7 +108,7 @@ trait ExecutionTrait
                         [
                             'logLevel' => 'DEBUG',
                             'simpleLogFormat' => 'on',
-                            'class' => '\Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console'
+                            'class' => '\\' . \Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console::class
                         ]
                     ]);
                 }
@@ -216,11 +213,9 @@ trait ExecutionTrait
     }
 
     /**
-     * @param mixed $commandObject
-     *
      * @return $this
      */
-    public function setCommandObject($commandObject)
+    public function setCommandObject(mixed $commandObject)
     {
         $this->commandObject = $commandObject;
 
@@ -257,7 +252,6 @@ trait ExecutionTrait
     }
 
     /**
-     * @param MonitoringItem $monitoringItem
      * @param int $numberOfchildProcesses number of child processes to run in parallel
      * @param array $workload workload to process
      * @param int $batchSize items to process per child process
@@ -287,7 +281,7 @@ trait ExecutionTrait
             $monitoringItem->setMessage('Processing batch '. ($i+1) . ' of ' . count($workloadChunks))->save();
 
             for($x = 1; $x <= 3; $x++) {
-                $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, json_encode($package), $monitoringItem->getId(), $callback);
+                $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, json_encode($package, JSON_THROW_ON_ERROR), $monitoringItem->getId(), $callback);
 
                 if($result['success'] == false) {
                     $monitoringItem->getLogger()->warning("Can't start child (tried ". $i .' time ) - reason: ' . $result['message']);
@@ -327,7 +321,6 @@ trait ExecutionTrait
     }
 
     /**
-     * @param MonitoringItem $monitoringItem
      * @param int $i
      * @param int $batchSize
      * @param int $numberOfchildProcesses

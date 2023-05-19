@@ -44,7 +44,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
 
     public function getTotalCount()
     {
-        return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . $this->getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
+        return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . static::getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
     }
 
     public function loadIdList()
@@ -62,6 +62,6 @@ class Dao extends Model\Listing\Dao\AbstractDao
             }
         }
 
-        return $this->db->fetchFirstColumn('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables, $types);
+        return $this->db->fetchFirstColumn('SELECT id FROM ' . static::getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables, $types);
     }
 }

@@ -38,8 +38,6 @@ class IndexController extends AdminController
     /**
      * @Route("/get-plugin-config")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function getPluginConfigAction(Request $request, CommandsValidator $commandsValidator, Translator $translator)
@@ -79,9 +77,7 @@ class IndexController extends AdminController
             ];
         }
 
-        usort($data['permissions'], function ($a, $b) {
-            return strnatcasecmp($a['name'], $b['name']);
-        });
+        usort($data['permissions'], fn ($a, $b) => strnatcasecmp($a['name'], $b['name']));
 
         $shortCutMenu = [];
 
@@ -110,8 +106,6 @@ class IndexController extends AdminController
     /**
      * @Route("/download")
      *
-     * @param Request $request
-     *
      * @return Response
      */
     public function downloadAction(Request $request)
@@ -135,11 +129,9 @@ class IndexController extends AdminController
     /**
      * @Route("/update-plugin")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
-    public function updatePluginAction(Request $request)
+    public function updatePluginAction(Request $request): never
     {
         //just for testing
 
@@ -151,8 +143,6 @@ class IndexController extends AdminController
 
     /**
      * @Route("/property-list")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -174,8 +164,6 @@ class IndexController extends AdminController
     /**
      * @Route("/get-classes")
      *
-     * @param Request $request
-     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      *
      * @throws \Exception
@@ -196,8 +184,6 @@ class IndexController extends AdminController
 
     /**
      * @Route("/get-grid-configs")
-     *
-     * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      *

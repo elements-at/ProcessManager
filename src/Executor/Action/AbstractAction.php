@@ -101,9 +101,6 @@ abstract class AbstractAction
         return $this;
     }
 
-    /**
-     * @param array $data
-     */
     public function setValues(array $data)
     {
         foreach($data as $key => $value) {
@@ -163,7 +160,6 @@ abstract class AbstractAction
     /**
      * returns data which can be used in action classes
      *
-     * @param MonitoringItem $monitoringItem
      * @param array $actionData
      *
      * @return array

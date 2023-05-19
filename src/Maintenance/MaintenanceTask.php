@@ -15,8 +15,6 @@ class MaintenanceTask implements TaskInterface
 
     /**
      * SystemEventsListener constructor.
-     *
-     * @param EngineInterface $renderingEngine
      */
     public function __construct(EngineInterface $renderingEngine)
     {

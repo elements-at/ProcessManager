@@ -59,10 +59,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(mixed $id)
     {
         $this->id = $id;
     }
@@ -76,11 +73,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $name
-     *
      * @return $this
      */
-    public function setName($name)
+    public function setName(mixed $name)
     {
         $this->name = $name;
 
@@ -95,10 +90,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->description;
     }
 
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description)
+    public function setDescription(mixed $description)
     {
         $this->description = $description;
     }
@@ -111,10 +103,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->creationDate;
     }
 
-    /**
-     * @param mixed $creationDate
-     */
-    public function setCreationDate($creationDate)
+    public function setCreationDate(mixed $creationDate)
     {
         $this->creationDate = $creationDate;
     }
@@ -127,10 +116,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->modificationDate;
     }
 
-    /**
-     * @param mixed $modificationDate
-     */
-    public function setModificationDate($modificationDate)
+    public function setModificationDate(mixed $modificationDate)
     {
         $this->modificationDate = $modificationDate;
     }
@@ -158,11 +144,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $executorSettings
-     *
      * @return $this
      */
-    public function setExecutorSettings($executorSettings)
+    public function setExecutorSettings(mixed $executorSettings)
     {
         $this->executorSettings = $executorSettings;
 
@@ -178,11 +162,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $executorClass
-     *
      * @return $this
      */
-    public function setExecutorClass($executorClass)
+    public function setExecutorClass(mixed $executorClass)
     {
         $this->executorClass = $executorClass;
 
@@ -265,11 +247,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $cronJob
-     *
      * @return $this
      */
-    public function setCronJob($cronJob)
+    public function setCronJob(mixed $cronJob)
     {
         if ($cronJob && !\Cron\CronExpression::isValidExpression($cronJob)) {
             throw new \Exception('The cronjob expression "' . $cronJob.'" is not valid. Please provide a valid Cronjob expression');
@@ -289,11 +269,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $lastCronJobExecution
-     *
      * @return $this
      */
-    public function setLastCronJobExecution($lastCronJobExecution)
+    public function setLastCronJobExecution(mixed $lastCronJobExecution)
     {
         $this->lastCronJobExecution = $lastCronJobExecution;
 
@@ -303,7 +281,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     public function getNextCronJobExecutionTimestamp()
     {
         if ($this->getCronJob()) {
-            if (Tool::classExists('\Cron\CronExpression')) {
+            if (Tool::classExists('\\' . \Cron\CronExpression::class)) {
                 $cron = new \Cron\CronExpression($this->getCronJob());
                 $lastExecution = $this->getLastCronJobExecution();
                 if (!$lastExecution) {
@@ -329,11 +307,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $active
-     *
      * @return $this
      */
-    public function setActive($active)
+    public function setActive(mixed $active)
     {
         $this->active = (bool)$active;
 
@@ -349,11 +325,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $keepVersions
-     *
      * @return $this
      */
-    public function setKeepVersions($keepVersions)
+    public function setKeepVersions(mixed $keepVersions)
     {
         $this->keepVersions = $keepVersions;
 
@@ -372,7 +346,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     {
 
         // check for custom static getters like Object::getByMyfield()
-        $propertyName = lcfirst(preg_replace('/^getBy/i', '', $method));
+        $propertyName = lcfirst(preg_replace('/^getBy/i', '', (string) $method));
         $list = new Configuration\Listing();
         $list->setCondition($propertyName.' = ?', [$arguments[0]]);
 
@@ -398,11 +372,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $restrictToRoles
-     *
      * @return $this
      */
-    public function setRestrictToRoles($restrictToRoles)
+    public function setRestrictToRoles(mixed $restrictToRoles)
     {
 
         $this->restrictToRoles = $this->implodeAsString($restrictToRoles);
@@ -418,7 +390,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         if (is_string($value) && $value != '' && $value[0] != ',') {
             $value = ','.$value;
         }
-        if (substr($value, -1, 1) != ',' && $value != '') {
+        if (!str_ends_with((string) $value, ',') && $value != '') {
             $value .= ',';
         }
 

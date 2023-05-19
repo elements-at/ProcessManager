@@ -5,9 +5,9 @@ namespace Elements\Bundle\ProcessManagerBundle\Message;
 class ExecuteCommandMessage
 {
     public function __construct(
-        private string $command,
-        private int $monitoringItemId,
-        private ?string $outputFile = null
+        private readonly string $command,
+        private readonly int $monitoringItemId,
+        private readonly ?string $outputFile = null
     ) {
     }
 
@@ -21,9 +21,6 @@ class ExecuteCommandMessage
         return $this->monitoringItemId;
     }
 
-    /**
-     * @return string|null
-     */
     public function getOutputFile(): ?string
     {
         return $this->outputFile;

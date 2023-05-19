@@ -63,14 +63,13 @@ class EmailSummary extends AbstractLogger
         if(!is_dir($dir)) {
             \Pimcore\File::mkdir($dir);
         }
-        $dir .= '/'.md5(json_encode($config)).'.log' ;
+        $dir .= '/'.md5(json_encode($config, JSON_THROW_ON_ERROR)).'.log' ;
 
         return $dir;
     }
 
     /**
      * @param $monitoringItem
-     * @param array $loggerConfig
      */
     public function handleShutdown(MonitoringItem $monitoringItem, array $loggerConfig)
     {
@@ -80,7 +79,7 @@ class EmailSummary extends AbstractLogger
             $mail = new \Pimcore\Mail();
             $mail->setSubject($loggerConfig['subject']);
 
-            $to = array_filter(explode(';', $loggerConfig['to']));
+            $to = array_filter(explode(';', (string) $loggerConfig['to']));
             if($to) {
                 foreach($to as &$email) {
                     $email = trim($email);
