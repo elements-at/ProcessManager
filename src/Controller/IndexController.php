@@ -30,16 +30,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin/elementsprocessmanager/index")
- */
+#[Route(path: '/admin/elementsprocessmanager/index')]
 class IndexController extends AdminController
 {
     /**
-     * @Route("/get-plugin-config")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/get-plugin-config')]
     public function getPluginConfigAction(Request $request, CommandsValidator $commandsValidator, Translator $translator)
     {
         $this->checkPermission(Enums\Permissions::VIEW);
@@ -104,10 +101,9 @@ class IndexController extends AdminController
     }
 
     /**
-     * @Route("/download")
-     *
      * @return Response
      */
+    #[Route(path: '/download')]
     public function downloadAction(Request $request)
     {
         $monitoringItem = MonitoringItem::getById($request->get('id'));
@@ -127,10 +123,9 @@ class IndexController extends AdminController
     }
 
     /**
-     * @Route("/update-plugin")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/update-plugin')]
     public function updatePluginAction(Request $request): never
     {
         //just for testing
@@ -142,10 +137,9 @@ class IndexController extends AdminController
     }
 
     /**
-     * @Route("/property-list")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/property-list')]
     public function propertyListAction(Request $request)
     {
         $result = [];
@@ -162,13 +156,13 @@ class IndexController extends AdminController
     }
 
     /**
-     * @Route("/get-classes")
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      *
      * @throws \Exception
      *
      */
+    #[Route(path: '/get-classes')]
     public function getClassesAction(Request $request): JsonResponse
     {
         $result = [];
@@ -183,13 +177,13 @@ class IndexController extends AdminController
     }
 
     /**
-     * @Route("/get-grid-configs")
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      *
      * @throws \Exception
      *
      */
+    #[Route(path: '/get-grid-configs')]
     public function getGridConfigsAction(Request $request): JsonResponse
     {
         $result = [];

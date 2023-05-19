@@ -27,16 +27,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin/elementsprocessmanager/config")
- */
+#[Route(path: '/admin/elementsprocessmanager/config')]
 class ConfigController extends AdminController
 {
     /**
-     * @Route("/get-by-id")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/get-by-id')]
     public function getByIdAction(Request $request)
     {
         try {
@@ -63,10 +60,9 @@ class ConfigController extends AdminController
     }
 
     /**
-     * @Route("/list")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/list')]
     public function listAction(Request $request)
     {
         $this->checkPermission(Enums\Permissions::VIEW);
@@ -116,10 +112,9 @@ class ConfigController extends AdminController
     }
 
     /**
-     * @Route("/save", methods={"POST"})
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/save', methods: ['POST'])]
     public function saveAction(Request $request)
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
@@ -182,10 +177,9 @@ class ConfigController extends AdminController
     }
 
     /**
-     * @Route("/delete")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/delete')]
     public function deleteAction(Request $request)
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
@@ -199,10 +193,9 @@ class ConfigController extends AdminController
     }
 
     /**
-     * @Route("/activate-disable")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/activate-disable')]
     public function activateDisableAction(Request $request)
     {
         try {
@@ -216,10 +209,9 @@ class ConfigController extends AdminController
     }
 
     /**
-     * @Route("/execute")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/execute')]
     public function executeAction(Request $request, UploadManger $uploadManger)
     {
         $this->checkPermission(Enums\Permissions::EXECUTE);

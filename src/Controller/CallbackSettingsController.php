@@ -22,16 +22,13 @@ use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin/elementsprocessmanager/callback-settings")
- */
+#[Route(path: '/admin/elementsprocessmanager/callback-settings')]
 class CallbackSettingsController extends AdminController
 {
     /**
-     * @Route("/save")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/save')]
     public function saveAction(Request $request)
     {
         try {
@@ -55,10 +52,9 @@ class CallbackSettingsController extends AdminController
     }
 
     /**
-     * @Route("/delete")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/delete')]
     public function deleteAction(Request $request)
     {
         try {
@@ -72,10 +68,9 @@ class CallbackSettingsController extends AdminController
     }
 
     /**
-     * @Route("/copy")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/copy')]
     public function copyAction(Request $request)
     {
         try {
@@ -93,10 +88,9 @@ class CallbackSettingsController extends AdminController
     }
 
     /**
-     * @Route("/list")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/list')]
     public function listAction(Request $request)
     {
         $list = new CallbackSetting\Listing();

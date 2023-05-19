@@ -24,9 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/webservice/elementsprocessmanager/rest")
- */
+#[Route(path: '/webservice/elementsprocessmanager/rest')]
 class RestController extends FrontendController
 {
     protected function getApiUser(Request $request)
@@ -59,10 +57,9 @@ class RestController extends FrontendController
     }
 
     /**
-     * @Route("/execute")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/execute')]
     public function executeAction(Request $request)
     {
         $user = $this->getApiUser($request);
@@ -109,10 +106,9 @@ class RestController extends FrontendController
     }
 
     /**
-     * @Route("/monitoring-item-state")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/monitoring-item-state')]
     public function monitoringItemStateAction(Request $request)
     {
         $user = $this->getApiUser($request);

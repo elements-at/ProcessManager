@@ -32,16 +32,13 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin/elementsprocessmanager/monitoring-item")
- */
+#[Route(path: '/admin/elementsprocessmanager/monitoring-item')]
 class MonitoringItemController extends AdminController
 {
     /**
-     * @Route("/list")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/list')]
     public function listAction(Request $request)
     {
         $this->checkPermission(Enums\Permissions::VIEW);
@@ -112,10 +109,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/update")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/update')]
     public function update(Request $request)
     {
 
@@ -156,10 +152,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/update-all-user-monitoring-items")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/update-all-user-monitoring-items')]
     public function updateAllUserMonitoringItems(Request $request)
     {
 
@@ -176,10 +171,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/list-processes-for-user")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/list-processes-for-user')]
     public function listProcessesForUser(Request $request)
     {
         $data = [
@@ -316,10 +310,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/log-application-logger")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/log-application-logger')]
     public function logApplicationLoggerAction(Request $request)
     {
         $config = [];
@@ -361,10 +354,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/log-file-logger")
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
+    #[Route(path: '/log-file-logger')]
     public function logFileLoggerAction(Request $request, ?Profiler $profiler)
     {
         $config = [];
@@ -447,10 +439,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/delete")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/delete')]
     public function deleteAction(Request $request)
     {
         $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
@@ -468,10 +459,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/delete-batch")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/delete-batch')]
     public function deleteBatchAction(Request $request)
     {
         $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
@@ -501,10 +491,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/cancel")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/cancel')]
     public function cancelAction(Request $request)
     {
         $monitoringItem = MonitoringItem::getById($request->get('id'));
@@ -529,10 +518,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/restart")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/restart')]
     public function restartAction(Request $request, MessageBusInterface $messageBus)
     {
         try {
@@ -551,10 +539,9 @@ class MonitoringItemController extends AdminController
     }
 
     /**
-     * @Route("/get-by-id")
-     *
      * @return JsonResponse
      */
+    #[Route(path: '/get-by-id')]
     public function getByIdAction(Request $request)
     {
         $data = [];
