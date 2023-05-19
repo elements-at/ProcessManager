@@ -23,13 +23,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassMethodExecutorCommand extends AbstractCommand
 {
+    protected static $defaultName = 'process-manager:class-method-executor';
+
     use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 
     protected function configure()
     {
-        $this
-            ->setName('process-manager:class-method-executor')
-            ->setDescription('Initializes a class and executes a given method.')
+        $this->setDescription('Initializes a class and executes a given method.')
             ->addOption(
                 'monitoring-item-id', null,
                 InputOption::VALUE_REQUIRED,

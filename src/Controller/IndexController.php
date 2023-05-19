@@ -37,7 +37,7 @@ class IndexController extends AdminController
      * @return JsonResponse
      */
     #[Route(path: '/get-plugin-config')]
-    public function getPluginConfigAction(Request $request, CommandsValidator $commandsValidator, Translator $translator)
+    public function getPluginConfigAction(CommandsValidator $commandsValidator, Translator $translator)
     {
         $this->checkPermission(Enums\Permissions::VIEW);
 
@@ -123,7 +123,9 @@ class IndexController extends AdminController
     }
 
     /**
-     * @return JsonResponse
+     * @param Request $request
+     *
+     * @return never
      */
     #[Route(path: '/update-plugin')]
     public function updatePluginAction(Request $request): never
@@ -157,16 +159,13 @@ class IndexController extends AdminController
 
     /**
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *
-     * @throws \Exception
+     * @return JsonResponse
      *
      */
     #[Route(path: '/get-classes')]
-    public function getClassesAction(Request $request): JsonResponse
+    public function getClassesAction(): JsonResponse
     {
         $result = [];
-
         $list = new ClassDefinition\Listing();
         $list->setOrderKey('name')->setOrder('ASC');
         foreach ($list as $c) {
@@ -178,16 +177,13 @@ class IndexController extends AdminController
 
     /**
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *
-     * @throws \Exception
+     * @return JsonResponse
      *
      */
     #[Route(path: '/get-grid-configs')]
-    public function getGridConfigsAction(Request $request): JsonResponse
+    public function getGridConfigsAction(): JsonResponse
     {
         $result = [];
-
         $list = new GridConfig\Listing();
         $list->setOrderKey('name');
         $list->setCondition('ownerId = ? OR shareGlobally =1', [$this->getAdminUser()->getId()]);

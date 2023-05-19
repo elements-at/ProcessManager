@@ -112,7 +112,7 @@ class MonitoringItemController extends AdminController
      * @return JsonResponse
      */
     #[Route(path: '/update')]
-    public function update(Request $request)
+    public function update(Request $request): JsonResponse
     {
 
         $monitoringItem = MonitoringItem::getById($request->get('id'));
@@ -174,7 +174,7 @@ class MonitoringItemController extends AdminController
      * @return JsonResponse
      */
     #[Route(path: '/list-processes-for-user')]
-    public function listProcessesForUser(Request $request)
+    public function listProcessesForUser()
     {
         $data = [
             'total' => 0,
@@ -187,11 +187,8 @@ class MonitoringItemController extends AdminController
         } catch (\Exception) {
             return $this->adminJson($data);
         }
-
         $list = $this->getProcessesForCurrentUser();
-
         $data['total'] = $list->getTotalCount();
-
         foreach($list->load() as $item) {
             $tmp = $this->getItemData($item);
             if($tmp['isAlive']) {

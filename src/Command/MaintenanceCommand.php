@@ -25,6 +25,8 @@ use Symfony\Component\Templating\EngineInterface;
 
 class MaintenanceCommand extends AbstractCommand
 {
+    protected static $defaultName = 'process-manager:maintenance';
+
     use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 
     protected $loggerInitialized = null;
@@ -36,9 +38,7 @@ class MaintenanceCommand extends AbstractCommand
 
     protected function configure()
     {
-        $this
-            ->setName('process-manager:maintenance')
-            ->setDescription('Executes regular maintenance tasks (Check Processes, execute cronjobs)')
+        $this->setDescription('Executes regular maintenance tasks (Check Processes, execute cronjobs)')
             ->addOption(
                 'monitoring-item-id', null,
                 InputOption::VALUE_REQUIRED,
