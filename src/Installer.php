@@ -49,7 +49,7 @@ class Installer extends SettingsStoreAwareInstaller
         return true;
     }
 
-    protected function getDb(): \Pimcore\Db\Connection|\Pimcore\Db\ConnectionInterface
+    protected function getDb(): \Pimcore\Db\Connection
     {
         return \Pimcore\Db::get();
     }
@@ -58,7 +58,7 @@ class Installer extends SettingsStoreAwareInstaller
     {
         $db = $this->getDb();
 
-        $db->query(
+        $db->executeQuery(
             'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION . "` (
             `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             `creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -80,7 +80,7 @@ class Installer extends SettingsStoreAwareInstaller
         ENGINE=InnoDB DEFAULT CHARSET=utf8
         ");
 
-        $db->query(
+        $db->executeQuery(
             'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . "` (
             `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `parentId` INT(11) NULL DEFAULT NULL,
@@ -115,7 +115,7 @@ class Installer extends SettingsStoreAwareInstaller
            ENGINE=InnoDB DEFAULT CHARSET=utf8"
         );
 
-        $db->query(
+        $db->executeQuery(
             'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING . "` (
             `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             `creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -138,11 +138,11 @@ class Installer extends SettingsStoreAwareInstaller
             ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING
         ];
         foreach ($tables as $table) {
-            $this->getDb()->query('DROP TABLE IF EXISTS ' . $table);
+            $this->getDb()->executeQuery('DROP TABLE IF EXISTS ' . $table);
         }
 
         foreach ($this->permissions as $permissionKey) {
-            $this->getDb()->query('DELETE FROM users_permission_definitions WHERE ' . $this->getDb()->quoteIdentifier('key').' = :permission', ['permission' => $permissionKey]);
+            $this->getDb()->executeQuery('DELETE FROM users_permission_definitions WHERE ' . $this->getDb()->quoteIdentifier('key').' = :permission', ['permission' => $permissionKey]);
         }
 
         parent::uninstall();

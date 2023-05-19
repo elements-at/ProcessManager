@@ -29,7 +29,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
     public function load()
     {
         $sql = 'SELECT id FROM '.$this->getTableName().$this->getCondition().$this->getOrder().$this->getOffsetLimit();
-        $ids = $this->db->fetchCol($sql, $this->model->getConditionVariables());
+        $ids = $this->db->fetchFirstColumn($sql, $this->model->getConditionVariables());
 
         $items = [];
         foreach ($ids as $id) {

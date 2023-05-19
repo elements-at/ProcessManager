@@ -65,7 +65,7 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
 
     public function getById($id)
     {
-        $data = $this->db->fetchRow('SELECT * FROM ' . $this->getTableName() . ' WHERE id= :id', ['id' => $id]);
+        $data = $this->db->fetchAssociative('SELECT * FROM ' . $this->getTableName() . ' WHERE id= :id', ['id' => $id]);
         if (!$data) {
             return null;
         }

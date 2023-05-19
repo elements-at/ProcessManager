@@ -64,7 +64,7 @@ class MonitoringItemController extends UserAwareController
         $callbacks = [
             'executedByUser' => function ($f) {
                 $db = \Pimcore\Db::get();
-                $ids = $db->fetchCol('SELECT id FROM users where name LIKE '.$db->quote('%'.$f->value.'%')) ?: [0];
+                $ids = $db->fetchFirstColumn('SELECT id FROM users where name LIKE '.$db->quote('%'.$f->value.'%')) ?: [0];
 
                 return ' executedByUser IN( '.implode(',', $ids).') ';
             }
