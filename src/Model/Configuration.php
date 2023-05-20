@@ -19,6 +19,10 @@ use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
 use Pimcore\Logger;
 use Pimcore\Tool;
 
+/**
+ * @method  Configuration save($params = []) Configuration
+ * @method  Configuration delete() void
+ */
 class Configuration extends \Pimcore\Model\AbstractModel
 {
     public $id;

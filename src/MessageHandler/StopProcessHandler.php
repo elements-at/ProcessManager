@@ -10,11 +10,11 @@ use Symfony\Component\Process\Process;
 #[AsMessageHandler]
 class StopProcessHandler
 {
-    public function __invoke(StopProcessMessage $message)
+    public function __invoke(StopProcessMessage $message): void
     {
         if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())) {
             if(!$pid = $monitoringItem->getPid()) {
-                return null;
+                return;
             }
 
             $monitoringItem->setPid(null)->setStatus(MonitoringItem::STATUS_FAILED)->save();

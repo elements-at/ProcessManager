@@ -3,6 +3,7 @@
 namespace Elements\Bundle\ProcessManagerBundle\Maintenance;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\Installer;
 use Elements\Bundle\ProcessManagerBundle\Maintenance;
 use Pimcore\Maintenance\TaskInterface;
 use Twig\Environment;
@@ -17,14 +18,14 @@ class MaintenanceTask implements TaskInterface
     /**
      * SystemEventsListener constructor.
      */
-    public function __construct(Environment $renderingEngine)
+    public function __construct(Environment $renderingEngine, private readonly Installer $installer)
     {
         $this->renderingEngine = $renderingEngine;
     }
 
-    public function execute()
+    public function execute(): void
     {
-        if (!ElementsProcessManagerBundle::isInstalled()) {
+        if (!$this->installer->isInstalled()) {
             return;
         }
 

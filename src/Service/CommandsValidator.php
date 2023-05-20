@@ -3,6 +3,8 @@
 namespace Elements\Bundle\ProcessManagerBundle\Service;
 
 use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+use Pimcore\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LazyCommand;
 
 class CommandsValidator
@@ -23,7 +25,7 @@ class CommandsValidator
     public function getValidCommands()
     {
 
-        $application = new \Pimcore\Console\Application(\Pimcore::getKernel());
+        $application = new Application(\Pimcore::getKernel());
         $commands = $this->{'getCommands' . ucfirst($this->getStrategy())}($application->all());
 
         ksort($commands);
@@ -36,12 +38,12 @@ class CommandsValidator
         return $commands;
     }
 
-    protected function getCommandsDefault($commands)
+    protected function getCommandsDefault(array $commands): array
     {
         $validCommands = [];
 
         /**
-         * @var \Symfony\Component\Console\Command\Command
+         * @var Command $command
          */
         foreach ($commands as $name => $command) {
             if (in_array($name, $this->getBlackList())) {
@@ -63,7 +65,7 @@ class CommandsValidator
         return $validCommands;
     }
 
-    protected function classUsesTraits($class, $autoload = true)
+    protected function classUsesTraits($class, $autoload = true): array
     {
         if ($class instanceof LazyCommand) {
             $class = $class->getCommand();
@@ -95,12 +97,7 @@ class CommandsValidator
         return $this->strategy;
     }
 
-    /**
-     * @param string $strategy
-     *
-     * @return $this
-     */
-    public function setStrategy($strategy)
+    public function setStrategy(string $strategy): static
     {
         $this->strategy = $strategy;
 
@@ -112,12 +109,7 @@ class CommandsValidator
         return $this->whiteList;
     }
 
-    /**
-     * @param array $whiteList
-     *
-     * @return $this
-     */
-    public function setWhiteList($whiteList)
+    public function setWhiteList(array $whiteList): static
     {
         $this->whiteList = $whiteList;
 
@@ -129,12 +121,7 @@ class CommandsValidator
         return $this->blackList;
     }
 
-    /**
-     * @param array $blackList
-     *
-     * @return $this
-     */
-    public function setBlackList($blackList)
+    public function setBlackList(array $blackList): static
     {
         $this->blackList = $blackList;
 

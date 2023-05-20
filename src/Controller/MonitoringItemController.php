@@ -29,6 +29,7 @@ use Pimcore\Controller\Traits\JsonHelperTrait;
 use Pimcore\Controller\UserAwareController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,6 +47,7 @@ class MonitoringItemController extends UserAwareController
     {
         $this->checkPermission(Enums\Permissions::VIEW);
         $data = [];
+
         $list = new MonitoringItem\Listing();
         $list->setOrder('DESC');
         $list->setOrderKey('id');
@@ -123,7 +125,7 @@ class MonitoringItemController extends UserAwareController
         $data = [];
 
         if($monitoringItem) {
-            if($monitoringItem->getExecutedByUser() == $this->getUser()->getId()) {
+            if($monitoringItem->getExecutedByUser() == $this->getPimcoreUser()->getId()) {
                 foreach($request->request->all() as $key => $value) {
                     $setter = 'set' . ucfirst($key);
                     if(method_exists($monitoringItem, $setter)) {
@@ -149,7 +151,7 @@ class MonitoringItemController extends UserAwareController
         $list->setOrderKey('id');
         //$list->setLimit(10);
 
-        $list->setCondition('executedByUser = ? and parentId IS NULL AND published = 1 ', [$this->getUser()->getId()]);
+        $list->setCondition('executedByUser = ? and parentId IS NULL AND published = 1 ', [$this->getPimcoreUser()->getId()]);
 
         return $list;
     }
@@ -191,6 +193,7 @@ class MonitoringItemController extends UserAwareController
             return $this->jsonResponse($data);
         }
         $list = $this->getProcessesForCurrentUser();
+
         $data['total'] = $list->getTotalCount();
         foreach($list->load() as $item) {
             $tmp = $this->getItemData($item);
@@ -203,7 +206,14 @@ class MonitoringItemController extends UserAwareController
         return $this->jsonResponse($data);
     }
 
-    protected function getItemData(MonitoringItem $item)
+    /**
+     * @param MonitoringItem $item
+     *
+     * @return array<string, mixed>
+     *
+     * @throws \JsonException
+     */
+    protected function getItemData(MonitoringItem $item): array
     {
         $tmp = $item->getObjectVars();
         $tmp['messageShort'] = \Pimcore\Tool\Text::cutStringRespectingWhitespace($tmp['message'], 30);
@@ -231,7 +241,7 @@ class MonitoringItemController extends UserAwareController
         if ($actions = $item->getActions()) {
             foreach ($actions as $action) {
                 /**
-                 * @var $class AbstractAction
+                 * @var AbstractAction $class
                  */
                 $class = new $action['class'];
                 if ($s = $class->getGridActionHtml($item, $action)) {
@@ -260,7 +270,7 @@ class MonitoringItemController extends UserAwareController
         if ($loggers = $item->getLoggers()) {
             foreach ((array)$loggers as $i => $logger) {
                 /**
-                 * @var $class AbstractLogger
+                 * @var AbstractLogger $class
                  */
                 $class = new $logger['class'];
                 if (\Pimcore\Tool::classExists($class::class)) {
@@ -313,7 +323,7 @@ class MonitoringItemController extends UserAwareController
      * @return JsonResponse
      */
     #[Route(path: '/log-application-logger')]
-    public function logApplicationLoggerAction(Request $request)
+    public function logApplicationLoggerAction(Request $request): JsonResponse
     {
         $config = [];
 
@@ -327,12 +337,14 @@ class MonitoringItemController extends UserAwareController
             if ($loggers = $monitoringItem->getLoggers()) {
                 foreach ((array)$loggers as $i => $config) {
                     /**
-                     * @var $class AbstractLogger
-                     * @var $logger Application
+                     * @var AbstractLogger $class
                      */
                     $class = new $config['class'];
                     if (\Pimcore\Tool::classExists($class::class)) {
                         if ($i == $loggerIndex) {
+                            /**
+                             * @var Application $logger
+                             */
                             $logger = $class;
                             if (!$config['logLevel']) {
                                 $config['logLevel'] = 'DEBUG';
@@ -353,11 +365,8 @@ class MonitoringItemController extends UserAwareController
         }
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
     #[Route(path: '/log-file-logger')]
-    public function logFileLoggerAction(Request $request, ?Profiler $profiler)
+    public function logFileLoggerAction(Request $request, ?Profiler $profiler): Response
     {
         $config = [];
         $logFile = null;
@@ -371,12 +380,14 @@ class MonitoringItemController extends UserAwareController
         if ($loggers = $monitoringItem->getLoggers()) {
             foreach ((array)$loggers as $i => $config) {
                 /**
-                 * @var $class AbstractLogger
-                 * @var $logger File
+                 * @var AbstractLogger $class
                  */
                 $class = new $config['class'];
                 if (\Pimcore\Tool::classExists($class::class)) {
                     if ($i == $loggerIndex) {
+                        /**
+                         * @var File $logger
+                         */
                         $logger = $class;
                         $logFile = $logger->getLogFile($config, $monitoringItem);
                         if (!$config['logLevel']) {
@@ -394,7 +405,7 @@ class MonitoringItemController extends UserAwareController
         if (is_readable($logFile)) {
             $data = file_get_contents($logFile);
             if(array_key_exists('disableFileProcessing', $config) && $config['disableFileProcessing']) {
-                return new \Symfony\Component\HttpFoundation\Response($data);
+                return new Response($data);
             }
 
             $fileSizeMb = round(filesize($logFile) / 1024 / 1024);
@@ -502,7 +513,7 @@ class MonitoringItemController extends UserAwareController
             $pid = $monitoringItem->getPid();
             if ($pid) {
                 $status = $monitoringItem->stopProcess();
-                $message = 'Process with PID "'.$pid.'" killed by Backend User: '.$this->getUser()->getUser()->getName();
+                $message = 'Process with PID "'.$pid.'" killed by Backend User: '.$this->getPimcoreUser()->getName();
                 $monitoringItem->getLogger()->warning($message);
                 foreach($monitoringItem->getChildProcesses() as $child) {
                     $child->stopProcess();

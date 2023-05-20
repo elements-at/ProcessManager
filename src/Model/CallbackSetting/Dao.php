@@ -65,7 +65,7 @@ class Dao extends AbstractDao
         if ($id) {
             $this->db
                 ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
-                ->execute([$id]);
+                ->executeQuery([$id]);
 
             $this->model = null;
         }

@@ -33,11 +33,8 @@ class ConfigController extends UserAwareController
 {
     use JsonHelperTrait;
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/get-by-id')]
-    public function getByIdAction(Request $request)
+    public function getByIdAction(Request $request): JsonResponse
     {
         try {
             $list = new Configuration\Listing();
@@ -62,11 +59,8 @@ class ConfigController extends UserAwareController
         return $this->jsonResponse($result);
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/list')]
-    public function listAction(Request $request)
+    public function listAction(Request $request): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::VIEW);
         $data = [];
@@ -114,11 +108,8 @@ class ConfigController extends UserAwareController
         return $this->jsonResponse(['total' => $list->getTotalCount(), 'success' => true, 'data' => $data]);
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/save', methods: ['POST'])]
-    public function saveAction(Request $request)
+    public function saveAction(Request $request): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
 
@@ -129,8 +120,7 @@ class ConfigController extends UserAwareController
 
         $actions = $data['actions'];
         /**
-         * @var $executorClass AbstractExecutor
-         * @var $configuration Configuration
+         * @var AbstractExecutor $executorClass
          */
         $executorClass = new $executorConfig['class']();
         $executorClass->setValues($data['values']);
@@ -139,7 +129,7 @@ class ConfigController extends UserAwareController
 
         foreach($data['actions'] as $actionData) {
             /**
-             * @var $obj AbstractAction
+             * @var AbstractAction $obj
              */
             $className = $actionData['class'];
             $obj = new $className();
@@ -179,11 +169,8 @@ class ConfigController extends UserAwareController
         return $this->jsonResponse(['success' => true, 'id' => $configuration->getId()]);
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/delete')]
-    public function deleteAction(Request $request)
+    public function deleteAction(Request $request): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
 
@@ -195,11 +182,8 @@ class ConfigController extends UserAwareController
         return $this->jsonResponse(['success' => true]);
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/activate-disable')]
-    public function activateDisableAction(Request $request)
+    public function activateDisableAction(Request $request): JsonResponse
     {
         try {
             $config = Configuration::getById($request->get('id'));

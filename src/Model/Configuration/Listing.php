@@ -19,10 +19,9 @@ use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Pimcore\Model;
 
 /**
- * Class Listing
- *
  * @method \Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing\Dao getDao()
  * @method Configuration[] load()
+ * @method int getTotalCount()
  */
 class Listing extends Model\Listing\AbstractListing
 {

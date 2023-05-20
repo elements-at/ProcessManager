@@ -27,7 +27,7 @@ class Installer extends SettingsStoreAwareInstaller
         Enums\Permissions::EXECUTE,
     ];
 
-    public function install()
+    public function install(): void
     {
         $this->createPermissions();
         $this->createTables();
@@ -44,7 +44,7 @@ class Installer extends SettingsStoreAwareInstaller
     /**
      * {@inheritdoc}
      */
-    public function needsReloadAfterInstall()
+    public function needsReloadAfterInstall(): bool
     {
         return true;
     }
@@ -130,7 +130,7 @@ class Installer extends SettingsStoreAwareInstaller
         );
     }
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $tables = [
             ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION,

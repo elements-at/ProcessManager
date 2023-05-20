@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
@@ -24,10 +24,14 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SystemEventsListener implements EventSubscriberInterface
 {
+    public function __construct(private readonly Installer $installer)
+    {
+    }
+
     /**
      * @return array
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             ConsoleEvents::ERROR => 'onConsoleError',
@@ -36,23 +40,23 @@ class SystemEventsListener implements EventSubscriberInterface
         ];
     }
 
-    public function onConsoleError(ConsoleErrorEvent $e)
+    public function onConsoleError(ConsoleErrorEvent $e): void
     {
-        if (!\Pimcore::isInstalled() || !ElementsProcessManagerBundle::isInstalled()) {
+        if (!\Pimcore::isInstalled() || !$this->installer->isInstalled()) {
             return;
         }
 
         if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
             $error = $e->getError();
             $monitoringItem->setMessage('ERROR: ' . $error->getMessage());
-            $monitoringItem->getLogger()->error($error);
+            $monitoringItem->getLogger()->error($error->getMessage());
             $monitoringItem->setPid(null)->setStatus($monitoringItem::STATUS_FAILED)->save();
         }
     }
 
-    public function onConsoleTerminate(ConsoleTerminateEvent $e)
+    public function onConsoleTerminate(ConsoleTerminateEvent $e): void
     {
-        if (!\Pimcore::isInstalled() || !ElementsProcessManagerBundle::isInstalled()) {
+        if (!\Pimcore::isInstalled() || !$this->installer->isInstalled()) {
             return;
         }
 

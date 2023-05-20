@@ -18,18 +18,23 @@ namespace Elements\Bundle\ProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\DependencyInjection\Compiler;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
+use Pimcore\Bundle\AdminBundle\PimcoreAdminBundle;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+use Pimcore\Extension\Bundle\Installer\InstallerInterface;
+use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
+use Pimcore\Extension\Bundle\Traits\BundleAdminClassicTrait;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
-use Pimcore\Extension\Bundle\Traits\StateHelperTrait;
+use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
+use Pimcore\HttpKernel\BundleCollection\BundleCollection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class ElementsProcessManagerBundle extends AbstractPimcoreBundle
+class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface, DependentBundleInterface
 {
     use ExecutionTrait;
     use PackageVersionTrait;
-    use StateHelperTrait;
+    use BundleAdminClassicTrait;
 
-    public static function getMaintenanceOptions()
+    public static function getMaintenanceOptions(): array
     {
 
         $logDir = str_replace(PIMCORE_PROJECT_ROOT, '', (string) self::getLogDir());
@@ -71,7 +76,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     /**
      * @return array
      */
-    public function getCssPaths()
+    public function getCssPaths(): array
     {
         return [
             '/bundles/elementsprocessmanager/css/admin.css'
@@ -81,7 +86,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     /**
      * @return array
      */
-    public function getJsPaths()
+    public function getJsPaths(): array
     {
         $files = [
             '/bundles/elementsprocessmanager/js/startup.js',
@@ -128,18 +133,18 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     /**
      * @inheritDoc
      */
-    public function getInstaller()
+    public function getInstaller(): InstallerInterface
     {
-        return \Pimcore::getContainer()->get(Installer::class);
+        return $this->container->get(Installer::class);
     }
 
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container
             ->addCompilerPass(new Compiler\ExecutorDefinitionPass());
     }
 
-    public static function shutdownHandler($arguments)
+    public static function shutdownHandler($arguments): void
     {
         /**
          * @var $monitoringItem MonitoringItem
@@ -174,7 +179,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         }
     }
 
-    public static function startup($arguments)
+    public static function startup($arguments): void
     {
         $monitoringItem = $arguments['monitoringItem'];
         if ($monitoringItem instanceof MonitoringItem) {
@@ -188,7 +193,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
     /**
      * @return BundleConfiguration
      */
-    public static function getConfiguration()
+    public static function getConfiguration(): BundleConfiguration
     {
         if (is_null(self::$_config)) {
             $configArray = \Pimcore::getKernel()->getContainer()->getParameter('elements_process_manager');
@@ -198,7 +203,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return self::$_config;
     }
 
-    public static function getLogDir()
+    public static function getLogDir(): string
     {
         $dir = PIMCORE_LOG_DIRECTORY . '/process-manager/';
         if (!is_dir($dir)) {
@@ -208,12 +213,12 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return $dir;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Process Manager';
     }
 
-    public static function setMonitoringItem(mixed $monitoringItem)
+    public static function setMonitoringItem(mixed $monitoringItem): void
     {
         self::$monitoringItem = $monitoringItem;
     }
@@ -223,7 +228,7 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
      *
      * @return MonitoringItem
      */
-    public static function getMonitoringItem($createDummyObjectIfRequired = true)
+    public static function getMonitoringItem(bool $createDummyObjectIfRequired = true): ?MonitoringItem
     {
         if ($createDummyObjectIfRequired && !self::$monitoringItem) {
             if(getenv(self::MONITORING_ITEM_ENV_VAR)) {
@@ -243,8 +248,13 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle
         return 'elements/process-manager-bundle';
     }
 
-    public function getNiceName()
+    public function getNiceName(): string
     {
         return self::BUNDLE_NAME;
+    }
+
+    public static function registerDependentBundles(BundleCollection $collection): void
+    {
+        $collection->addBundle(new PimcoreAdminBundle(), 60);
     }
 }

@@ -22,6 +22,7 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
  *
  * @method \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem\Listing\Dao getDao()
  * @method MonitoringItem[] load()
+ * @method int getTotalCount()
  */
 class Listing extends \Pimcore\Model\Listing\AbstractListing
 {

@@ -17,7 +17,7 @@ namespace Elements\Bundle\ProcessManagerBundle;
 
 class Logger extends \Pimcore\Log\ApplicationLogger
 {
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         parent::log($level, $message, $context);
         $monitoringItem = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getMonitoringItem();

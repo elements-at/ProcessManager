@@ -47,7 +47,7 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
 
             $this->db
                 ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
-                ->execute([$id]);
+                ->executeQuery([$id]);
         }
     }
 

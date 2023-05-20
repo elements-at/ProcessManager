@@ -67,9 +67,9 @@ class Dao extends AbstractDao
         }
 
         // refresh db connection if connection has been lost (happens when db connection has been idle for too long)
-        if(false == $db->ping()) {
-            $db = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
-        }
+        //        if(false == $db->ping()) {
+        //            $db = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
+        //        }
 
         $data = $this->getValidStorageValues();
         if (!$preventModificationDateUpdate) {
@@ -104,7 +104,7 @@ class Dao extends AbstractDao
 
             $this->db
                 ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
-                ->execute([$id]);
+                ->executeQuery([$id]);
 
             if ($logFile = $this->model->getLogFile()) {
                 @unlink($logFile);

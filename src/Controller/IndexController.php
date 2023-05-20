@@ -36,11 +36,8 @@ class IndexController extends UserAwareController
 {
     use JsonHelperTrait;
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/get-plugin-config')]
-    public function getPluginConfigAction(CommandsValidator $commandsValidator, Translator $translator)
+    public function getPluginConfigAction(CommandsValidator $commandsValidator, Translator $translator): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::VIEW);
 
@@ -104,10 +101,10 @@ class IndexController extends UserAwareController
     }
 
     /**
-     * @return Response
+     * @throws \JsonException
      */
     #[Route(path: '/download')]
-    public function downloadAction(Request $request)
+    public function downloadAction(Request $request): ?Response
     {
         $monitoringItem = MonitoringItem::getById($request->get('id'));
         $actions = $monitoringItem->getActions();
@@ -115,37 +112,19 @@ class IndexController extends UserAwareController
             if ($action['accessKey'] == $request->get('accessKey')) {
                 $className = $action['class'];
                 /**
-                 * @var $class AbstractAction
+                 * @var AbstractAction $class
                  */
                 $class = new $className();
-                $result = $class->execute($monitoringItem, $action);
 
-                return $result;
+                return $class->execute($monitoringItem, $action);
             }
         }
+
+        return null;
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return never
-     */
-    #[Route(path: '/update-plugin')]
-    public function updatePluginAction(Request $request): never
-    {
-        //just for testing
-
-        $method = 'updateVersion'.$request->get('version');
-
-        Updater::getInstance()->$method();
-        die();
-    }
-
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/property-list')]
-    public function propertyListAction(Request $request)
+    public function propertyListAction(Request $request): JsonResponse
     {
         $result = [];
         $fieldName = $request->get('fieldName');

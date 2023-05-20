@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 class ElementsProcessManagerExtension extends ConfigurableExtension implements PrependExtensionInterface
 {
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         if ($container->hasExtension('doctrine_migrations')) {
             $loader = new YamlFileLoader(
@@ -38,7 +38,7 @@ class ElementsProcessManagerExtension extends ConfigurableExtension implements P
     /**
      * {@inheritdoc}
      */
-    public function loadInternal(array $config, ContainerBuilder $container)
+    public function loadInternal(array $config, ContainerBuilder $container): void
     {
         $container->setParameter('elements_process_manager', $config);
 

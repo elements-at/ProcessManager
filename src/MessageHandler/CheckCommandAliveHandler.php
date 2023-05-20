@@ -9,12 +9,12 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class CheckCommandAliveHandler
 {
-    public function __invoke(CheckCommandAliveMessage $message)
+    public function __invoke(CheckCommandAliveMessage $message): void
     {
 
         if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())) {
             if(!$pid = $monitoringItem->getPid()) {
-                return null;
+                return;
             }
 
             $checks = 0;
@@ -31,10 +31,10 @@ class CheckCommandAliveHandler
         }
     }
 
-    protected function checkPid(MonitoringItem $monitoringItem)
+    protected function checkPid(MonitoringItem $monitoringItem): void
     {
         if(!$pid = $monitoringItem->getPid()) {
-            return null;
+            return;
         }
 
         if(!$this->pidExists($pid)) {
@@ -43,7 +43,7 @@ class CheckCommandAliveHandler
         }
     }
 
-    protected function pidExists($pid): bool
+    protected function pidExists(int $pid): bool
     {
         if(function_exists('posix_getpgid')) {
             return posix_getpgid($pid);

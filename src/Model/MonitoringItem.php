@@ -26,6 +26,7 @@ use Symfony\Component\Process\Process;
  * Class MonitoringItem
  *
  * @method  MonitoringItem save() MonitoringItem
+ * @method  MonitoringItem delete() void
  * @method  MonitoringItem load() []MonitoringItem
  */
 class MonitoringItem extends \Pimcore\Model\AbstractModel
@@ -331,7 +332,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $self->getDao()->getById($id);
     }
 
-    public function setValues($data = [])
+    public function setValues($data = [], bool $ignoreEmptyValues = false): static
     {
         if (is_array($data) && count($data) > 0) {
             foreach ($data as $key => $value) {
@@ -767,7 +768,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return is_string($this->callbackSettings) ? json_decode($this->callbackSettings, true, 512, JSON_THROW_ON_ERROR) : $this->callbackSettings;
     }
 
-    public function getCallbackSettingsForGrid()
+    public function getCallbackSettingsForGrid(): string
     {
         $html = '';
         $data = $this->getCallbackSettings();
@@ -848,7 +849,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         if (!$this->logger) {
             $this->logger = new \Elements\Bundle\ProcessManagerBundle\Logger();
-            $this->logger->setComponent($this->getName());
+            $this->logger->setComponent((string)$this->getName());
             if ($loggerData = $this->getLoggers()) {
                 foreach ($loggerData as $loggerConfig) {
                     /**
@@ -873,7 +874,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     /**
      * @return int
      */
-    public function getExecutedByUser()
+    public function getExecutedByUser(): int
     {
         return (int)$this->executedByUser;
     }
@@ -883,7 +884,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      *
      * @return $this
      */
-    public function setExecutedByUser($executedByUser)
+    public function setExecutedByUser($executedByUser): static
     {
         $this->executedByUser = (int)$executedByUser;
 
@@ -893,7 +894,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     /**
      * @return array
      */
-    public function getLoggers()
+    public function getLoggers(): array
     {
         $loggers = $this->loggers;
         if (is_string($loggers)) {
@@ -908,14 +909,14 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      *
      * @return $this
      */
-    public function setLoggers($loggers)
+    public function setLoggers($loggers): static
     {
         $this->loggers = $loggers;
 
         return $this;
     }
 
-    public function getForWebserviceExport()
+    public function getForWebserviceExport(): array
     {
         $data = $this->getObjectVars();
 
@@ -936,7 +937,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return null;
     }
 
-    public function stopProcess()
+    public function stopProcess(): bool
     {
         $pid = $this->getPid();
         if($pid) {
@@ -946,6 +947,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
             return true;
         }
+
+        return false;
     }
 
     public function getChildProcesses()
@@ -957,7 +960,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $list->load();
     }
 
-    public function getChildProcessesStatus()
+    public function getChildProcessesStatus(): array
     {
         $summary = ['active' => 0, 'failed' => 0, 'finished' => 0];
         $details = ['active' => [], 'failed' => [], 'finished' => []];

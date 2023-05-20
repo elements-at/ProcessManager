@@ -31,7 +31,7 @@ class ClassMethodExecutorCommand extends AbstractCommand
 
     use ExecutionTrait;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption('monitoring-item-id', null, InputOption::VALUE_REQUIRED, 'Contains the monitoring item if executed via the Pimcore backend');
     }

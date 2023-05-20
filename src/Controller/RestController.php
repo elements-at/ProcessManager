@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/webservice/elementsprocessmanager/rest')]
 class RestController extends FrontendController
 {
-    protected function getApiUser(Request $request)
+    protected function getApiUser(Request $request): JsonResponse|\Pimcore\Model\User
     {
         $user = \Pimcore\Model\User::getByName($request->get('username'));
         if(!$user) {
@@ -94,7 +94,7 @@ class RestController extends FrontendController
                 }
             }
 
-            if ($val && !$callbackSettings) {
+            if (!$callbackSettings) {
                 return $this->json(['success' => false, 'message' => "Couldn't decode the callbackSettigs. Please make sure that you passed a valid JSON or XML."]);
             }
         }

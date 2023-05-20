@@ -42,7 +42,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return $items;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . static::getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
     }

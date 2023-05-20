@@ -33,14 +33,12 @@ class MaintenanceCommand extends AbstractCommand
 
     use ExecutionTrait;
 
-    protected $loggerInitialized = null;
-
     public function __construct(private readonly Environment $templatingEngine)
     {
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption('monitoring-item-id', null, InputOption::VALUE_REQUIRED, 'Contains the monitoring item if executed via the Pimcore backend');
     }
