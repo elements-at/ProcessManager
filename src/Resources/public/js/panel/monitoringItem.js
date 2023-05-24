@@ -256,12 +256,12 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             }
         });
 
-        gridColumns.push({header: t("action"), width: 50, dataIndex: 'action', sortable: false});
+        gridColumns.push({header: t("action"), width: 65, dataIndex: 'action', sortable: false});
         gridColumns.push({
             header: t("plugin_pm_log"),
             dataIndex: 'logger',
             sortable: false,
-            width: 50
+            width: 65
         });
         gridColumns.push({
             header: t("plugin_pm_details"),
