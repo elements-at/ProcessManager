@@ -11,6 +11,16 @@ class BundleConfiguration
         $this->config = $config;
     }
 
+    public function getConfigurationMigrationsNamespace() : string
+    {
+        return $this->config["configurationMigrationsNamespace"];
+    }
+
+    public function getConfigurationMigrationsDirectory() : string
+    {
+        return $this->config["configurationMigrationsDirectory"];
+    }
+
     /**
      * @return bool
      */

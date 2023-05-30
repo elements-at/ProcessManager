@@ -11,6 +11,8 @@ elements_process_manager:
     restApiUsers:
         - {username: "tester" , apiKey: "1234"}
         - {username: "tester2" , apiKey: "344"}
+    configurationMigrationsDirectory: "%kernel.project_dir%/src/Migrations"
+    configurationMigrationsNamespace: "App\Migrations"
 
 services:
     example:
