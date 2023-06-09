@@ -17,6 +17,7 @@ namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Monolog\Handler\StreamHandler;
+use Symfony\Component\Filesystem\Filesystem;
 
 class EmailSummary extends AbstractLogger
 {
@@ -60,8 +61,10 @@ class EmailSummary extends AbstractLogger
     public function getLogFile($monitoringItem, $config)
     {
         $dir = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getLogDir().'email/' . $monitoringItem->getId() ;
+
         if(!is_dir($dir)) {
-            \Pimcore\File::mkdir($dir);
+            $filesystem = new Filesystem();
+            $filesystem->mkdir($dir, 0755);
         }
         $dir .= '/'.md5(json_encode($config, JSON_THROW_ON_ERROR)).'.log' ;
 

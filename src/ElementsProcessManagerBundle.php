@@ -27,6 +27,7 @@ use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
 use Pimcore\HttpKernel\BundleCollection\BundleCollection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface, DependentBundleInterface
 {
@@ -207,7 +208,8 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements Pimc
     {
         $dir = PIMCORE_LOG_DIRECTORY . '/process-manager/';
         if (!is_dir($dir)) {
-            \Pimcore\File::mkdir($dir);
+            $filesystem = new Filesystem();
+            $filesystem->mkdir($dir, 0775);
         }
 
         return $dir;

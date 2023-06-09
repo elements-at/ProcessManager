@@ -22,7 +22,7 @@ use Pimcore\Model;
 
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-    public static function getTableName()
+    public static function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION;
     }
@@ -30,7 +30,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
     /**
      * @return array
      */
-    public function load()
+    public function load(): array
     {
         $items = [];
 
@@ -47,7 +47,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . static::getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
     }
 
-    public function loadIdList()
+    public function loadIdList(): array
     {
         $condition = $this->getCondition();
         $conditionVariables = $this->model->getConditionVariables();

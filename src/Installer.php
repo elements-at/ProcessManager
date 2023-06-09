@@ -15,6 +15,7 @@
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
+use Doctrine\DBAL\Connection;
 use Elements\Bundle\ProcessManagerBundle\Migrations\Version20210428000000;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Model\User\Permission\Definition;
@@ -34,7 +35,7 @@ class Installer extends SettingsStoreAwareInstaller
         parent::install();
     }
 
-    protected function createPermissions()
+    protected function createPermissions(): void
     {
         foreach ($this->permissions as $permissionKey) {
             Definition::create($permissionKey);
@@ -49,12 +50,12 @@ class Installer extends SettingsStoreAwareInstaller
         return true;
     }
 
-    protected function getDb(): \Pimcore\Db\Connection
+    protected function getDb(): Connection
     {
         return \Pimcore\Db::get();
     }
 
-    protected function createTables()
+    protected function createTables(): void
     {
         $db = $this->getDb();
 

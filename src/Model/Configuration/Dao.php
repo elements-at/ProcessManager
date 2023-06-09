@@ -27,12 +27,12 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
      */
     protected $model;
 
-    protected function getTableName()
+    protected function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION;
     }
 
-    public function delete()
+    public function delete(): void
     {
         $id = $this->model->getId();
 
@@ -54,7 +54,7 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
     /**
      * @return $this->model
      */
-    public function save($params = [])
+    public function save($params = []): static
     {
         $data = $this->getValidStorageValues();
 

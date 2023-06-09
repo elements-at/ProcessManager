@@ -21,12 +21,12 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator;
-use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
+use Pimcore\Bundle\AdminBundle\Model\GridConfig;
 use Pimcore\Controller\Traits\JsonHelperTrait;
 use Pimcore\Controller\UserAwareController;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\GridConfig;
 use Pimcore\Translation\Translator;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -107,6 +107,9 @@ class IndexController extends UserAwareController
     public function downloadAction(Request $request): ?Response
     {
         $monitoringItem = MonitoringItem::getById($request->get('id'));
+        if(!$monitoringItem) {
+            throw $this->createNotFoundException('MonitoringItem Not Found');
+        }
         $actions = $monitoringItem->getActions();
         foreach ($actions as $action) {
             if ($action['accessKey'] == $request->get('accessKey')) {

@@ -68,7 +68,7 @@ class ConfigController extends UserAwareController
         $list->setOrder('ASC');
         $list->setOrderKey('name');
         $list->setLimit($request->get('limit', 25));
-        $list->setOffset($request->get('start'));
+        $list->setOffset($request->get('start', 0));
 
         $sortingSettings = QueryParams::extractSortingSettings($request->request->all());
         if ($sortingSettings['orderKey'] && $sortingSettings['order']) {
@@ -78,7 +78,7 @@ class ConfigController extends UserAwareController
 
         $list->setUser($this->getPimcoreUser());
 
-        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'), [])) {
+        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter', ''), [])) {
             $list->setCondition($filterCondition);
         }
 

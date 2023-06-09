@@ -23,12 +23,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[\Symfony\Component\Console\Attribute\AsCommand('process-manager:class-method-executor', 'Initializes a class and executes a given method.')]
 class ClassMethodExecutorCommand extends AbstractCommand
 {
-    protected static $defaultName = 'process-manager:class-method-executor';
-
-    protected static $defaultDescription = 'Initializes a class and executes a given method.';
-
     use ExecutionTrait;
 
     protected function configure(): void

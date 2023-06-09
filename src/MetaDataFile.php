@@ -15,6 +15,8 @@
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 class MetaDataFile
 {
     /**
@@ -75,7 +77,8 @@ class MetaDataFile
     protected static function getFile($identifier)
     {
         $datFile = PIMCORE_PRIVATE_VAR . '/process-manager-meta-data-files/';
-        \Pimcore\File::mkdir($datFile);
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($datFile, 0775);
         $datFile .= "$identifier.json";
 
         return $datFile;

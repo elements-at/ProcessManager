@@ -22,7 +22,7 @@ use Pimcore\Model;
 
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-    protected function getTableName()
+    protected function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM;
     }
@@ -30,7 +30,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
     /**
      * @return string
      */
-    protected function getCondition()
+    protected function getCondition(): string
     {
         $condition = '';
         if ($cond = $this->model->getCondition()) {
@@ -56,7 +56,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return $condition;
     }
 
-    public function load()
+    public function load(): array
     {
         $sql = 'SELECT id FROM ' . $this->getTableName() . $this->getCondition() . $this->getOrder() . $this->getOffsetLimit();
         $ids = $this->db->fetchFirstColumn($sql, $this->model->getConditionVariables());
@@ -74,7 +74,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return $items;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return (int) $this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . $this->getTableName() . ' '. $this->getCondition(), $this->model->getConditionVariables());
     }

@@ -53,7 +53,7 @@ class Maintenance
         $items = $list->load();
 
         foreach($items as $item) {
-            $ts = time()-$item->getModificationDate();
+            $ts = time() - $item->getModificationDate();
             $modDate = \Carbon\Carbon::createFromTimestamp($item->getModificationDate());
             $diff = $modDate->diffInHours(\Carbon\Carbon::now());
             $item->getLogger()->debug('Delete item ' . $item->getId() .' Name: '. $item->getName(). ' because it expired. Hours diff: ' . $diff);

@@ -30,7 +30,7 @@ class Listing extends Model\Listing\AbstractListing
      */
     protected $user;
 
-    public function isValidOrderKey($key)
+    public function isValidOrderKey($key): bool
     {
         return true;
     }
@@ -43,7 +43,7 @@ class Listing extends Model\Listing\AbstractListing
     /**
      * @return $this
      */
-    public function setUser(?\Pimcore\Model\User $user)
+    public function setUser(?\Pimcore\Model\User $user): static
     {
         $this->user = $user;
 

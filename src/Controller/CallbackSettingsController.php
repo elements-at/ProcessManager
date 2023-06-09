@@ -17,10 +17,10 @@ namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
 use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
-use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
 use Pimcore\Controller\Traits\JsonHelperTrait;
 use Pimcore\Controller\UserAwareController;
 use Pimcore\Model\Exception\NotFoundException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\Routing\Annotation\Route;

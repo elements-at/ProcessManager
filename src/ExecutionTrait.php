@@ -272,13 +272,13 @@ trait ExecutionTrait
         $i = 0;
         foreach($workloadChunks as $i => $package) {
 
-            if($startAfterPackage && $startAfterPackage > ($i+1)) {
-                $monitoringItem->getLogger()->debug('Skipping Package' . ($i+1));
+            if($startAfterPackage && $startAfterPackage > ($i + 1)) {
+                $monitoringItem->getLogger()->debug('Skipping Package' . ($i + 1));
 
                 continue;
             }
 
-            $monitoringItem->setMessage('Processing batch '. ($i+1) . ' of ' . count($workloadChunks))->save();
+            $monitoringItem->setMessage('Processing batch '. ($i + 1) . ' of ' . count($workloadChunks))->save();
 
             for($x = 1; $x <= 3; $x++) {
                 $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, json_encode($package, JSON_THROW_ON_ERROR), $monitoringItem->getId(), $callback);
@@ -302,7 +302,7 @@ trait ExecutionTrait
     {
         $statuses = $monitoringItem->getChildProcessesStatus();
         $monitoringItem->setModificationDate(time())->save();
-        if($statuses['summary']['failed']  && static::getChildProcessErrorHandling() == 'strict') {
+        if($statuses['summary']['failed'] && static::getChildProcessErrorHandling() == 'strict') {
             foreach([MonitoringItem::STATUS_RUNNING, MonitoringItem::STATUS_INITIALIZING, MonitoringItem::STATUS_UNKNOWN] as $status) {
                 $items = $statuses['details'][$status] ?? [];
                 foreach((array)$items as $entry) {

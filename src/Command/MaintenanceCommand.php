@@ -25,12 +25,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twig\Environment;
 
+#[\Symfony\Component\Console\Attribute\AsCommand('process-manager:maintenance', 'Executes regular maintenance tasks (Check Processes, execute cronjobs)')]
 class MaintenanceCommand extends AbstractCommand
 {
-    protected static $defaultName = 'process-manager:maintenance';
-
-    protected static $defaultDescription = 'Executes regular maintenance tasks (Check Processes, execute cronjobs)';
-
     use ExecutionTrait;
 
     public function __construct(private readonly Environment $templatingEngine)

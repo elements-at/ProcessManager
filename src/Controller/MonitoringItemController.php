@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
@@ -54,7 +54,7 @@ class MonitoringItemController extends UserAwareController
         $list->setLimit($request->get('limit', 25));
         $list->setUser($this->getPimcoreUser());
 
-        $list->setOffset($request->get('start'));
+        $list->setOffset($request->get('start', 0));
 
         $allParams = array_merge($request->request->all(), $request->query->all());
         $sortingSettings = QueryParams::extractSortingSettings($allParams);
@@ -66,13 +66,13 @@ class MonitoringItemController extends UserAwareController
         $callbacks = [
             'executedByUser' => function ($f) {
                 $db = \Pimcore\Db::get();
-                $ids = $db->fetchFirstColumn('SELECT id FROM users where name LIKE '.$db->quote('%'.$f->value.'%')) ?: [0];
+                $ids = $db->fetchFirstColumn('SELECT id FROM users where name LIKE ' . $db->quote('%' . $f->value . '%')) ?: [0];
 
-                return ' executedByUser IN( '.implode(',', $ids).') ';
+                return ' executedByUser IN( ' . implode(',', $ids) . ') ';
             }
         ];
         if ($filterCondition = QueryParams::getFilterCondition(
-            $request->get('filter'),
+            $request->get('filter', ''),
             ['id', 'o_id', 'pid'],
             true,
             $callbacks
@@ -82,16 +82,16 @@ class MonitoringItemController extends UserAwareController
         }
 
         $condition = $list->getCondition();
-        if($filters = $request->get('filter')) {
-            foreach(json_decode((string) $filters, true, 512, JSON_THROW_ON_ERROR) as $e) {
-                if($e['property'] == 'id') {
-                    $condition .= ' OR `parentId` = ' . (int)$e['value'].' ';
+        if ($filters = $request->get('filter')) {
+            foreach (json_decode((string)$filters, true, 512, JSON_THROW_ON_ERROR) as $e) {
+                if ($e['property'] == 'id') {
+                    $condition .= ' OR `parentId` = ' . (int)$e['value'] . ' ';
                 }
             }
         }
 
         if (!$request->get('showHidden') || $request->get('showHidden') == 'false') {
-            $filterConditionArray =  QueryParams::getFilterCondition($request->get('filter'), ['id', 'o_id', 'pid'], false, $callbacks);
+            $filterConditionArray = QueryParams::getFilterCondition($request->get('filter', ''), ['id', 'o_id', 'pid'], false, $callbacks);
 
             if ($filterConditionArray && isset($filterConditionArray['id'])) {
             } else {
@@ -124,11 +124,11 @@ class MonitoringItemController extends UserAwareController
 
         $data = [];
 
-        if($monitoringItem) {
-            if($monitoringItem->getExecutedByUser() == $this->getPimcoreUser()->getId()) {
-                foreach($request->request->all() as $key => $value) {
+        if ($monitoringItem) {
+            if ($monitoringItem->getExecutedByUser() == $this->getPimcoreUser()->getId()) {
+                foreach ($request->request->all() as $key => $value) {
                     $setter = 'set' . ucfirst($key);
-                    if(method_exists($monitoringItem, $setter)) {
+                    if (method_exists($monitoringItem, $setter)) {
                         $monitoringItem->$setter($value);
                     }
                 }
@@ -168,7 +168,7 @@ class MonitoringItemController extends UserAwareController
         /**
          * @var MonitoringItem $item
          */
-        foreach($list->load() as $item) {
+        foreach ($list->load() as $item) {
             $item->setValues($params)->save();
         }
 
@@ -179,7 +179,7 @@ class MonitoringItemController extends UserAwareController
      * @return JsonResponse
      */
     #[Route(path: '/list-processes-for-user')]
-    public function listProcessesForUser()
+    public function listProcessesForUser(): JsonResponse
     {
         $data = [
             'total' => 0,
@@ -195,9 +195,9 @@ class MonitoringItemController extends UserAwareController
         $list = $this->getProcessesForCurrentUser();
 
         $data['total'] = $list->getTotalCount();
-        foreach($list->load() as $item) {
+        foreach ($list->load() as $item) {
             $tmp = $this->getItemData($item);
-            if($tmp['isAlive']) {
+            if ($tmp['isAlive']) {
                 $data['active']++;
             }
             $data['items'][] = $tmp;
@@ -219,7 +219,7 @@ class MonitoringItemController extends UserAwareController
         $tmp['messageShort'] = \Pimcore\Tool\Text::cutStringRespectingWhitespace($tmp['message'], 30);
         $tmp['steps'] = '-';
         if ($item->getTotalSteps() > 0 || $item->getCurrentStep()) {
-            $tmp['steps'] = $item->getCurrentStep().'/'.$item->getTotalSteps();
+            $tmp['steps'] = $item->getCurrentStep() . '/' . $item->getTotalSteps();
         }
         $tmp['duration'] = $item->getDuration() ?: '-';
         $tmp['progress'] = 0;
@@ -229,7 +229,7 @@ class MonitoringItemController extends UserAwareController
             if ($user) {
                 $tmp['executedByUser'] = $user->getName();
             } else {
-                $tmp['executedByUser'] = 'User id: '.$tmp['executedByUser'];
+                $tmp['executedByUser'] = 'User id: ' . $tmp['executedByUser'];
             }
         } else {
             $tmp['executedByUser'] = 'System';
@@ -251,12 +251,12 @@ class MonitoringItemController extends UserAwareController
         }
         $tmp['actionItems'] = [];
 
-        if($tmp['actions']) {
-            $actionItems = json_decode((string) $tmp['actions'], true, 512, JSON_THROW_ON_ERROR);
+        if ($tmp['actions']) {
+            $actionItems = json_decode((string)$tmp['actions'], true, 512, JSON_THROW_ON_ERROR);
 
-            foreach($actionItems as $i => $v) {
-                if($class = $v['class']) {
-                    if(\Pimcore\Tool::classExists($class)) {
+            foreach ($actionItems as $i => $v) {
+                if ($class = $v['class']) {
+                    if (\Pimcore\Tool::classExists($class)) {
                         $o = new $class();
                         $v['dynamicData'] = $o->toJson($item, $v);
                     }
@@ -309,7 +309,7 @@ class MonitoringItemController extends UserAwareController
         $tmp['progress'] = '-';
         if ($item->getCurrentWorkload() && $item->getTotalWorkload()) {
             $progress = $item->getProgressPercentage();
-            $tmp['progress'] = '<div class="x-progress x-progress-default x-border-box" style="width:100%;"><div class="x-progress-text x-progress-text-back" ></div><div class="x-progress-bar x-progress-bar-default" style="width:'.$progress.'%;min-width: 35px; "><div class="x-progress-text" style="text-align:left;margin-left: 5px;"><div>'.$progress.'%</div></div></div></div>';
+            $tmp['progress'] = '<div class="x-progress x-progress-default x-border-box" style="width:100%;"><div class="x-progress-text x-progress-text-back" ></div><div class="x-progress-bar x-progress-bar-default" style="width:' . $progress . '%;min-width: 35px; "><div class="x-progress-text" style="text-align:left;margin-left: 5px;"><div>' . $progress . '%</div></div></div></div>';
         }
 
         $tmp['progressPercentage'] = (float)$item->getProgressPercentage();
@@ -331,7 +331,7 @@ class MonitoringItemController extends UserAwareController
             $monitoringItem = MonitoringItem::getById($request->get('id'));
 
             if (!$monitoringItem) {
-                throw new \Exception('Monitoring Item with id'.$request->get('id').' not found');
+                throw new \Exception('Monitoring Item with id' . $request->get('id') . ' not found');
             }
             $loggerIndex = $request->get('loggerIndex');
             if ($loggers = $monitoringItem->getLoggers()) {
@@ -357,7 +357,7 @@ class MonitoringItemController extends UserAwareController
             }
 
             $result = $monitoringItem->getObjectVars();
-            $result['logLevel'] = strtolower((string) $config['logLevel']);
+            $result['logLevel'] = strtolower((string)$config['logLevel']);
 
             return $this->jsonResponse(['success' => true, 'data' => $result]);
         } catch (\Exception $e) {
@@ -370,7 +370,7 @@ class MonitoringItemController extends UserAwareController
     {
         $config = [];
         $logFile = null;
-        if(null !== $profiler) {
+        if (null !== $profiler) {
             $profiler->disable();
         }
         $viewData = [];
@@ -404,7 +404,7 @@ class MonitoringItemController extends UserAwareController
 
         if (is_readable($logFile)) {
             $data = file_get_contents($logFile);
-            if(array_key_exists('disableFileProcessing', $config) && $config['disableFileProcessing']) {
+            if (array_key_exists('disableFileProcessing', $config) && $config['disableFileProcessing']) {
                 return new Response($data);
             }
 
@@ -415,7 +415,7 @@ class MonitoringItemController extends UserAwareController
                 $data = explode("\n", $data);
             } else {
                 $data = explode("\n", shell_exec('tail -n 1000 ' . $logFile));
-                $warning = '<span style="color:#ff131c">The log file is to large to view all contents (' . $fileSizeMb.'MB). The last 1000 lines are displayed. File: ' . $logFile . '</span>';
+                $warning = '<span style="color:#ff131c">The log file is to large to view all contents (' . $fileSizeMb . 'MB). The last 1000 lines are displayed. File: ' . $logFile . '</span>';
                 array_unshift($data, $warning);
                 array_push($data, $warning);
             }
@@ -423,23 +423,23 @@ class MonitoringItemController extends UserAwareController
             foreach ($data as $i => $row) {
                 if ($row) {
                     if (strpos($row, '.WARNING')) {
-                        $data[$i] = '<span style="color:#ffb13b">'.$row.'</span>';
+                        $data[$i] = '<span style="color:#ffb13b">' . $row . '</span>';
                     }
                     if (strpos($row, '.ERROR') || strpos($row, '.CRITICAL')) {
-                        $data[$i] = '<span style="color:#ff131c">'.$row.'</span>';
+                        $data[$i] = '<span style="color:#ff131c">' . $row . '</span>';
                     }
                     if (str_starts_with($row, 'dev-server > ') || str_starts_with($row, 'production-server > ')) {
-                        $data[$i] = '<span style="color:#35ad33">'.$row.'</span>';
+                        $data[$i] = '<span style="color:#35ad33">' . $row . '</span>';
                     }
                     foreach (['[echo]', '[mkdir]', '[delete]', '[copy]'] as $k) {
                         if (strpos($row, $k)) {
-                            $data[$i] = '<span style="color:#49b7d4">'.$row.'</span>';
+                            $data[$i] = '<span style="color:#49b7d4">' . $row . '</span>';
                         }
                     }
                 }
             }
         } else {
-            $data = ["Log file doesn't exist. ".$logFile];
+            $data = ["Log file doesn't exist. " . $logFile];
         }
         $data = implode("\n", $data);
 
@@ -453,12 +453,12 @@ class MonitoringItemController extends UserAwareController
      * @return JsonResponse
      */
     #[Route(path: '/delete')]
-    public function deleteAction(Request $request)
+    public function deleteAction(Request $request): JsonResponse
     {
         $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
         $entry = MonitoringItem::getById($request->get('id'));
         if ($entry) {
-            if($entry->isAlive()) {
+            if ($entry->isAlive()) {
                 $entry->stopProcess();
             }
             $entry->delete();
@@ -473,15 +473,15 @@ class MonitoringItemController extends UserAwareController
      * @return JsonResponse
      */
     #[Route(path: '/delete-batch')]
-    public function deleteBatchAction(Request $request)
+    public function deleteBatchAction(Request $request): JsonResponse
     {
         $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
-        $logLevels = array_filter(explode(',', (string) $request->get('logLevels')));
+        $logLevels = array_filter(explode(',', (string)$request->get('logLevels')));
         if (!empty($logLevels)) {
             $list = new MonitoringItem\Listing();
             $conditions = [];
             foreach ($logLevels as $loglevel) {
-                $conditions[] = ' status ="'.$loglevel.'" ';
+                $conditions[] = ' status ="' . $loglevel . '" ';
             }
             $condition = implode(' OR ', $conditions);
             $list->setCondition($condition);
@@ -505,7 +505,7 @@ class MonitoringItemController extends UserAwareController
      * @return JsonResponse
      */
     #[Route(path: '/cancel')]
-    public function cancelAction(Request $request)
+    public function cancelAction(Request $request): JsonResponse
     {
         $monitoringItem = MonitoringItem::getById($request->get('id'));
 
@@ -513,9 +513,9 @@ class MonitoringItemController extends UserAwareController
             $pid = $monitoringItem->getPid();
             if ($pid) {
                 $status = $monitoringItem->stopProcess();
-                $message = 'Process with PID "'.$pid.'" killed by Backend User: '.$this->getPimcoreUser()->getName();
+                $message = 'Process with PID "' . $pid . '" killed by Backend User: ' . $this->getPimcoreUser()->getName();
                 $monitoringItem->getLogger()->warning($message);
-                foreach($monitoringItem->getChildProcesses() as $child) {
+                foreach ($monitoringItem->getChildProcesses() as $child) {
                     $child->stopProcess();
                 }
 
@@ -532,7 +532,7 @@ class MonitoringItemController extends UserAwareController
      * @return JsonResponse
      */
     #[Route(path: '/restart')]
-    public function restartAction(Request $request, MessageBusInterface $messageBus)
+    public function restartAction(Request $request, MessageBusInterface $messageBus): JsonResponse
     {
         try {
             $monitoringItem = MonitoringItem::getById($request->get('id'));
@@ -553,13 +553,13 @@ class MonitoringItemController extends UserAwareController
      * @return JsonResponse
      */
     #[Route(path: '/get-by-id')]
-    public function getByIdAction(Request $request)
+    public function getByIdAction(Request $request): JsonResponse
     {
         $data = [];
 
         $item = MonitoringItem::getById($request->get('id'));
         $data = $item->getObjectVars();
-        $data['callbackSettings'] = json_decode((string) $data['callbackSettings'], null, 512, JSON_THROW_ON_ERROR);
+        $data['callbackSettings'] = json_decode((string)$data['callbackSettings'], null, 512, JSON_THROW_ON_ERROR);
         $data['executorSettings']['values'] = [];
 
         return $this->jsonResponse($data);

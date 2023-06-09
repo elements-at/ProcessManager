@@ -37,10 +37,17 @@ class ElementsProcessManagerExtension extends ConfigurableExtension implements P
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<array<mixed>> $mergedConfig
+     * @param ContainerBuilder $container
+     *
+     * @return void
+     *
+     * @throws \Exception
      */
-    public function loadInternal(array $config, ContainerBuilder $container): void
+    public function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
-        $container->setParameter('elements_process_manager', $config);
+        $container->setParameter('elements_process_manager', $mergedConfig);
 
         $loader = new YamlFileLoader(
             $container,
