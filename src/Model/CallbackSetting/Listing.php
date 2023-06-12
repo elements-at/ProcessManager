@@ -17,13 +17,14 @@ namespace Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem\Listing\Dao;
+use Pimcore\Model\Listing\AbstractListing;
 
 /**
  * @method Dao getDao()
  * @method MonitoringItem[] load()
  * @method int getTotalCount()
  */
-class Listing extends \Pimcore\Model\Listing\AbstractListing
+class Listing extends AbstractListing
 {
     /**
      * Tests if the given key is an valid order key to sort the results
@@ -35,7 +36,7 @@ class Listing extends \Pimcore\Model\Listing\AbstractListing
      * @todo remove the dummy-always-true rule
      *
      */
-    public function isValidOrderKey($key)
+    public function isValidOrderKey($key): bool
     {
         return true;
     }

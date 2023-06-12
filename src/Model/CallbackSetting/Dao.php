@@ -30,7 +30,7 @@ class Dao extends AbstractDao
      */
     protected $model;
 
-    public function getTableName()
+    public function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING;
     }

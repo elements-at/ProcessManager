@@ -26,7 +26,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING;
     }
 
-    public function load()
+    public function load(): array
     {
         $sql = 'SELECT id FROM '.$this->getTableName().$this->getCondition().$this->getOrder().$this->getOffsetLimit();
         $ids = $this->db->fetchFirstColumn($sql, $this->model->getConditionVariables());
@@ -39,7 +39,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return $items;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return (int)$this->db->fetchOne(
             'SELECT COUNT(*) as amount FROM '.$this->getTableName().' '.$this->getCondition(),

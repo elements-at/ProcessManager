@@ -53,11 +53,8 @@ class CallbackSettingsController extends UserAwareController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/delete')]
-    public function deleteAction(Request $request)
+    public function deleteAction(Request $request): JsonResponse
     {
         try {
             $setting = CallbackSetting::getById($request->get('id'));
@@ -74,11 +71,8 @@ class CallbackSettingsController extends UserAwareController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/copy')]
-    public function copyAction(Request $request)
+    public function copyAction(Request $request): JsonResponse
     {
         try {
             $setting = CallbackSetting::getById($request->get('id'));
@@ -94,18 +88,15 @@ class CallbackSettingsController extends UserAwareController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/list')]
-    public function listAction(Request $request)
+    public function listAction(Request $request): JsonResponse
     {
         $list = new CallbackSetting\Listing();
         $list->setOrder('DESC');
         $list->setOrderKey('id');
         $list->setLimit($request->get('limit', 25));
         $list->setOffset($request->get('start'));
-        if ($filterCondition = QueryParams::getFilterCondition($request->get('filter'))) {
+        if ($filterCondition = QueryParams::getFilterCondition((string)$request->get('filter'))) {
             $list->setCondition($filterCondition);
         }
 

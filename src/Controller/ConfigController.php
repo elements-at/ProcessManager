@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
@@ -43,7 +43,7 @@ class ConfigController extends UserAwareController
 
             $values = $config->getObjectVars();
             if ($tmp = $values['executorSettings']) {
-                $values['executorSettings'] = json_decode((string) $tmp, true, 512, JSON_THROW_ON_ERROR);
+                $values['executorSettings'] = json_decode((string)$tmp, true, 512, JSON_THROW_ON_ERROR);
             }
             $result = [
                 'success' => true,
@@ -113,7 +113,7 @@ class ConfigController extends UserAwareController
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
 
-        $data = json_decode((string) $request->get('data'), true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode((string)$request->get('data'), true, 512, JSON_THROW_ON_ERROR);
 
         $values = $data['values'];
         $executorConfig = $data['executorConfig'];
@@ -127,7 +127,7 @@ class ConfigController extends UserAwareController
 
         $actions = [];
 
-        foreach($data['actions'] as $actionData) {
+        foreach ($data['actions'] as $actionData) {
             /**
              * @var AbstractAction $obj
              */
@@ -152,9 +152,9 @@ class ConfigController extends UserAwareController
         }
 
         foreach ($values as $key => $v) {
-            $setter = 'set' . ucfirst((string) $key);
+            $setter = 'set' . ucfirst((string)$key);
             if (method_exists($configuration, $setter)) {
-                $configuration->$setter(trim((string) $v));
+                $configuration->$setter(trim((string)$v));
             }
         }
         $configuration->setExecutorClass($executorConfig['class']);
@@ -195,14 +195,11 @@ class ConfigController extends UserAwareController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/execute')]
-    public function executeAction(Request $request, UploadManger $uploadManger)
+    public function executeAction(Request $request, UploadManger $uploadManger): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::EXECUTE);
-        $callbackSettings = $request->get('callbackSettings') ? json_decode((string) $request->get('callbackSettings'), true, 512, JSON_THROW_ON_ERROR) : [];
+        $callbackSettings = $request->get('callbackSettings') ? json_decode((string)$request->get('callbackSettings'), true, 512, JSON_THROW_ON_ERROR) : [];
 
         $result = Helper::executeJob(
             $request->get('id'),

@@ -27,6 +27,8 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Bundle\AdminBundle\Helper\QueryParams;
 use Pimcore\Controller\Traits\JsonHelperTrait;
 use Pimcore\Controller\UserAwareController;
+use Pimcore\Model\User;
+use Pimcore\Tool\Text;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,11 +41,8 @@ class MonitoringItemController extends UserAwareController
 {
     use JsonHelperTrait;
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/list')]
-    public function listAction(Request $request)
+    public function listAction(Request $request): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::VIEW);
         $data = [];
@@ -113,9 +112,6 @@ class MonitoringItemController extends UserAwareController
         return $this->jsonResponse(['success' => true, 'total' => $total, 'data' => $data]);
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/update')]
     public function update(Request $request): JsonResponse
     {
@@ -141,10 +137,7 @@ class MonitoringItemController extends UserAwareController
 
     }
 
-    /**
-     * @return MonitoringItem\Listing
-     */
-    protected function getProcessesForCurrentUser()
+    protected function getProcessesForCurrentUser(): MonitoringItem\Listing
     {
         $list = new MonitoringItem\Listing();
         $list->setOrder('DESC');
@@ -156,11 +149,8 @@ class MonitoringItemController extends UserAwareController
         return $list;
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/update-all-user-monitoring-items')]
-    public function updateAllUserMonitoringItems(Request $request)
+    public function updateAllUserMonitoringItems(Request $request): JsonResponse
     {
 
         $list = $this->getProcessesForCurrentUser();
@@ -216,7 +206,7 @@ class MonitoringItemController extends UserAwareController
     protected function getItemData(MonitoringItem $item): array
     {
         $tmp = $item->getObjectVars();
-        $tmp['messageShort'] = \Pimcore\Tool\Text::cutStringRespectingWhitespace($tmp['message'], 30);
+        $tmp['messageShort'] = Text::cutStringRespectingWhitespace((int)$tmp['message'], 30);
         $tmp['steps'] = '-';
         if ($item->getTotalSteps() > 0 || $item->getCurrentStep()) {
             $tmp['steps'] = $item->getCurrentStep() . '/' . $item->getTotalSteps();
@@ -225,7 +215,7 @@ class MonitoringItemController extends UserAwareController
         $tmp['progress'] = 0;
 
         if ($tmp['executedByUser']) {
-            $user = \Pimcore\Model\User::getById($tmp['executedByUser']);
+            $user = User::getById($tmp['executedByUser']);
             if ($user) {
                 $tmp['executedByUser'] = $user->getName();
             } else {
@@ -319,9 +309,6 @@ class MonitoringItemController extends UserAwareController
         return $tmp;
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/log-application-logger')]
     public function logApplicationLoggerAction(Request $request): JsonResponse
     {
@@ -449,9 +436,6 @@ class MonitoringItemController extends UserAwareController
         return $this->render('@ElementsProcessManager/MonitoringItem/logFileLogger.html.twig', $viewData);
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/delete')]
     public function deleteAction(Request $request): JsonResponse
     {
@@ -469,9 +453,6 @@ class MonitoringItemController extends UserAwareController
         return $this->jsonResponse(['success' => false, 'message' => "Couldn't delete entry"]);
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/delete-batch')]
     public function deleteBatchAction(Request $request): JsonResponse
     {
@@ -501,9 +482,6 @@ class MonitoringItemController extends UserAwareController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/cancel')]
     public function cancelAction(Request $request): JsonResponse
     {
@@ -528,9 +506,6 @@ class MonitoringItemController extends UserAwareController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/restart')]
     public function restartAction(Request $request, MessageBusInterface $messageBus): JsonResponse
     {
@@ -549,9 +524,6 @@ class MonitoringItemController extends UserAwareController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     #[Route(path: '/get-by-id')]
     public function getByIdAction(Request $request): JsonResponse
     {
