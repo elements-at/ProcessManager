@@ -229,7 +229,7 @@ trait ExecutionTrait
      */
     public static function checkExecutingUser($allowedUsers = [])
     {
-        $configFile = \Pimcore\Config::locateConfigFile('system.yml');
+        $configFile = PIMCORE_WEB_ROOT.'/index.php';
         $owner = fileowner($configFile);
 
         if ($owner === false) {
