@@ -48,9 +48,12 @@ pimcore.plugin.processmanager = Class.create({
     showProcessManager : function (config){
         config = defaultValue(config,{});
         if (pimcore.globalmanager.get("plugin_pm_cnf")) {
-            return Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_pm_panel");
+            Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_pm_panel");
+            if(config.activeTab){
+                Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(config.activeTab);
+            }
         } else {
-            return pimcore.globalmanager.add("plugin_pm_cnf", new pimcore.plugin.processmanager.panel.general(config));
+            pimcore.globalmanager.add("plugin_pm_cnf", new pimcore.plugin.processmanager.panel.general(config));
         }
     },
 
