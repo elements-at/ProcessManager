@@ -728,6 +728,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             minHeight: minHeight,
             maxHeight: maxHeight,
             multiSelect: true,
+            plugins: ['pimcore.gridfilters'],
             flex: 1,
             viewConfig: {
                 plugins: {
