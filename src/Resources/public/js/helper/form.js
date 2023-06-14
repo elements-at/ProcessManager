@@ -711,7 +711,8 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                 text: t("plugin_pm_property_selector_propertyname"),
                 sortable: true,
                 dataIndex: "name",
-                flex: 1
+                flex: 1,
+                filter: 'string'
             }
         ]);
 
