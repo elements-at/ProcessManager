@@ -12,6 +12,10 @@ use Pimcore\Migrations\BundleAwareMigration;
  */
 final class Version20230321092750 extends BundleAwareMigration
 {
+    protected function getBundleName(): string
+    {
+        return ElementsProcessManagerBundle::BUNDLE_NAME;
+    }
 
     public function up(Schema $schema): void
     {
