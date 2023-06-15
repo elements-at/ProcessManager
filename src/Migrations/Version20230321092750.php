@@ -6,6 +6,7 @@ namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Pimcore\Migrations\BundleAwareMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
