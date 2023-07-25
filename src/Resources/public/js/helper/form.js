@@ -711,7 +711,8 @@ pimcore.plugin.processmanager.helper.form = Class.create({
                 text: t("plugin_pm_property_selector_propertyname"),
                 sortable: true,
                 dataIndex: "name",
-                flex: 1
+                flex: 1,
+                filter: 'string'
             }
         ]);
 
@@ -728,6 +729,7 @@ pimcore.plugin.processmanager.helper.form = Class.create({
             minHeight: minHeight,
             maxHeight: maxHeight,
             multiSelect: true,
+            plugins: ['pimcore.gridfilters'],
             flex: 1,
             viewConfig: {
                 plugins: {
