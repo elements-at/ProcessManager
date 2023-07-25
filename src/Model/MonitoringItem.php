@@ -339,6 +339,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $self->getDao()->getById($id);
     }
 
+    /**
+     * @return static
+     */
     public function setValues($data = [])
     {
         if (is_array($data) && count($data) > 0) {
