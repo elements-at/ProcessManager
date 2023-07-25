@@ -8,14 +8,14 @@ class BundleConfiguration
     {
     }
 
-    public function getConfigurationMigrationsNamespace() : string
+    public function getConfigurationMigrationsNamespace(): string
     {
-        return $this->config["configurationMigrationsNamespace"];
+        return $this->config['configurationMigrationsNamespace'];
     }
 
-    public function getConfigurationMigrationsDirectory() : string
+    public function getConfigurationMigrationsDirectory(): string
     {
-        return $this->config["configurationMigrationsDirectory"];
+        return $this->config['configurationMigrationsDirectory'];
     }
 
     /**
