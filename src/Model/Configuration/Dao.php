@@ -55,7 +55,7 @@ class Dao extends AbstractDao
     /**
      * @return $this->model
      */
-    public function save($params = []): static
+    public function save($params = [])
     {
         $data = $this->getValidStorageValues();
 
