@@ -284,7 +284,10 @@ trait ExecutionTrait
                 $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, json_encode($package, JSON_THROW_ON_ERROR), $monitoringItem->getId(), $callback);
 
                 if($result['success'] == false) {
-                    $monitoringItem->getLogger()->warning("Can't start child (tried ". $i .' time ) - reason: ' . $result['message']);
+                    $attempts = $i === 1 ? "$i time" : "$i times";
+                    $monitoringItem->getLogger()->warning("Can't start child (tried $attempts) - reason: " . $result['message']);
+
+
                     sleep(5);
                     if($x == 3) {
                         throw new \Exception("Can't start child  - reason: " . $result['message']);
