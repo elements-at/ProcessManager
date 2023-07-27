@@ -225,7 +225,7 @@ abstract class AbstractExecutor implements \JsonSerializable
      */
     abstract public function getCommand($callbackSettings = [], $monitoringItem = null);
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $values = ['class' => static::class, ...get_object_vars($this)];
 
