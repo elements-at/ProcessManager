@@ -36,16 +36,16 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
         foreach ($this->model->getObjectVars() as $key => $value) {
             if (in_array($key, $this->validColumns)) {
                 if (is_object($value)) {
-                    $value = get_class($value);
-                }elseif(is_array($value)){
-                    foreach($value as $k => $v){
-                        if(is_object($v)){
-                            if(method_exists($v,'getStorageData')){
+                    $value = $value::class;
+                } elseif(is_array($value)) {
+                    foreach($value as $k => $v) {
+                        if(is_object($v)) {
+                            if(method_exists($v, 'getStorageData')) {
                                 $value[$k] = $v->getStorageData();
                             }
                         }
                     }
-                    $value = json_encode($value);
+                    $value = json_encode($value, JSON_THROW_ON_ERROR);
 
                 } elseif (is_bool($value)) {
                     $value = (int)$value;
@@ -65,7 +65,7 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
 
     public function getById($id)
     {
-        $data = $this->db->fetchRow('SELECT * FROM ' . $this->getTableName() . ' WHERE id= :id' , ['id' => $id]);
+        $data = $this->db->fetchAssociative('SELECT * FROM ' . $this->getTableName() . ' WHERE id= :id', ['id' => $id]);
         if (!$data) {
             return null;
         }

@@ -17,5 +17,4 @@ namespace Elements\Bundle\ProcessManagerBundle\Executor\Callback;
 
 class General extends AbstractCallback
 {
-
 }

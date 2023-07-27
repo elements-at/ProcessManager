@@ -21,12 +21,9 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-class ElementsProcessManagerExtension  extends ConfigurableExtension implements PrependExtensionInterface
+class ElementsProcessManagerExtension extends ConfigurableExtension implements PrependExtensionInterface
 {
-    /**
-     * @param ContainerBuilder $container
-     */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         if ($container->hasExtension('doctrine_migrations')) {
             $loader = new YamlFileLoader(
@@ -40,10 +37,17 @@ class ElementsProcessManagerExtension  extends ConfigurableExtension implements 
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<array<mixed>> $mergedConfig
+     * @param ContainerBuilder $container
+     *
+     * @return void
+     *
+     * @throws \Exception
      */
-    public function loadInternal(array $config, ContainerBuilder $container)
+    public function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
-        $container->setParameter('elements_process_manager', $config);
+        $container->setParameter('elements_process_manager', $mergedConfig);
 
         $loader = new YamlFileLoader(
             $container,
@@ -52,5 +56,4 @@ class ElementsProcessManagerExtension  extends ConfigurableExtension implements 
 
         $loader->load('services.yml');
     }
-
 }

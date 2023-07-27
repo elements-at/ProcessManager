@@ -9,17 +9,19 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
+use Doctrine\DBAL\DriverManager;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Service\UploadManger;
+use Pimcore\Db;
 
 /**
  * Class Dao
@@ -37,7 +39,7 @@ class Dao extends AbstractDao
      */
     protected static $dbTransactionFree;
 
-    public function getTableName()
+    public function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM;
     }
@@ -57,37 +59,38 @@ class Dao extends AbstractDao
          * If we are in a transction we need to create a new connection and use this because otherwise
          * the satus won't be updated as the transaction isn't committed (e.g when a exception is thrown within a transaction)
          */
-        if(\Pimcore\Db::get()->isTransactionActive()){
-            if(!self::$dbTransactionFree){
-                self::$dbTransactionFree = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
+        if (Db::get()->isTransactionActive()) {
+            if (!self::$dbTransactionFree) {
+                self::$dbTransactionFree = DriverManager::getConnection($this->db->getParams());
             }
             $db = self::$dbTransactionFree;
-        }else{
+        } else {
             $db = $this->db;
         }
 
-        /* refresh db connection if connection has been lost (happens when db connection has been idle for too long) */
-        if(FALSE == $db->ping()){
-            $db = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
-        }
+        // refresh db connection if connection has been lost (happens when db connection has been idle for too long)
+        //        if(false == $db->ping()) {
+        //            $db = \Doctrine\DBAL\DriverManager::getConnection($this->db->getParams());
+        //        }
 
         $data = $this->getValidStorageValues();
         if (!$preventModificationDateUpdate) {
             $data['modificationDate'] = time();
         }
-
-        if (!$data['id']) {
-            unset($data['id']);
-            $db->insert($this->getTableName(), $data);
+        $quoteKeyData= [];
+        array_walk($data, function ($value, $key) use (&$quoteKeyData) { $quoteKeyData['`'.$key.'`'] = $value; });
+        if (!$quoteKeyData['`id`']) {
+            unset($quoteKeyData['`id`']);
+            $db->insert($this->getTableName(), $quoteKeyData);
             $this->model->setId($db->lastInsertId($this->getTableName()));
         } else {
-            $result = $db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
+            $result = $db->update($this->getTableName(), $quoteKeyData, ['id' => $this->model->getId()]);
         }
 
         return $this->getById($this->model->getId());
     }
 
-    public function delete()
+    public function delete(): void
     {
         $id = $this->model->getId();
 
@@ -104,7 +107,7 @@ class Dao extends AbstractDao
 
             $this->db
                 ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
-                ->execute([$id]);
+                ->executeQuery([$id]);
 
             if ($logFile = $this->model->getLogFile()) {
                 @unlink($logFile);

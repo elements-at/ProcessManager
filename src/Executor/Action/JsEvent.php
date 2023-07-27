@@ -15,13 +15,10 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Action;
 
-use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-
 class JsEvent extends AbstractAction
 {
     public $name = 'jsEvent';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.action.jsEvent';
 
     /**
@@ -44,9 +41,6 @@ class JsEvent extends AbstractAction
      */
     protected $eventData = '';
 
-    /**
-     * @return string
-     */
     public function getLabel(): string
     {
         return $this->label;
@@ -54,17 +48,16 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $label
+     *
      * @return $this
      */
     public function setLabel($label)
     {
         $this->label = $label;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getEventName(): string
     {
         return $this->eventName;
@@ -72,17 +65,16 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $eventName
+     *
      * @return $this
      */
     public function setEventName($eventName)
     {
         $this->eventName = $eventName;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getEventData(): string
     {
         return $this->eventData;
@@ -90,17 +82,16 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $eventData
+     *
      * @return $this
      */
     public function setEventData($eventData)
     {
         $this->eventData = $eventData;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getIcon(): string
     {
         return $this->icon;
@@ -108,14 +99,15 @@ class JsEvent extends AbstractAction
 
     /**
      * @param string $icon
+     *
      * @return $this
      */
     public function setIcon($icon)
     {
         $this->icon = $icon;
+
         return $this;
     }
-
 
     public function getGridActionHtml($monitoringItem, $actionData)
     {
@@ -123,17 +115,18 @@ class JsEvent extends AbstractAction
                     console.log('Dispatch event', event);
                     document.dispatchEvent(event);";
 
-        $js = sprintf($js, $actionData['eventName'], htmlspecialchars(json_encode($actionData)));
+        $js = sprintf($js, $actionData['eventName'], htmlspecialchars(json_encode($actionData, JSON_THROW_ON_ERROR)));
 
         $data = [
             'actionData' => $actionData,
             'monitoringItem' => $monitoringItem
         ];
-        $js = 'processmanagerPluginJsEvent.executeActionForGridList('.htmlspecialchars(json_encode($data)).')';
+        $js = 'processmanagerPluginJsEvent.executeActionForGridList('.htmlspecialchars(json_encode($data, JSON_THROW_ON_ERROR)).')';
         $img = '<img src="'.($actionData['icon'] ?: '/bundles/pimcoreadmin/img/flat-color-icons/biohazard.svg').'" />';
         $link = '<a href="javascript://" onClick="'.$js
             .'" class="process_manager_icon_download process_manager_action_js_event"'
             .'alt="'.$actionData['label'].'">'.$img.'</a>';
+
         return $link;
 
     }

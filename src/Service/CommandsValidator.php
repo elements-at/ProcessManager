@@ -3,6 +3,8 @@
 namespace Elements\Bundle\ProcessManagerBundle\Service;
 
 use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+use Pimcore\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LazyCommand;
 
 class CommandsValidator
@@ -10,36 +12,38 @@ class CommandsValidator
     protected string $strategy;
 
     protected array $whiteList = [];
+
     protected array $blackList = [];
 
-    public function __construct(string $strategy = "default", array $whiteList = [], array $blackList = [])
+    public function __construct(string $strategy = 'default', array $whiteList = [], array $blackList = [])
     {
         $this->setStrategy($strategy);
         $this->setWhiteList($whiteList);
         $this->setBlackList($blackList);
     }
 
-
     public function getValidCommands()
     {
 
-        $application = new \Pimcore\Console\Application(\Pimcore::getKernel());
-        $commands = $this->{"getCommands" . ucfirst($this->getStrategy())}($application->all());
+        $application = new Application(\Pimcore::getKernel());
+        $commands = $this->{'getCommands' . ucfirst($this->getStrategy())}($application->all());
 
         ksort($commands);
+
         return $commands;
     }
 
-    protected function getCommandsAll($commands){
+    protected function getCommandsAll($commands)
+    {
         return $commands;
     }
 
-    protected function getCommandsDefault($commands)
+    protected function getCommandsDefault(array $commands): array
     {
         $validCommands = [];
 
         /**
-         * @var \Symfony\Component\Console\Command\Command
+         * @var Command $command
          */
         foreach ($commands as $name => $command) {
             if (in_array($name, $this->getBlackList())) {
@@ -48,6 +52,7 @@ class CommandsValidator
 
             if (in_array($name, $this->getWhiteList())) {
                 $validCommands[$name] = $command;
+
                 continue;
             }
 
@@ -60,7 +65,7 @@ class CommandsValidator
         return $validCommands;
     }
 
-    protected function classUsesTraits($class, $autoload = true)
+    protected function classUsesTraits($class, $autoload = true): array
     {
         if ($class instanceof LazyCommand) {
             $class = $class->getCommand();
@@ -78,7 +83,7 @@ class CommandsValidator
             $newTraits = class_uses(array_pop($traitsToSearch), $autoload);
             $traits = array_merge($newTraits, $traits);
             $traitsToSearch = array_merge($newTraits, $traitsToSearch);
-        };
+        }
 
         foreach ($traits as $trait => $same) {
             $traits = array_merge(class_uses($trait, $autoload), $traits);
@@ -87,57 +92,39 @@ class CommandsValidator
         return array_unique($traits);
     }
 
-    /**
-     * @return string
-     */
     public function getStrategy(): string
     {
         return $this->strategy;
     }
 
-    /**
-     * @param string $strategy
-     * @return $this
-     */
-    public function setStrategy($strategy)
+    public function setStrategy(string $strategy): static
     {
         $this->strategy = $strategy;
+
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getWhiteList(): array
     {
         return $this->whiteList;
     }
 
-    /**
-     * @param array $whiteList
-     * @return $this
-     */
-    public function setWhiteList($whiteList)
+    public function setWhiteList(array $whiteList): static
     {
         $this->whiteList = $whiteList;
+
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getBlackList(): array
     {
         return $this->blackList;
     }
 
-    /**
-     * @param array $blackList
-     * @return $this
-     */
-    public function setBlackList($blackList)
+    public function setBlackList(array $blackList): static
     {
         $this->blackList = $blackList;
+
         return $this;
     }
 }

@@ -19,10 +19,9 @@ use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Pimcore\Model;
 
 /**
- * Class Listing
- *
  * @method \Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing\Dao getDao()
  * @method Configuration[] load()
+ * @method int getTotalCount()
  */
 class Listing extends Model\Listing\AbstractListing
 {
@@ -31,25 +30,20 @@ class Listing extends Model\Listing\AbstractListing
      */
     protected $user;
 
-    public function isValidOrderKey($key)
+    public function isValidOrderKey($key): bool
     {
         return true;
     }
 
-    /**
-     * @return null|\Pimcore\Model\User
-     */
-    public function getUser()
+    public function getUser(): ?\Pimcore\Model\User
     {
         return $this->user;
     }
 
     /**
-     * @param null|\Pimcore\Model\User $user
-     *
      * @return $this
      */
-    public function setUser($user)
+    public function setUser(?\Pimcore\Model\User $user): static
     {
         $this->user = $user;
 

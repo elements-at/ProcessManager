@@ -1,6 +1,6 @@
 pimcore.registerNS("pimcore.plugin.processmanager.window.activeProcesses");
 
-pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plugin.admin, {
+pimcore.plugin.processmanager.window.activeProcesses = Class.create({
     displayList : [],
     toast : null,
     refreshIntervalSeconds : 3,

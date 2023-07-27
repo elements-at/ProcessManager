@@ -24,19 +24,23 @@ abstract class AbstractAction
     public $extJsClass = '';
 
     public $name = '';
-    
+
     public $executeAtStates = ['finished'];
 
     protected $config = [];
 
     /**
      * @param $key
+     *
      * @return string
      */
-    protected function trans($key){
+    protected function trans($key)
+    {
         $translator = \Pimcore::getKernel()->getContainer()->get('translator');
-        return $translator->trans($key,[],'admin');
+
+        return $translator->trans($key, [], 'admin');
     }
+
     /**
      * @return string
      */
@@ -97,17 +101,16 @@ abstract class AbstractAction
         return $this;
     }
 
-    /**
-     * @param array $data
-     */
-    public function setValues(array $data){
-        foreach($data as $key => $value){
-            $setter = "set" . ucfirst($key);
-            if(method_exists($this,$setter)){
+    public function setValues(array $data)
+    {
+        foreach($data as $key => $value) {
+            $setter = 'set' . ucfirst($key);
+            if(method_exists($this, $setter)) {
                 $this->$setter($value);
             }
         }
     }
+
     /**
      * @return array
      */
@@ -156,12 +159,15 @@ abstract class AbstractAction
 
     /**
      * returns data which can be used in action classes
-     * @param MonitoringItem $monitoringItem
+     *
      * @param array $actionData
+     *
      * @return array
      */
-    public function toJson(MonitoringItem $monitoringItem,$actionData){
+    public function toJson(MonitoringItem $monitoringItem, $actionData)
+    {
         $data = $this->getObjectVars();
+
         return $data;
     }
 

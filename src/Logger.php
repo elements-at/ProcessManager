@@ -15,30 +15,28 @@
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
-use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
-use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-
 class Logger extends \Pimcore\Log\ApplicationLogger
 {
-
-    public function log($level, $message, array $context = []){
+    public function log($level, $message, array $context = []): void
+    {
         parent::log($level, $message, $context);
         $monitoringItem = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getMonitoringItem();
 
-        if($check = $monitoringItem->getCriticalErrorLevel()){
-            if(in_array($level,$check)){
+        if($check = $monitoringItem->getCriticalErrorLevel()) {
+            if(in_array($level, $check)) {
                 $monitoringItem->setHasCriticalError(true)->save();
             }
         }
     }
 
-    public function closeLoggerHandlers() : void {
+    public function closeLoggerHandlers(): void
+    {
 
         /**
          * @var \Monolog\Logger $logger
          */
-        foreach($this->loggers as $logger){
-            foreach($logger->getHandlers() ?? [] as $handler){
+        foreach($this->loggers as $logger) {
+            foreach($logger->getHandlers() ?? [] as $handler) {
                 $handler->close();
             }
         }

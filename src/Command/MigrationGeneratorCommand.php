@@ -15,20 +15,16 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Command;
 
-use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class MigrationGeneratorCommand extends AbstractCommand
 {
-
     protected function configure()
     {
         $this
@@ -39,7 +35,7 @@ class MigrationGeneratorCommand extends AbstractCommand
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Configuration id for which the migration should be generated.'
-            );;
+            );
     }
 
     protected string $template = '<?php
@@ -89,7 +85,6 @@ final class <versionName> extends AbstractMigration
     }
 }';
 
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $helper = $this->getHelper('question');
@@ -109,7 +104,6 @@ final class <versionName> extends AbstractMigration
                 'all'
             );
             $question->setMultiselect(true);
-
 
             $configurationIds = $helper->ask($input, $output, $question);
             if (in_array('all', $configurationIds)) {
@@ -167,6 +161,7 @@ final class <versionName> extends AbstractMigration
             $versionNumber++;
             $file = $this->getVersionFilePath($versionName, $configMigrationsDirectory, $versionNumber);
         }
+
         return $file;
     }
 }

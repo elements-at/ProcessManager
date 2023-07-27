@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class Download extends AbstractAction
 {
     public $name = 'download';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.action.download';
 
     /**
@@ -49,10 +50,6 @@ class Download extends AbstractAction
      */
     public $isAbsoluteFilePath = false;
 
-
-    /**
-     * @return bool
-     */
     public function getDeleteWithMonitoringItem(): bool
     {
         return $this->deleteWithMonitoringItem;
@@ -60,17 +57,16 @@ class Download extends AbstractAction
 
     /**
      * @param bool $deleteWithMonitoringItem
+     *
      * @return $this
      */
     public function setDeleteWithMonitoringItem($deleteWithMonitoringItem)
     {
         $this->deleteWithMonitoringItem = $deleteWithMonitoringItem;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAccessKey(): string
     {
         return $this->accessKey;
@@ -78,17 +74,16 @@ class Download extends AbstractAction
 
     /**
      * @param string $accessKey
+     *
      * @return $this
      */
     public function setAccessKey($accessKey)
     {
         $this->accessKey = $accessKey;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLabel(): string
     {
         return $this->label;
@@ -96,17 +91,16 @@ class Download extends AbstractAction
 
     /**
      * @param string $label
+     *
      * @return $this
      */
     public function setLabel($label)
     {
         $this->label = $label;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFilePath(): string
     {
         return $this->filePath;
@@ -114,36 +108,34 @@ class Download extends AbstractAction
 
     /**
      * @param string $filePath
+     *
      * @return $this
      */
     public function setFilePath($filePath)
     {
         $this->filePath = $filePath;
+
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isAbsoluteFilePath(): bool
     {
         return $this->isAbsoluteFilePath;
     }
 
-    /**
-     * @param bool $isAbsoluteFilePath
-     * @return $this
-     */
     public function setIsAbsoluteFilePath(bool $isAbsoluteFilePath): Download
     {
         $this->isAbsoluteFilePath = $isAbsoluteFilePath;
+
         return $this;
     }
 
-    protected function buildFilePath($actionData) {
+    protected function buildFilePath($actionData)
+    {
         $filePath = $actionData['filepath'];
         $isAbsoluteFilePath = $actionData['isAbsoluteFilePath'] ?? $this->isAbsoluteFilePath();
         $file = $isAbsoluteFilePath ? $filePath : PIMCORE_PROJECT_ROOT.$filePath;
+
         return $file;
     }
 
@@ -153,12 +145,14 @@ class Download extends AbstractAction
      *
      * @return bool
      */
-    protected function downloadFileExists($monitoringItem, $actionData){
+    protected function downloadFileExists($monitoringItem, $actionData)
+    {
         if ($actionData['filepath']) {
             $file = $this->buildFilePath($actionData);
         } else {
             $file = $monitoringItem->getLogFile();
         }
+
         return is_readable($file);
     }
 
@@ -172,10 +166,10 @@ class Download extends AbstractAction
     {
         if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
 
-            $downloadFileExists = $this->downloadFileExists($monitoringItem,$actionData);
+            $downloadFileExists = $this->downloadFileExists($monitoringItem, $actionData);
             if ($downloadFileExists) {
                 return '<a href="#" onClick="processmanagerPlugin.download('.$monitoringItem->getId(
-                    ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download" title="Download">&nbsp;</a>&nbsp;';
+                ).',\''.$actionData['accessKey'].'\');" class="pimcore_icon_download process_manager_icon_download" alt="Download" title="Download">&nbsp;</a>&nbsp;';
             } else {
                 return $this->trans('plugin_pm_download_file_doesnt_exist');
             }
@@ -197,7 +191,7 @@ class Download extends AbstractAction
         if (is_readable($file)) {
             $response = new BinaryFileResponse($file);
             $response->headers->set('Content-Type', finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file), true);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($file));
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename((string) $file));
 
             return $response;
         } else {
@@ -211,7 +205,7 @@ class Download extends AbstractAction
      */
     public function preMonitoringItemDeletion($monitoringItem, $actionData)
     {
-        if ($actionData['deleteWithMonitoringItem'] == true || $actionData['deleteWithMonitoringItem'] == "on") {
+        if ($actionData['deleteWithMonitoringItem'] == true || $actionData['deleteWithMonitoringItem'] == 'on') {
             $file = $this->buildFilePath($actionData);
             if (is_readable($file) && is_file($file)) {
                 unlink($file);
@@ -223,17 +217,18 @@ class Download extends AbstractAction
     {
         $data = parent::toJson($monitoringItem, $actionData);
         if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
-            $data['fileExists'] = $this->downloadFileExists($monitoringItem,$actionData);
-        }else {
+            $data['fileExists'] = $this->downloadFileExists($monitoringItem, $actionData);
+        } else {
             $data['fileExists'] = false;
         }
+
         return $data;
     }
 
     /**
      * @inheritDoc
      */
-    public function getStorageData() : array
+    public function getStorageData(): array
     {
         return [
             'accessKey' => $this->getAccessKey(),

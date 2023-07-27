@@ -8,9 +8,9 @@ if(typeof defaultValue != 'function'){
     }
 }
 
-pimcore.registerNS("pimcore.plugin.processmanager");
+pimcore.registerNS('pimcore.plugin.processmanager');
 
-pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
+pimcore.plugin.processmanager = Class.create({
     config : {},
 
     getClassName: function() {
@@ -18,23 +18,22 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     },
 
     initialize: function() {
-        //only register plugin if user has a dataLogger permission
-        if(pimcore.currentuser.permissions.indexOf("plugin_pm_permission_view") >= 0 ||
-           pimcore.currentuser.permissions.indexOf("plugin_pm_permission_configure") >= 0
-        ){
-            pimcore.plugin.broker.registerPlugin(this);
-        }
+        document.addEventListener(pimcore.events.preMenuBuild, this.createNavigationEntry.bind(this));
     },
- 
-    pimcoreReady: function (params,broker){
-        var extrasMenu = pimcore.globalmanager.get("layout_toolbar").extrasMenu;
-        if(extrasMenu){
-            extrasMenu.insert(extrasMenu.items.length+1, {
+
+    createNavigationEntry: function (e) {
+        let menu = e.detail.menu;
+        const user = pimcore.globalmanager.get('user');
+        if (menu.extras &&
+            (user.isAllowed("plugin_pm_permission_view") || user.isAllowed("plugin_pm_permission_configure"))
+        ) {
+            menu.extras.items.push({
                 text: t("plugin_pm"),
                 iconCls: "plugin_pmicon",
                 cls: "pimcore_main_menu",
                 handler: this.showProcessManager.bind(this)
             });
+        }
 
             //ignore process manager process log request exceptions as otherwise annoying errors can pop up in the pimcore backend
             Ext.Ajax.on({requestexception: function (conn, response, options) {
@@ -42,10 +41,6 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                     options.ignoreErrors = true;
                 }
             }, priority: 1000});
-        }
-        if(extrasMenu){
-            extrasMenu.updateLayout();
-        }
 
         this.getConfig();
     },
@@ -241,5 +236,5 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     }
 });
 
-var processmanagerPlugin = new pimcore.plugin.processmanager();
+const processmanagerPlugin = new pimcore.plugin.processmanager();
 

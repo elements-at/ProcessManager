@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment;
 
 class Maintenance
 {
@@ -30,7 +30,7 @@ class Maintenance
 
     protected $renderingEngine;
 
-    public function __construct(EngineInterface $renderingEngine)
+    public function __construct(Environment $renderingEngine)
     {
         $this->renderingEngine = $renderingEngine;
     }
@@ -45,14 +45,15 @@ class Maintenance
         $this->deleteExpiredMonitoringItems();
     }
 
-    protected function deleteExpiredMonitoringItems(){
+    protected function deleteExpiredMonitoringItems()
+    {
         $list = new Model\MonitoringItem\Listing();
         $list->setCondition('(status = "'.MonitoringItem::STATUS_FINISHED.'" OR status = "'.MonitoringItem::STATUS_FINISHED_WITH_ERROR.'") AND (deleteAfterHours > 0 AND (UNIX_TIMESTAMP()-(deleteAfterHours*3600)) > modificationDate)');
 
         $items = $list->load();
 
-        foreach($items as $item){
-            $ts = time()-$item->getModificationDate();
+        foreach($items as $item) {
+            $ts = time() - $item->getModificationDate();
             $modDate = \Carbon\Carbon::createFromTimestamp($item->getModificationDate());
             $diff = $modDate->diffInHours(\Carbon\Carbon::now());
             $item->getLogger()->debug('Delete item ' . $item->getId() .' Name: '. $item->getName(). ' because it expired. Hours diff: ' . $diff);
@@ -75,7 +76,7 @@ class Maintenance
 
         foreach ($items as $item) {
             if (!$item->getCommand()) { //manually created - do not check
-                $item->setReportedDate(1)->save(true);
+                $item->setReportedDate(1)->save();
             } else {
                 if ($item->isAlive()) {
                     $diff = time() - $item->getModificationDate();
@@ -89,7 +90,7 @@ class Maintenance
                     Helper::executeMonitoringItemLoggerShutdown($item, true);
                     if ($item->getStatus() == $item::STATUS_FINISHED) {
                         $item->getLogger()->info('Process was checked by ProcessManager maintenance and considered as successfull process.');
-                        $item->setReportedDate(time())->save(true);
+                        $item->setReportedDate(time())->save();
                     } else {
                         $item->setMessage('Process died. ' . $item->getMessage() . ' Last State: ' . $item->getStatus(), false)->setStatus($item::STATUS_FAILED);
                         $item->getLogger()->error('Process was checked by ProcessManager maintenance and considered as dead process');
@@ -111,15 +112,15 @@ class Maintenance
 
                 $html = $this->renderingEngine->render('@ElementsProcessManager/reportEmail.html.twig', [
                     'totalItemsCount' => count($reportItems),
-                    'reportItems' => array_slice($reportItems,0,5)
+                    'reportItems' => array_slice($reportItems, 0, 5)
                 ]);
 
                 $mail->html($html);
 
-                foreach($recipients as $emailAdr){
+                foreach($recipients as $emailAdr) {
                     try {
                         $mail->addTo($emailAdr);
-                    }catch (\Exception $e){
+                    } catch (\Exception $e) {
                         $logger = \Pimcore\Log\ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
                         $message = "Can't add E-Mail address : " . $e->getMessage();
                         $logger->emergency($message);
@@ -141,7 +142,7 @@ class Maintenance
          * @var $item MonitoringItem
          */
         foreach ($reportItems as $key => $item) {
-            $item->setReportedDate(time())->save($itemsAlive[$key]);
+            $item->setReportedDate(time())->save();
         }
         $this->monitoringItem->setStatus('Processes checked')->save();
     }
@@ -167,13 +168,13 @@ class Maintenance
                 $params = [];
                 //add default callback settings if defined
                 if ($settings = $config->getExecutorSettings()) {
-                    $settings = json_decode($settings, true);
+                    $settings = json_decode((string) $settings, true, 512, JSON_THROW_ON_ERROR);
                     if (isset($settings['values']['defaultPreDefinedConfig'])) {
                         $preDefinedConfigId = $settings['values']['defaultPreDefinedConfig'];
                         $callbackSetting = CallbackSetting::getById($preDefinedConfigId);
                         if ($callbackSetting) {
                             if ($v = $callbackSetting->getSettings()) {
-                                $params = json_decode($v, true);
+                                $params = json_decode($v, true, 512, JSON_THROW_ON_ERROR);
                             }
                         }
                     }
@@ -201,7 +202,7 @@ class Maintenance
 
         $threshold = ElementsProcessManagerBundle::getConfiguration()->getArchiveThresholdLogs();
         if ($threshold) {
-            $timestamp = Carbon::createFromTimestamp(time())->subDay($threshold)->getTimestamp();
+            $timestamp = Carbon::createFromTimestamp(time())->subDay()->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
             $items = $list->load();

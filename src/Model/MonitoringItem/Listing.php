@@ -22,6 +22,7 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
  *
  * @method \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem\Listing\Dao getDao()
  * @method MonitoringItem[] load()
+ * @method int getTotalCount()
  */
 class Listing extends \Pimcore\Model\Listing\AbstractListing
 {
@@ -39,25 +40,20 @@ class Listing extends \Pimcore\Model\Listing\AbstractListing
      *
      * @return bool
      */
-    public function isValidOrderKey($key)
+    public function isValidOrderKey($key): bool
     {
         return true;
     }
 
-    /**
-     * @return null|\Pimcore\Model\User
-     */
-    public function getUser()
+    public function getUser(): ?\Pimcore\Model\User
     {
         return $this->user;
     }
 
     /**
-     * @param null|\Pimcore\Model\User $user
-     *
      * @return $this
      */
-    public function setUser($user)
+    public function setUser(?\Pimcore\Model\User $user)
     {
         $this->user = $user;
 

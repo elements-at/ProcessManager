@@ -22,7 +22,7 @@ use Pimcore\Model;
 
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-    protected function getTableName()
+    protected function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM;
     }
@@ -30,7 +30,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
     /**
      * @return string
      */
-    protected function getCondition()
+    protected function getCondition(): string
     {
         $condition = '';
         if ($cond = $this->model->getCondition()) {
@@ -48,7 +48,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
                     } else {
                         $condition .= ' WHERE ';
                     }
-                    $condition .= ' configurationId IN(' . implode(', ', wrapArrayElements($ids,"'")).')';
+                    $condition .= ' configurationId IN(' . implode(', ', wrapArrayElements($ids, "'")).')';
                 }
             }
         }
@@ -56,24 +56,25 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return $condition;
     }
 
-    public function load()
+    public function load(): array
     {
         $sql = 'SELECT id FROM ' . $this->getTableName() . $this->getCondition() . $this->getOrder() . $this->getOffsetLimit();
-        $ids = $this->db->fetchCol($sql, $this->model->getConditionVariables());
+        $ids = $this->db->fetchFirstColumn($sql, $this->model->getConditionVariables());
 
         $items = [];
         foreach ($ids as $id) {
             $item = MonitoringItem::getById($id);
-            if($item){//hack because somehow it can happen that we dont get a monitoring id if we are using multiprocessing and the element would be empty
+            if($item) {//hack because somehow it can happen that we dont get a monitoring id if we are using multiprocessing and the element would be empty
                 $items[] = $item;
             }
         }
 
         $this->model->setData($items);
+
         return $items;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return (int) $this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . $this->getTableName() . ' '. $this->getCondition(), $this->model->getConditionVariables());
     }

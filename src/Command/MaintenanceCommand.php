@@ -16,53 +16,41 @@
 namespace Elements\Bundle\ProcessManagerBundle\Command;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 use Elements\Bundle\ProcessManagerBundle\Maintenance;
 use Pimcore\Console\AbstractCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment;
 
+#[\Symfony\Component\Console\Attribute\AsCommand('process-manager:maintenance', 'Executes regular maintenance tasks (Check Processes, execute cronjobs)')]
 class MaintenanceCommand extends AbstractCommand
 {
-    use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+    use ExecutionTrait;
 
-    /**
-     * @var EngineInterface
-     */
-    private $templatingEngine;
-
-    protected $loggerInitialized = null;
-
-    public function __construct(EngineInterface $templatingEngine)
+    public function __construct(private readonly Environment $templatingEngine)
     {
         parent::__construct();
-
-        $this->templatingEngine = $templatingEngine;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('process-manager:maintenance')
-            ->setDescription('Executes regular maintenance tasks (Check Processes, execute cronjobs)')
-            ->addOption(
-                'monitoring-item-id', null,
-                InputOption::VALUE_REQUIRED,
-                'Contains the monitoring item if executed via the Pimcore backend'
-            );
+        $this->addOption('monitoring-item-id', null, InputOption::VALUE_REQUIRED, 'Contains the monitoring item if executed via the Pimcore backend');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $options = ElementsProcessManagerBundle::getMaintenanceOptions();
-        $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'), $options);
-        $this->doUniqueExecutionCheck(null, ['command' => $this->getCommand($options)]);
+        $monitoringItem = static::initProcessManager($input->getOption('monitoring-item-id'), $options);
+        static::doUniqueExecutionCheck(null, ['command' => static::getCommand($options)]);
 
         self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfiguration()->getAdditionalScriptExecutionUsers());
 
         $maintenance = new Maintenance($this->templatingEngine);
         $maintenance->execute();
-        return 0;
+
+        return Command::SUCCESS;
     }
 }

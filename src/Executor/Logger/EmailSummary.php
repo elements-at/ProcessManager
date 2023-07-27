@@ -17,12 +17,14 @@ namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Monolog\Handler\StreamHandler;
-use Monolog\Handler\SwiftMailerHandler;
+use Symfony\Component\Filesystem\Filesystem;
 
 class EmailSummary extends AbstractLogger
 {
     protected $streamHandler = null;
+
     public $name = 'emailSummary';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.logger.emailSummary';
 
     /**
@@ -45,9 +47,8 @@ class EmailSummary extends AbstractLogger
 
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
 
-
-            $logFile = $this->getLogFile($monitoringItem,$config);
-            $this->streamHandler = new StreamHandler($logFile,$logLevel);
+            $logFile = $this->getLogFile($monitoringItem, $config);
+            $this->streamHandler = new StreamHandler($logFile, $logLevel);
 
             if ($config['simpleLogFormat'] ?? false) {
                 $this->streamHandler->setFormatter(new \Monolog\Formatter\LineFormatter(self::LOG_FORMAT_SIMPLE));
@@ -57,29 +58,33 @@ class EmailSummary extends AbstractLogger
         return $this->streamHandler;
     }
 
-    public function getLogFile($monitoringItem,$config){
+    public function getLogFile($monitoringItem, $config)
+    {
         $dir = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getLogDir().'email/' . $monitoringItem->getId() ;
-        if(!is_dir($dir)){
-            \Pimcore\File::mkdir($dir);
+
+        if(!is_dir($dir)) {
+            $filesystem = new Filesystem();
+            $filesystem->mkdir($dir, 0755);
         }
-        $dir .= '/'.md5(json_encode($config)).'.log' ;
+        $dir .= '/'.md5(json_encode($config, JSON_THROW_ON_ERROR)).'.log' ;
+
         return $dir;
     }
 
     /**
      * @param $monitoringItem
-     * @param array $loggerConfig
      */
-    public function handleShutdown(MonitoringItem $monitoringItem, array $loggerConfig){
+    public function handleShutdown(MonitoringItem $monitoringItem, array $loggerConfig)
+    {
 
-        $logFile = $this->getLogFile($monitoringItem,$loggerConfig);
-        if($file = is_file($logFile)){
+        $logFile = $this->getLogFile($monitoringItem, $loggerConfig);
+        if($file = is_file($logFile)) {
             $mail = new \Pimcore\Mail();
             $mail->setSubject($loggerConfig['subject']);
 
-            $to = array_filter(explode(';',$loggerConfig['to']));
-            if($to){
-                foreach($to as &$email){
+            $to = array_filter(explode(';', (string) $loggerConfig['to']));
+            if($to) {
+                foreach($to as &$email) {
                     $email = trim($email);
                     $mail->addTo($email);
                 }
@@ -89,7 +94,7 @@ class EmailSummary extends AbstractLogger
             }
             unlink($logFile);
         }
+
         return ['reportedDate' => date('Y-m-d H:i:s')];
     }
-
 }

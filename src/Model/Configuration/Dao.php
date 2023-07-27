@@ -15,24 +15,25 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 
-use Elements\Bundle\ProcessManagerBundle\AbstractExecutor;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
+use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
-class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
+class Dao extends AbstractDao
 {
     /**
      * @var Configuration
      */
     protected $model;
 
-    protected function getTableName()
+    protected function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION;
     }
 
-    public function delete()
+    public function delete(): void
     {
         $id = $this->model->getId();
 
@@ -47,7 +48,7 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
 
             $this->db
                 ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
-                ->execute([$id]);
+                ->executeQuery([$id]);
         }
     }
 
@@ -62,21 +63,26 @@ class Dao extends \Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao
             $data['keepVersions'] = null;
         }
         if (!$data['id']) {
-            throw new \Exception("A valid Command has to have an id associated with it!");
+            throw new \Exception('A valid Command has to have an id associated with it!');
         }
+
+        $quoteKeyData= [];
+        array_walk($data, function ($value, $key) use (&$quoteKeyData) { $quoteKeyData['`'.$key.'`'] = $value; });
+
         if (isset($params['oldId'])) {
-            if ($params['oldId'] != "") {
-                $this->db->update($this->getTableName(), $data, ['id' => $params['oldId']]);
+            if ($params['oldId'] != '') {
+                $this->db->update($this->getTableName(), $quoteKeyData, ['id' => $params['oldId']]);
             } else {
-                $this->db->insert($this->getTableName(), $data);
+                $this->db->insert($this->getTableName(), $quoteKeyData);
             }
-        }else{
-            if ($id = $this->getById($id = $this->model->getId())){
-                $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
+        } else {
+            if ($id = $this->getById($id = $this->model->getId())) {
+                $this->db->update($this->getTableName(), $quoteKeyData, ['id' => $this->model->getId()]);
             } else {
-                $this->db->insert($this->getTableName(), $data);
+                $this->db->insert($this->getTableName(), $quoteKeyData);
             }
         }
+
         return $this->getById($this->model->getId());
     }
 

@@ -19,6 +19,7 @@ namespace Elements\Bundle\ProcessManagerBundle\Model;
  * Class MonitoringItem
  *
  * @method  MonitoringItem save() MonitoringItem
+ * @method  MonitoringItem delete() void
  * @method  MonitoringItem load() []MonitoringItem
  */
 class CallbackSetting extends \Pimcore\Model\AbstractModel

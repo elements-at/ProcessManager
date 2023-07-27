@@ -19,30 +19,29 @@ use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage;
 use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Process\Process;
-use function Symfony\Component\Debug\Tests\testHeader;
 
 /**
  * Class MonitoringItem
  *
  * @method  MonitoringItem save() MonitoringItem
+ * @method  MonitoringItem delete() void
  * @method  MonitoringItem load() []MonitoringItem
  */
 class MonitoringItem extends \Pimcore\Model\AbstractModel
 {
-    const STATUS_UNKNOWN = 'unknown';
+    final public const STATUS_UNKNOWN = 'unknown';
 
-    const STATUS_FINISHED = 'finished';
+    final public const STATUS_FINISHED = 'finished';
 
-    const STATUS_FINISHED_WITH_ERROR = 'finished_with_errors';
+    final public const STATUS_FINISHED_WITH_ERROR = 'finished_with_errors';
 
-    const STATUS_FAILED = 'failed';
+    final public const STATUS_FAILED = 'failed';
 
-    const STATUS_RUNNING = 'running';
+    final public const STATUS_RUNNING = 'running';
 
-    const STATUS_INITIALIZING = 'initializing';
+    final public const STATUS_INITIALIZING = 'initializing';
 
     /**
      * @var int
@@ -93,6 +92,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      * @var array
      */
     public $callbackSettings = [];
+
     /**
      * @var int
      */
@@ -154,9 +154,6 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public $criticalErrorLevel = [];
 
-    /**
-     * @return array
-     */
     public function getCriticalErrorLevel(): array
     {
         return $this->criticalErrorLevel;
@@ -164,14 +161,15 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param array $criticalErrorLevel
+     *
      * @return $this
      */
     public function setCriticalErrorLevel($criticalErrorLevel)
     {
         $this->criticalErrorLevel = $criticalErrorLevel;
+
         return $this;
     }
-
 
     /**
      * @return int
@@ -183,17 +181,16 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $deleteAfterHours
+     *
      * @return $this
      */
     public function setDeleteAfterHours($deleteAfterHours)
     {
         $this->deleteAfterHours = $deleteAfterHours;
+
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getHasCriticalError(): bool
     {
         return $this->hasCriticalError;
@@ -209,23 +206,25 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @param int $parentId
+     *
      * @return $this
      */
     public function setParentId($parentId)
     {
         $this->parentId = $parentId;
+
         return $this;
     }
 
-
-
     /**
      * @param bool $hasCriticalError
+     *
      * @return $this
      */
     public function setHasCriticalError($hasCriticalError)
     {
         $this->hasCriticalError = $hasCriticalError;
+
         return $this;
     }
 
@@ -269,21 +268,15 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isMessengerPending(): bool
     {
         return $this->messengerPending;
     }
 
-    /**
-     * @param bool $messengerPending
-     * @return MonitoringItem
-     */
     public function setMessengerPending(bool $messengerPending): MonitoringItem
     {
         $this->messengerPending = $messengerPending;
+
         return $this;
     }
 
@@ -339,10 +332,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $self->getDao()->getById($id);
     }
 
-    /**
-     * @return static
-     */
-    public function setValues($data = [])
+    public function setValues($data = [], bool $ignoreEmptyValues = false): static
     {
         if (is_array($data) && count($data) > 0) {
             foreach ($data as $key => $value) {
@@ -364,7 +354,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $actions = $this->actions;
         if (is_string($actions)) {
-            $actions = json_decode($actions, true);
+            $actions = json_decode($actions, true, 512, JSON_THROW_ON_ERROR);
         }
 
         return $actions;
@@ -512,11 +502,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $message
-     *
      * @return $this
      */
-    public function setMessage($message, $logLevel = \Monolog\Logger::NOTICE)
+    public function setMessage(mixed $message, $logLevel = \Monolog\Logger::NOTICE)
     {
         $this->message = $message;
         if ($logLevel !== false) {
@@ -555,11 +543,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $command
-     *
      * @return $this
      */
-    public function setCommand($command)
+    public function setCommand(mixed $command)
     {
         $this->command = $command;
 
@@ -588,7 +574,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
             $messageBus->dispatch($message);
 
             return (bool)self::getById($this->getId())->getPid();
-        }else{
+        } else {
             return false;
         }
     }
@@ -601,10 +587,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this->creationDate;
     }
 
-    /**
-     * @param mixed $creationDate
-     */
-    public function setCreationDate($creationDate)
+    public function setCreationDate(mixed $creationDate)
     {
         $this->creationDate = $creationDate;
 
@@ -619,10 +602,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this->modificationDate;
     }
 
-    /**
-     * @param mixed $modificationDate
-     */
-    public function setModificationDate($modificationDate)
+    public function setModificationDate(mixed $modificationDate)
     {
         $this->modificationDate = $modificationDate;
 
@@ -663,6 +643,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     /**
      * @deprecated Use setWorkloadCompleted() instead
+     *
      * @return $this
      */
     public function setWorloadCompleted()
@@ -708,11 +689,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $configurationId
-     *
      * @return $this
      */
-    public function setConfigurationId($configurationId)
+    public function setConfigurationId(mixed $configurationId)
     {
         $this->configurationId = $configurationId;
 
@@ -728,11 +707,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $pid
-     *
      * @return $this
      */
-    public function setPid($pid)
+    public function setPid(mixed $pid)
     {
         $this->pid = $pid;
 
@@ -788,10 +765,10 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public function getCallbackSettings()
     {
-        return is_string($this->callbackSettings) ? json_decode($this->callbackSettings, true) : $this->callbackSettings;
+        return is_string($this->callbackSettings) ? json_decode($this->callbackSettings, true, 512, JSON_THROW_ON_ERROR) : $this->callbackSettings;
     }
 
-    public function getCallbackSettingsForGrid()
+    public function getCallbackSettingsForGrid(): string
     {
         $html = '';
         $data = $this->getCallbackSettings();
@@ -856,11 +833,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed $reportedDate
-     *
      * @return $this
      */
-    public function setReportedDate($reportedDate)
+    public function setReportedDate(mixed $reportedDate)
     {
         $this->reportedDate = $reportedDate;
 
@@ -874,7 +849,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         if (!$this->logger) {
             $this->logger = new \Elements\Bundle\ProcessManagerBundle\Logger();
-            $this->logger->setComponent($this->getName());
+            $this->logger->setComponent((string)$this->getName());
             if ($loggerData = $this->getLoggers()) {
                 foreach ($loggerData as $loggerConfig) {
                     /**
@@ -899,7 +874,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     /**
      * @return int
      */
-    public function getExecutedByUser()
+    public function getExecutedByUser(): int
     {
         return (int)$this->executedByUser;
     }
@@ -909,7 +884,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      *
      * @return $this
      */
-    public function setExecutedByUser($executedByUser)
+    public function setExecutedByUser($executedByUser): static
     {
         $this->executedByUser = (int)$executedByUser;
 
@@ -919,11 +894,11 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     /**
      * @return array
      */
-    public function getLoggers()
+    public function getLoggers(): array
     {
         $loggers = $this->loggers;
         if (is_string($loggers)) {
-            $loggers = json_decode($loggers, true);
+            $loggers = json_decode($loggers, true, 512, JSON_THROW_ON_ERROR);
         }
 
         return $loggers;
@@ -934,29 +909,26 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      *
      * @return $this
      */
-    public function setLoggers($loggers)
+    public function setLoggers($loggers): static
     {
         $this->loggers = $loggers;
 
         return $this;
     }
 
-    public function getForWebserviceExport()
+    public function getForWebserviceExport(): array
     {
         $data = $this->getObjectVars();
 
-        $data['callbackSettings'] = json_decode($data['callbackSettings'], true);
-        $data['actions'] = json_decode($data['actions'], true);
-        $data['loggers'] = json_decode($data['loggers'], true);
+        $data['callbackSettings'] = json_decode((string) $data['callbackSettings'], true, 512, JSON_THROW_ON_ERROR);
+        $data['actions'] = json_decode((string) $data['actions'], true, 512, JSON_THROW_ON_ERROR);
+        $data['loggers'] = json_decode((string) $data['loggers'], true, 512, JSON_THROW_ON_ERROR);
         unset($data['command']);
 
         return $data;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getProgressPercentage()
+    public function getProgressPercentage(): ?int
     {
         if ($this->getCurrentWorkload() && $this->getTotalWorkload()) {
             return round($this->getCurrentWorkload() / ($this->getTotalWorkload() / 100));
@@ -965,40 +937,46 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return null;
     }
 
-
-    public function stopProcess(){
+    public function stopProcess(): bool
+    {
         $pid = $this->getPid();
-        if($pid){
+        if($pid) {
             $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
             $message = new StopProcessMessage($this->getId());
             $messageBus->dispatch($message);
+
             return true;
         }
+
+        return false;
     }
 
-    public function getChildProcesses(){
+    public function getChildProcesses()
+    {
         $list = new MonitoringItem\Listing();
-        $list->setCondition('parentId = ?',[$this->getId()]);
+        $list->setCondition('parentId = ?', [$this->getId()]);
         $list->setOrder('id');
+
         return $list->load();
     }
 
-    public function getChildProcessesStatus(){
-        $summary = ['active' => 0, 'failed' => 0,'finished' => 0];
-        $details = ['active' => [], 'failed' => [],'finished' => []];
+    public function getChildProcessesStatus(): array
+    {
+        $summary = ['active' => 0, 'failed' => 0, 'finished' => 0];
+        $details = ['active' => [], 'failed' => [], 'finished' => []];
         $currentWorkload = 0;
 
-        foreach($this->getChildProcesses() as $child){
-            $details[$child->getStatus()][] = ['id' => $child->getId(),'message' => $child->getMessage(),'alive' => $child->isAlive()];
+        foreach($this->getChildProcesses() as $child) {
+            $details[$child->getStatus()][] = ['id' => $child->getId(), 'message' => $child->getMessage(), 'alive' => $child->isAlive()];
 
             $currentWorkload += $child->getCurrentWorkload();
 
-            if($child->getStatus() == self::STATUS_FINISHED){
+            if($child->getStatus() == self::STATUS_FINISHED) {
                 $summary['finished']++;
-            }else{
-                if($child->isAlive()){
+            } else {
+                if($child->isAlive()) {
                     $summary['active']++;
-                }else{
+                } else {
                     $summary['failed']++;
                 }
             }

@@ -16,12 +16,11 @@
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Action;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class OpenItem extends AbstractAction
 {
     public $name = 'openItem';
+
     public $extJsClass = 'pimcore.plugin.processmanager.executor.action.openItem';
 
     /**
@@ -39,9 +38,6 @@ class OpenItem extends AbstractAction
      */
     protected $itemId = null;
 
-    /**
-     * @return string
-     */
     public function getLabel(): string
     {
         return $this->label;
@@ -49,17 +45,16 @@ class OpenItem extends AbstractAction
 
     /**
      * @param string $label
+     *
      * @return $this
      */
     public function setLabel($label)
     {
         $this->label = $label;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
@@ -67,17 +62,16 @@ class OpenItem extends AbstractAction
 
     /**
      * @param string $type
+     *
      * @return $this
      */
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getItemId(): int
     {
         return $this->itemId;
@@ -85,33 +79,36 @@ class OpenItem extends AbstractAction
 
     /**
      * @param int $itemId
+     *
      * @return $this
      */
     public function setItemId($itemId)
     {
         $this->itemId = $itemId;
+
         return $this;
     }
-
 
     /**
      * @param $monitoringItem MonitoringItem
      * @param $actionData
-     *
-     * @return object | null
      */
-    protected function getItem($monitoringItem, $actionData){
-        return \Pimcore\Model\Element\Service::getElementById($actionData['type'],$actionData['itemId']);
+    protected function getItem($monitoringItem, $actionData): ?object
+    {
+        return \Pimcore\Model\Element\Service::getElementById($actionData['type'], $actionData['itemId']);
     }
 
-    protected function getIcon($type){
+    protected function getIcon($type)
+    {
         $icons = [
-            'document' => "/bundles/pimcoreadmin/img/flat-white-icons/page.svg",
-            'object' => "/bundles/pimcoreadmin/img/flat-white-icons/object.svg",
-            'asset' =>  "/bundles/pimcoreadmin/img/flat-white-icons/camera.svg"
+            'document' => '/bundles/pimcoreadmin/img/flat-white-icons/page.svg',
+            'object' => '/bundles/pimcoreadmin/img/flat-white-icons/object.svg',
+            'asset' =>  '/bundles/pimcoreadmin/img/flat-white-icons/camera.svg'
         ];
+
         return $icons[$type];
     }
+
     /**
      * @param $monitoringItem MonitoringItem
      * @param $actionData
@@ -122,11 +119,11 @@ class OpenItem extends AbstractAction
     {
         if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
 
-            $item = $this->getItem($monitoringItem,$actionData);
+            $item = $this->getItem($monitoringItem, $actionData);
             if ($item) {
                 $icon = $this->getIcon($actionData['type']);
                 $type = $item->getType();
-                $method = 'pimcore.helpers.open'.ucfirst($actionData['type']);
+                $method = 'pimcore.helpers.open'.ucfirst((string) $actionData['type']);
                 $cssClass = 'process_manager_icon_action_open '.$actionData['type'].' ';
                 $s =  '<a href="#" onClick="'.$method.'('.$actionData['itemId'].',\''.$item->getType().'\');" class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
 
@@ -137,7 +134,6 @@ class OpenItem extends AbstractAction
         }
     }
 
-
     public function toJson(MonitoringItem $monitoringItem, $actionData)
     {
         $data = parent::toJson($monitoringItem, $actionData);
@@ -145,14 +141,15 @@ class OpenItem extends AbstractAction
         $data['item_type'] = null;
 
         if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
-            $item = $this->getItem($monitoringItem,$actionData);
+            $item = $this->getItem($monitoringItem, $actionData);
             if($item) {
                 $data['item_exists'] = true;
                 $data['item_type'] = $item->getType();
-            }else{
+            } else {
                 $data['item_exists'] = false;
             }
         }
+
         return $data;
     }
 

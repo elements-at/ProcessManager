@@ -15,7 +15,6 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor;
 
-use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Tool\Console;
@@ -35,18 +34,16 @@ abstract class AbstractExecutor implements \JsonSerializable
     protected $actions = [];
 
     protected $isShellCommand = false;
-    /**
-     * @var Configuration
-     */
-    protected $config;
 
-    public function __construct($config = [])
+    /**
+     * @param Configuration $config
+     */
+    public function __construct(protected $config = [])
     {
-        $this->config = $config;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getIsShellCommand()
     {
@@ -71,7 +68,7 @@ abstract class AbstractExecutor implements \JsonSerializable
     public function getName()
     {
         if (!$this->name) {
-            $this->name = lcfirst(array_pop(explode('\\', get_class($this))));
+            $this->name = lcfirst(array_pop(explode('\\', static::class)));
         }
 
         return $this->name;
@@ -151,6 +148,7 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     public function getExtJsSettings()
     {
+        $data = [];
         $executorConfig = [
             'extJsClass' => $this->getExtJsClass(),
             'name' => $this->getName(),
@@ -227,9 +225,9 @@ abstract class AbstractExecutor implements \JsonSerializable
      */
     abstract public function getCommand($callbackSettings = [], $monitoringItem = null);
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
-        $values = array_merge(['class' => get_class($this)], get_object_vars($this));
+        $values = ['class' => static::class, ...get_object_vars($this)];
 
         return $values;
     }
@@ -257,8 +255,8 @@ abstract class AbstractExecutor implements \JsonSerializable
     public function getStorageValue()
     {
         $actions = (array)$this->getActions();
-        foreach($actions as $i => $data){
-            if(is_object($data) && method_exists($data,'getStorageData')){
+        foreach($actions as $i => $data) {
+            if(is_object($data) && method_exists($data, 'getStorageData')) {
                 $actions[$i] = $data->getStorageData();
             }
         }
@@ -268,13 +266,13 @@ abstract class AbstractExecutor implements \JsonSerializable
             'loggers' => (array)$this->getLoggers()
         ];
 
-        return json_encode($data);
+        return json_encode($data, JSON_THROW_ON_ERROR);
     }
 
     protected function setData($values)
     {
         foreach ($values as $key => $value) {
-            $setter = 'set' . ucfirst($key);
+            $setter = 'set' . ucfirst((string) $key);
             if (method_exists($this, $setter)) {
                 $this->$setter($value);
             }
@@ -284,15 +282,13 @@ abstract class AbstractExecutor implements \JsonSerializable
     }
 
     /**
-     * @param Configuration $configuration
-     *
      * @return Configuration
      */
     public function setDataFromResource(Configuration $configuration)
     {
         $settings = $configuration->getExecutorSettings();
         if (is_string($settings)) {
-            $this->setData(json_decode($settings, true));
+            $this->setData(json_decode($settings, true, 512, JSON_THROW_ON_ERROR));
         }
         $this->setConfig($configuration);
 

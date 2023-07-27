@@ -12,26 +12,23 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\DependencyInjection\Compiler;
 
-use MyCLabs\Enum\Enum;
+use Elements\Bundle\ProcessManagerBundle\Enums;
+use Elements\Bundle\ProcessManagerBundle\Executor;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
-use Elements\Bundle\ProcessManagerBundle\Executor;
-use Elements\Bundle\ProcessManagerBundle\Enums;
+
 class ExecutorDefinitionPass implements CompilerPassInterface
 {
-    const SERVICE_TAG = 'pimcore.datahub.fileExport.exporter.type';
-    const VARIABLE = '$executor';
+    final public const SERVICE_TAG = 'pimcore.datahub.fileExport.exporter.type';
 
-    /**
-     * @param ContainerBuilder $container
-     */
-    public function process(ContainerBuilder $container)
+    final public const VARIABLE = '$executor';
+
+    public function process(ContainerBuilder $container): void
     {
 
         $config = $container->getParameter('elements_process_manager');
 
-        foreach(Enums\General::EXECUTOR_CLASS_TYPES as $category){
+        foreach(Enums\General::EXECUTOR_CLASS_TYPES as $category) {
             $config[$category] = [];
             $taggedServices = $container->findTaggedServiceIds("elements.processManager.$category");
             if (sizeof($taggedServices)) {
@@ -39,19 +36,19 @@ class ExecutorDefinitionPass implements CompilerPassInterface
                     $object = $container->get($id);
 
                     $tmp = [
-                        "name" => $object->getName(),
-                        "extJsClass" => $object->getExtJsClass(),
-                        "class" => get_class($object),
-                        "config" => $object->getConfig(),
+                        'name' => $object->getName(),
+                        'extJsClass' => $object->getExtJsClass(),
+                        'class' => $object::class,
+                        'config' => $object->getConfig(),
                     ];
-                    if($object instanceof Executor\Callback\AbstractCallback){
-                        $tmp["jsFile"] = $object->getJsFile();
+                    if($object instanceof Executor\Callback\AbstractCallback) {
+                        $tmp['jsFile'] = $object->getJsFile();
                     }
                     $config[$category][$object->getName()] = $tmp;
                 }
             }
         }
-        $container->setParameter('elements_process_manager',$config);
+        $container->setParameter('elements_process_manager', $config);
 
     }
 }

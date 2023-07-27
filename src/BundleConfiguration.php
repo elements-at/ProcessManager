@@ -1,24 +1,21 @@
 <?php
+
 namespace Elements\Bundle\ProcessManagerBundle;
-use Symfony\Component\Validator\Constraints\EmailValidator;
 
 class BundleConfiguration
 {
-    protected array $config;
-
-    public function __construct($config)
+    public function __construct(protected $config)
     {
-        $this->config = $config;
     }
 
-    public function getConfigurationMigrationsNamespace() : string
+    public function getConfigurationMigrationsNamespace(): string
     {
-        return $this->config["configurationMigrationsNamespace"];
+        return $this->config['configurationMigrationsNamespace'];
     }
 
-    public function getConfigurationMigrationsDirectory() : string
+    public function getConfigurationMigrationsDirectory(): string
     {
-        return $this->config["configurationMigrationsDirectory"];
+        return $this->config['configurationMigrationsDirectory'];
     }
 
     /**
@@ -26,40 +23,46 @@ class BundleConfiguration
      */
     public function getDisableShortcutMenu()
     {
-        return $this->config["disableShortcutMenu"];
+        return $this->config['disableShortcutMenu'];
     }
 
-    public function getProcessTimeoutMinutes() : int
+    public function getProcessTimeoutMinutes(): int
     {
-        return $this->config["processTimeoutMinutes"];
+        return $this->config['processTimeoutMinutes'];
     }
 
     /**
      * @return array
      */
-    public function getClassTypes(){
+    public function getClassTypes()
+    {
         $result = [];
-        foreach (Enums\General::EXECUTOR_CLASS_TYPES as $type){
+        foreach (Enums\General::EXECUTOR_CLASS_TYPES as $type) {
             $result[$type] = $this->config[$type];
         }
+
         return $result;
     }
 
-    public function getAdditionalScriptExecutionUsers() : array {
-        return (array)$this->config["additionalScriptExecutionUsers"];
+    public function getAdditionalScriptExecutionUsers(): array
+    {
+        return (array)$this->config['additionalScriptExecutionUsers'];
     }
 
-    public function getReportingEmailAddresses() : array {
-        $addresses = (array)$this->config["reportingEmailAddresses"];
+    public function getReportingEmailAddresses(): array
+    {
+        $addresses = (array)$this->config['reportingEmailAddresses'];
+
         return array_filter($addresses);
     }
 
-    public function getArchiveThresholdLogs() : int {
-        return (int)$this->config["archiveThresholdLogs"];
+    public function getArchiveThresholdLogs(): int
+    {
+        return (int)$this->config['archiveThresholdLogs'];
     }
 
-    public function getRestApiUsers() : array {
-        return (array)$this->config["restApiUsers"];
+    public function getRestApiUsers(): array
+    {
+        return (array)$this->config['restApiUsers'];
     }
-
 }

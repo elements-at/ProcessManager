@@ -15,7 +15,6 @@
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 
-use Doctrine\DBAL\Connection;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
@@ -23,7 +22,7 @@ use Pimcore\Model;
 
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-    public static function getTableName()
+    public static function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION;
     }
@@ -31,7 +30,7 @@ class Dao extends Model\Listing\Dao\AbstractDao
     /**
      * @return array
      */
-    public function load()
+    public function load(): array
     {
         $items = [];
 
@@ -43,12 +42,12 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return $items;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
-        return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . $this->getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
+        return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . static::getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
     }
 
-    public function loadIdList()
+    public function loadIdList(): array
     {
         $condition = $this->getCondition();
         $conditionVariables = $this->model->getConditionVariables();
@@ -57,12 +56,12 @@ class Dao extends Model\Listing\Dao\AbstractDao
             $ids = Helper::getAllowedConfigIdsByUser($user);
             $condition .= $condition ? ' AND ' : ' WHERE ';
             if ($ids) {
-                $condition .= ' id IN('. implode(",",wrapArrayElements($ids,"'")).')';
-            }else{
+                $condition .= ' id IN('. implode(',', wrapArrayElements($ids, "'")).')';
+            } else {
                 $condition .= 'id IS NULL';
             }
         }
 
-        return $this->db->fetchFirstColumn('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables,$types);
+        return $this->db->fetchFirstColumn('SELECT id FROM ' . static::getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables, $types);
     }
 }
