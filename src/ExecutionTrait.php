@@ -19,6 +19,7 @@ use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Monolog\Logger;
 use phpDocumentor\Reflection\Types\Static_;
+use Symfony\Component\Console\Input\InputInterface;
 
 trait ExecutionTrait
 {
@@ -58,6 +59,17 @@ trait ExecutionTrait
     public static function setChildProcessErrorHandling($childProcessErrorHandling)
     {
         static::$childProcessErrorHandling = $childProcessErrorHandling;
+    }
+
+    protected function initProcessManagerByInputOption(
+        InputInterface $input,
+        array $options = ['autoCreate' => true],
+        string $monitoringItemIdOptionName = 'monitoring-item-id'
+    ): MonitoringItem {
+        return static::initProcessManager(
+            $input->getOption($monitoringItemIdOptionName),
+            $options
+        );
     }
 
     /**

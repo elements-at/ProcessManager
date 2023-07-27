@@ -15,56 +15,53 @@
 
 namespace App\Command;
 
+use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 use Elements\Bundle\ProcessManagerBundle\MetaDataFile;
+use Elements\Bundle\ProcessManagerBundle\MonitoringTrait;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use \Elements\Bundle\ProcessManagerBundle\Executor\Action;
 
 class ProcessManagerSampleCommandSimple extends AbstractCommand
 {
-    use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+    use ExecutionTrait;
+    use MonitoringTrait;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('process-manager:sample-command-simple')
             ->setDescription('Just an example - using the ProcessManager - simple version')
-            ->addOption(
-                'monitoring-item-id',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Contains the monitoring item if executed via the Pimcore backend'
-            );
+            ->addMonitoringItemIdOption();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
+        $monitoringItem = $this->initProcessManagerByInputOption($input);
 
-        $monitoringItem->getLogger()->debug("Callback settings: " . print_r($monitoringItem->getCallbackSettings(),true));
-        $metDataFileObject = MetaDataFile::getById('spample-id');
+        $monitoringItem->getLogger()->debug('Callback settings: ' . print_r($monitoringItem->getCallbackSettings(),true));
+        $metDataFileObject = MetaDataFile::getById('sample-id');
 
         $start = \Carbon\Carbon::now();
-        if($ts = $metDataFileObject->getData()['lastRun'] ?? null){
+        if ($ts = $metDataFileObject->getData()['lastRun'] ?? null) {
             $lastRun = \Carbon\Carbon::createFromTimestamp($ts);
-        }else{
+        } else {
             $lastRun = \Carbon\Carbon::now();
         }
 
         //query api with last successfully execution time...
 
-
         $workload = ['one','two','three','four'];
+        $this->startWorkload('Starting process', count($workload));
 
-        $monitoringItem->setCurrentWorkload(0)->setTotalWorkload(count($workload))->setMessage('Starting process')->save();
-
-        foreach($workload as $i => $item){
+        foreach ($workload as $item) {
             $monitoringItem->getLogger()->debug('Detailed log info for ' . $item);
-            $monitoringItem->setMessage('Processing ' .$item)->setCurrentWorkload($i+1)->save();
+            $this->updateWorkload('Processing ' . $item);
             sleep(3);
         }
+
+        $this->completeWorkload();
 
         //adding some actions programmatically
         $downloadAction = new Action\Download();
