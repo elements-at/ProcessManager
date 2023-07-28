@@ -25,7 +25,7 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
 {
     use \Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('process-manager:sample-command-advanced')
@@ -38,7 +38,7 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
 
@@ -126,5 +126,6 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
         ]);
 
         $monitoringItem->setMessage('Job finished')->setCompleted();
+        return self::SUCCESS;
     }
 }

@@ -125,24 +125,17 @@ class Configuration extends \Pimcore\Model\AbstractModel
         $this->modificationDate = $modificationDate;
     }
 
-    /**
-     * @param $id
-     *
-     * @return Configuration
-     */
-    public static function getById($id)
+    public static function getById(int $id): ?Configuration
     {
         $self = new self();
         $self->getDao()->getById($id);
         if ($self->getId()) {
             return $self;
         }
+        return null;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getExecutorSettings()
+    public function getExecutorSettings(): array
     {
         return $this->executorSettings;
     }

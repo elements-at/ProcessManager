@@ -21,24 +21,24 @@ use Pimcore\Tool\Console;
 
 abstract class AbstractExecutor implements \JsonSerializable
 {
-    protected $name = '';
+    protected string $name = '';
 
-    protected $extJsClass = '';
+    protected string $extJsClass = '';
 
-    protected $values = [];
+    protected array $values = [];
 
-    protected $loggers = [];
+    protected array $loggers = [];
 
-    protected $executorConfig = [];
+    protected array $executorConfig = [];
 
-    protected $actions = [];
+    protected array $actions = [];
 
-    protected $isShellCommand = false;
+    protected bool $isShellCommand = false;
 
     /**
      * @param Configuration $config
      */
-    public function __construct(protected $config = [])
+    public function __construct(protected array $config = [])
     {
     }
 
@@ -114,22 +114,14 @@ abstract class AbstractExecutor implements \JsonSerializable
         return $this->extJsClass;
     }
 
-    /**
-     * @param string $extJsClass
-     *
-     * @return $this
-     */
-    public function setExtJsClass($extJsClass)
+    public function setExtJsClass(string $extJsClass): self
     {
         $this->extJsClass = $extJsClass;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getValues()
+    public function getValues(): array
     {
         return $this->values;
     }
@@ -146,7 +138,7 @@ abstract class AbstractExecutor implements \JsonSerializable
         return $this;
     }
 
-    public function getExtJsSettings()
+    public function getExtJsSettings(): array
     {
         $data = [];
         $executorConfig = [
@@ -252,7 +244,7 @@ abstract class AbstractExecutor implements \JsonSerializable
         return $this;
     }
 
-    public function getStorageValue()
+    public function getStorageValue(): string
     {
         $actions = (array)$this->getActions();
         foreach($actions as $i => $data) {

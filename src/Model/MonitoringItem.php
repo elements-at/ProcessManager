@@ -20,6 +20,7 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage;
 use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;
 use Monolog\Logger;
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
 use Symfony\Component\Process\Process;
 
 /**
@@ -69,49 +70,24 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     public $modificationDate;
 
-    public $pid;
+    public int $pid;
 
-    public $loggers = [];
+    public array $loggers = [];
 
-    /**
-     * @var array
-     */
-    public $actions = [];
+    public array $actions = [];
 
-    /**
-     * @var int
-     */
-    public $executedByUser = 0;
+    public int $executedByUser = 0;
 
-    /**
-     * @var \Monolog\Logger
-     */
-    protected $logger;
+    protected \Monolog\Logger $logger;
 
-    /**
-     * @var array
-     */
-    public $callbackSettings = [];
+    public array $callbackSettings = [];
 
-    /**
-     * @var int
-     */
-    public $totalWorkload;
+    public int $totalWorkload;
+    public int $currentWorkload;
 
-    /**
-     * @var int
-     */
-    public $currentWorkload;
+    public int $currentStep = 0;
 
-    /**
-     * @var int
-     */
-    public $currentStep = 0;
-
-    /**
-     * @var int
-     */
-    public $totalSteps = 1;
+    public int $totalSteps = 1;
 
     /**
      * The dummy object won't be saved
@@ -842,10 +818,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-    /**
-     * @return \Pimcore\Log\ApplicationLogger
-     */
-    public function getLogger()
+    public function getLogger(): \Elements\Bundle\ProcessManagerBundle\Logger
     {
         if (!$this->logger) {
             $this->logger = new \Elements\Bundle\ProcessManagerBundle\Logger();

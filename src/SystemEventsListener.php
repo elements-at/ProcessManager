@@ -28,9 +28,6 @@ class SystemEventsListener implements EventSubscriberInterface
     {
     }
 
-    /**
-     * @return array
-     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -72,7 +69,7 @@ class SystemEventsListener implements EventSubscriberInterface
                         $list = new MonitoringItem\Listing();
                         $list->setOrder('DESC')->setOrderKey('id')->setOffset((int)$versions)->setLimit(
                             100_000_000_000
-                        ); //a limit has to defined otherwise the offset wont work
+                        ); //a limit has to defined otherwise the offset won't work
                         $list->setCondition(
                             'status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? AND parentId IS NULL ',
                             [$config->getId(), $monitoringItem->getPid()]
