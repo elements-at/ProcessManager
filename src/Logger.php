@@ -15,7 +15,9 @@
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
-class Logger extends \Pimcore\Log\ApplicationLogger
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
+
+class Logger extends ApplicationLogger
 {
     public function log($level, $message, array $context = []): void
     {
