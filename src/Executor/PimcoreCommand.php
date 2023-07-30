@@ -21,9 +21,9 @@ use Pimcore\Tool\Console;
 
 class PimcoreCommand extends AbstractExecutor
 {
-    protected $name = 'pimcoreCommand';
+    protected string $name = 'pimcoreCommand';
 
-    protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.pimcoreCommand';
+    protected string $extJsClass = 'pimcore.plugin.processmanager.executor.class.pimcoreCommand';
 
     /**
      * @param string[] $callbackSettings

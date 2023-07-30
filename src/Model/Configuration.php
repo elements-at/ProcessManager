@@ -16,6 +16,7 @@
 namespace Elements\Bundle\ProcessManagerBundle\Model;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
+use mysql_xdevapi\DocResult;
 use Pimcore\Logger;
 use Pimcore\Tool;
 
@@ -25,13 +26,13 @@ use Pimcore\Tool;
  */
 class Configuration extends \Pimcore\Model\AbstractModel
 {
-    public $id;
+    public string $id;
 
-    public $name;
+    public string $name;
 
-    public $group;
+    public string $group;
 
-    public $description;
+    public string $description;
 
     public $creationDate;
 
@@ -39,13 +40,13 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     public $executorClass;
 
-    public $executorSettings;
+    public string $executorSettings;
 
-    public $cronJob;
+    public string $cronJob;
 
     public $lastCronJobExecution;
 
-    public $active;
+    public bool $active;
 
     public $keepVersions;
 
@@ -125,7 +126,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         $this->modificationDate = $modificationDate;
     }
 
-    public static function getById(int $id): ?Configuration
+    public static function getById(string|int $id): ?Configuration
     {
         $self = new self();
         $self->getDao()->getById($id);
@@ -135,7 +136,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return null;
     }
 
-    public function getExecutorSettings(): array
+    public function getExecutorSettings(): string
     {
         return $this->executorSettings;
     }
@@ -143,7 +144,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     /**
      * @return $this
      */
-    public function setExecutorSettings(mixed $executorSettings)
+    public function setExecutorSettings(string $executorSettings)
     {
         $this->executorSettings = $executorSettings;
 
@@ -198,7 +199,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     /**
      * @return MonitoringItem[]
      */
-    public function getRunningProcesses()
+    public function getRunningProcesses(): array
     {
         $list = new MonitoringItem\Listing();
         $list->setCondition(
@@ -215,45 +216,29 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $items;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getGroup()
+    public function getGroup(): string
     {
         return $this->group;
     }
 
-    /**
-     * @param string $group
-     *
-     * @return $this
-     */
-    public function setGroup($group)
+    public function setGroup(string $group): self
     {
         $this->group = $group;
-
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCronJob()
+    public function getCronJob(): string
     {
         return $this->cronJob;
     }
 
-    /**
-     * @return $this
-     */
-    public function setCronJob(mixed $cronJob)
+    public function setCronJob(string $cronJob): self
     {
         if ($cronJob && !\Cron\CronExpression::isValidExpression($cronJob)) {
             throw new \Exception('The cronjob expression "' . $cronJob.'" is not valid. Please provide a valid Cronjob expression');
         }
 
         $this->cronJob = $cronJob;
-
         return $this;
     }
 

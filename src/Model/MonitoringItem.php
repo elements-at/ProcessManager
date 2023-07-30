@@ -82,8 +82,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     public array $callbackSettings = [];
 
-    public int $totalWorkload;
-    public int $currentWorkload;
+    public int $totalWorkload = 0;
+    public int $currentWorkload = 0;
 
     public int $currentStep = 0;
 
@@ -96,7 +96,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      *
      * @var bool
      */
-    public $isDummy = false;
+    public bool $isDummy = false;
 
     /**
      * @var bool

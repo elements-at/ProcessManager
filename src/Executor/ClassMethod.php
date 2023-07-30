@@ -20,9 +20,9 @@ use Pimcore\Tool\Console;
 
 class ClassMethod extends AbstractExecutor
 {
-    protected $name = 'classMethod';
+    protected string $name = 'classMethod';
 
-    protected $extJsClass = 'pimcore.plugin.processmanager.executor.class.classMethod';
+    protected string $extJsClass = 'pimcore.plugin.processmanager.executor.class.classMethod';
 
     /**
      * @param string[] $callbackSettings
