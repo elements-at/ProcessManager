@@ -278,7 +278,7 @@ class MonitoringItemController extends UserAwareController
         }
 
         if ($tmp['retry'] == 1) {
-            $config = Configuration::getById($item->getConfigurationId());
+            $config = Configuration::getById($item->getConfigurationId() ?? '');
             if ($config) {
                 if ($config->getActive() == 0) {
                     $tmp['retry'] = 0;

@@ -170,7 +170,7 @@ class ConfigController extends UserAwareController
     }
 
     #[Route(path: '/delete')]
-    public function deleteAction(Request $request): JsonResponse
+    public function delete(Request $request): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
 

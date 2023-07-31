@@ -37,7 +37,7 @@ class Dao extends AbstractDao
     {
         $id = $this->model->getId();
 
-        if ($id) {
+        if (!is_null($id)) {
             $items = (new MonitoringItem\Listing())
                 ->setCondition('configurationId = ?', [$id])
                 ->load();

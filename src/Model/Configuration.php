@@ -130,7 +130,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     {
         $self = new self();
         $self->getDao()->getById($id);
-        if ($self->getId()) {
+        if (!is_null($self->getId())) {
             return $self;
         }
         return null;
