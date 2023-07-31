@@ -65,7 +65,10 @@ class CommandsValidator
         return $validCommands;
     }
 
-    protected function classUsesTraits($class, $autoload = true): array
+    /**
+     * @return array<string>
+     */
+    protected function classUsesTraits(LazyCommand | Command $class, bool $autoload = true): array
     {
         if ($class instanceof LazyCommand) {
             $class = $class->getCommand();
@@ -104,11 +107,17 @@ class CommandsValidator
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getWhiteList(): array
     {
         return $this->whiteList;
     }
 
+    /**
+     * @param array<string> $whiteList
+     */
     public function setWhiteList(array $whiteList): static
     {
         $this->whiteList = $whiteList;
@@ -116,11 +125,17 @@ class CommandsValidator
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getBlackList(): array
     {
         return $this->blackList;
     }
 
+    /**
+     * @param array<string> $blackList
+     */
     public function setBlackList(array $blackList): static
     {
         $this->blackList = $blackList;
