@@ -2,7 +2,7 @@ parameters:
     level: 6
 
     # optional - Default uses current php version
-    phpVersion: 80200 # PHP 8.2
+    phpVersion: 80100 # PHP 8.1
 
     paths:
         - src

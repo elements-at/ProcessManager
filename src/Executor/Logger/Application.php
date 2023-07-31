@@ -16,6 +16,7 @@
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
+use Pimcore\Bundle\ApplicationLoggerBundle\Handler\ApplicationLoggerDb;
 
 class Application extends AbstractLogger
 {
@@ -45,7 +46,7 @@ class Application extends AbstractLogger
             }
             $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
 
-            return new \Pimcore\Log\Handler\ApplicationLoggerDb(\Pimcore\Db::get(), $logLevel);
+            return new ApplicationLoggerDb(\Pimcore\Db::get(), $logLevel);
         }
 
         return $this->streamHandler;
