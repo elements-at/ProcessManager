@@ -78,12 +78,12 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     public int $executedByUser = 0;
 
-    protected \Monolog\Logger $logger;
+    protected \Elements\Bundle\ProcessManagerBundle\Logger $logger;
 
     public array $callbackSettings = [];
 
-    public int $totalWorkload = 0;
-    public int $currentWorkload = 0;
+    public int|null $totalWorkload = null;
+    public int|null $currentWorkload = 0;
 
     public int $currentStep = 0;
 
@@ -822,7 +822,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     public function getLogger(): \Elements\Bundle\ProcessManagerBundle\Logger
     {
-        if (!$this->logger) {
+        if (!isset($this->logger)) {
             $this->logger = new \Elements\Bundle\ProcessManagerBundle\Logger();
             $this->logger->setComponent((string)$this->getName());
             if ($loggerData = $this->getLoggers()) {

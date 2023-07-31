@@ -26,7 +26,7 @@ use Pimcore\Tool;
  */
 class Configuration extends \Pimcore\Model\AbstractModel
 {
-    public string $id;
+    public ?string $id;
 
     public string $name;
 
@@ -59,12 +59,12 @@ class Configuration extends \Pimcore\Model\AbstractModel
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?string
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
-    public function setId(mixed $id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
@@ -126,7 +126,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         $this->modificationDate = $modificationDate;
     }
 
-    public static function getById(string|int $id): ?Configuration
+    public static function getById(string $id): ?Configuration
     {
         $self = new self();
         $self->getDao()->getById($id);

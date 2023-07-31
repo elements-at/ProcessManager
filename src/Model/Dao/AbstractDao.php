@@ -69,7 +69,6 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
         if (!$data) {
             return null;
         }
-        $data['id'] = $data['id'];
         $this->model->setValues($data);
 
         return $this->model;

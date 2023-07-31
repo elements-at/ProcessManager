@@ -121,7 +121,7 @@ abstract class AbstractExecutor implements \JsonSerializable
         $executorConfig = [
             'extJsClass' => $this->getExtJsClass(),
             'name' => $this->getName(),
-            'class' => $this->getConfig()->getExecutorClass(),
+            'class' => $this->getConfig()->getExecutorClass()
         ];
         $data['executorConfig'] = $executorConfig;
 
