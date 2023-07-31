@@ -70,7 +70,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     public $modificationDate;
 
-    public int $pid;
+    public int|null $pid = null;
 
     public array $loggers = [];
 
@@ -312,6 +312,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         if (is_array($data) && count($data) > 0) {
             foreach ($data as $key => $value) {
+                if(in_array($key,['callbackSettings','actions','loggers']) && is_string($value)){
+                    $value = json_decode($value,true);
+                }
                 if ($key == 'message') {
                     $this->setMessage($value, false);
                 } else {
@@ -773,10 +776,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      *
      * @return $this
      */
-    public function setCallbackSettings($callbackSettings)
+    public function setCallbackSettings(array $callbackSettings): self
     {
         $this->callbackSettings = $callbackSettings;
-
         return $this;
     }
 
