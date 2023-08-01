@@ -16,7 +16,6 @@
 namespace Elements\Bundle\ProcessManagerBundle\Model;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
-use mysql_xdevapi\DocResult;
 use Pimcore\Logger;
 use Pimcore\Tool;
 
@@ -133,6 +132,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         if (!is_null($self->getId())) {
             return $self;
         }
+
         return null;
     }
 
@@ -224,6 +224,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     public function setGroup(string $group): self
     {
         $this->group = $group;
+
         return $this;
     }
 
@@ -239,6 +240,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         }
 
         $this->cronJob = $cronJob;
+
         return $this;
     }
 

@@ -123,6 +123,7 @@ final class <versionName> extends AbstractMigration
             );
             if (!$data) {
                 $output->writeln('<error>Configuration with id "' . $configurationId . '" not found.</error>');
+
                 continue;
             }
 

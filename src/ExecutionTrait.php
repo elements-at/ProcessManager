@@ -64,7 +64,7 @@ trait ExecutionTrait
      *
      * @return MonitoringItem
      */
-    public static function initProcessManager(string $monitoringId, $options = [])
+    public static function initProcessManager(string $monitoringId, array $options = [])
     {
         if (!ElementsProcessManagerBundle::getMonitoringItem(false)) {
             if(!array_key_exists('autoCreate', $options)) {

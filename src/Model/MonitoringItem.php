@@ -20,7 +20,6 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage;
 use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;
 use Monolog\Logger;
-use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
 use Symfony\Component\Process\Process;
 
 /**
@@ -83,6 +82,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public array $callbackSettings = [];
 
     public int|null $totalWorkload = null;
+
     public int|null $currentWorkload = 0;
 
     public int $currentStep = 0;
@@ -312,8 +312,8 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         if (is_array($data) && count($data) > 0) {
             foreach ($data as $key => $value) {
-                if(in_array($key,['callbackSettings','actions','loggers']) && is_string($value)){
-                    $value = json_decode($value,true);
+                if(in_array($key, ['callbackSettings', 'actions', 'loggers']) && is_string($value)) {
+                    $value = json_decode($value, true);
                 }
                 if ($key == 'message') {
                     $this->setMessage($value, false);
@@ -779,6 +779,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function setCallbackSettings(array $callbackSettings): self
     {
         $this->callbackSettings = $callbackSettings;
+
         return $this;
     }
 

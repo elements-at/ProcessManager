@@ -73,6 +73,7 @@ abstract class AbstractExecutor implements \JsonSerializable
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -81,9 +82,10 @@ abstract class AbstractExecutor implements \JsonSerializable
         return $this->config;
     }
 
-    public function setConfig(Configuration $config) : self
+    public function setConfig(Configuration $config): self
     {
         $this->config = $config;
+
         return $this;
     }
 
@@ -95,6 +97,7 @@ abstract class AbstractExecutor implements \JsonSerializable
     public function setExtJsClass(string $extJsClass): self
     {
         $this->extJsClass = $extJsClass;
+
         return $this;
     }
 
