@@ -29,7 +29,7 @@ class GroupExecutionCommand extends AbstractCommand
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'), ['autoCreate' => true]);
+        $monitoringItem = static::initProcessManager((string)$input->getOption('monitoring-item-id'), ['autoCreate' => true]);
         $logger = $monitoringItem->getLogger();
         $commands = $childMonitoringItems = [];
 

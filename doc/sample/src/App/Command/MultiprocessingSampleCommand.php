@@ -33,7 +33,7 @@ class MultiprocessingSampleCommand extends AbstractCommand
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $monitoringItem = $this->initProcessManager($input->getOption("monitoring-item-id"), ['autoCreate' => true]);
+        $monitoringItem = static::initProcessManager((string)$input->getOption("monitoring-item-id"), ['autoCreate' => true]);
         if($input->getOption("monitoring-item-parent-id")){
             $this->executeChild($input,$output,$monitoringItem); //child process
         }else{

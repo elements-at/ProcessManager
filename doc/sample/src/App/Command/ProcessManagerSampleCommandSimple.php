@@ -41,7 +41,7 @@ class ProcessManagerSampleCommandSimple extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $monitoringItem = $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
+        $monitoringItem = static::initProcessManager((string)$input->getOption('monitoring-item-id'),['autoCreate' => true]);
 
         $monitoringItem->getLogger()->debug("Callback settings: " . print_r($monitoringItem->getCallbackSettings(),true));
         $metDataFileObject = MetaDataFile::getById('spample-id');

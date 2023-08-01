@@ -64,7 +64,7 @@ trait ExecutionTrait
      *
      * @return MonitoringItem
      */
-    public static function initProcessManager($monitoringId, $options = [])
+    public static function initProcessManager(string $monitoringId, $options = [])
     {
         if (!ElementsProcessManagerBundle::getMonitoringItem(false)) {
             if(!array_key_exists('autoCreate', $options)) {
@@ -75,7 +75,7 @@ trait ExecutionTrait
                 $monitoringItem = MonitoringItem::getById($monitoringId);
                 ElementsProcessManagerBundle::setMonitoringItem($monitoringItem);
             } elseif(getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR)) { //check for env passed
-                $monitoringId = getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR);
+                $monitoringId = (string)getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR);
                 $monitoringItem = MonitoringItem::getById($monitoringId);
                 ElementsProcessManagerBundle::setMonitoringItem($monitoringItem);
             }
@@ -122,8 +122,8 @@ trait ExecutionTrait
 
             $monitoringItem = ElementsProcessManagerBundle::getMonitoringItem();
             if ($monitoringId) {
-                if ($monitoringItem) {
-                    $config = Configuration::getById($monitoringItem->getConfigurationId());
+                if ($monitoringItem && $monitoringItem->getConfigurationId()) {
+                    $config = Configuration::getById((string)$monitoringItem->getConfigurationId());
                     if ($config) {
                         if (!$monitoringItem->getName()) {
                             $monitoringItem->setName($config->getName())->save();
@@ -286,7 +286,6 @@ trait ExecutionTrait
                 if($result['success'] == false) {
                     $attempts = $i === 1 ? "$i time" : "$i times";
                     $monitoringItem->getLogger()->warning("Can't start child (tried $attempts) - reason: " . $result['message']);
-
 
                     sleep(5);
                     if($x == 3) {

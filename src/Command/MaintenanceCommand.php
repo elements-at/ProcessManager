@@ -43,7 +43,7 @@ class MaintenanceCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $options = ElementsProcessManagerBundle::getMaintenanceOptions();
-        $monitoringItem = static::initProcessManager($input->getOption('monitoring-item-id'), $options);
+        $monitoringItem = static::initProcessManager((string)$input->getOption('monitoring-item-id'), $options);
         static::doUniqueExecutionCheck(null, ['command' => static::getCommand($options)]);
 
         self::checkExecutingUser((array)ElementsProcessManagerBundle::getConfiguration()->getAdditionalScriptExecutionUsers());

@@ -40,7 +40,7 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
+        static::initProcessManager((string)$input->getOption('monitoring-item-id'),['autoCreate' => true]);
 
         $classList = new \Pimcore\Model\DataObject\ClassDefinition\Listing();
         $classList->setLimit(1);
