@@ -63,7 +63,7 @@ class SystemEventsListener implements EventSubscriberInterface
 
         if ($e->getExitCode() == 0) {
             if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
-                if ($config = Configuration::getById($monitoringItem->getConfigurationId())) {
+                if ($config = Configuration::getById($monitoringItem->getConfigurationId() ?? '')) {
                     $versions = $config->getKeepVersions();
                     if (is_numeric($versions)) {
                         $list = new MonitoringItem\Listing();
