@@ -241,8 +241,8 @@ class MonitoringItemController extends UserAwareController
         }
         $tmp['actionItems'] = [];
 
-        if ($tmp['actions']) {
-            $actionItems = json_decode((string)$tmp['actions'], true, 512, JSON_THROW_ON_ERROR);
+        if (isset($tmp['actions'])) {
+            $actionItems = $tmp['actions'];
 
             foreach ($actionItems as $i => $v) {
                 if ($class = $v['class']) {
