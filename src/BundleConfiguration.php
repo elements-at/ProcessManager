@@ -1,10 +1,18 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle;
 
 class BundleConfiguration
 {
-    public function __construct(protected $config)
+    /**
+     * @param array<mixed> $config
+     */
+    public function __construct(protected array $config)
     {
     }
 
@@ -32,7 +40,7 @@ class BundleConfiguration
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getClassTypes()
     {
@@ -44,11 +52,17 @@ class BundleConfiguration
         return $result;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getAdditionalScriptExecutionUsers(): array
     {
         return (array)$this->config['additionalScriptExecutionUsers'];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getReportingEmailAddresses(): array
     {
         $addresses = (array)$this->config['reportingEmailAddresses'];
@@ -61,6 +75,9 @@ class BundleConfiguration
         return (int)$this->config['archiveThresholdLogs'];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getRestApiUsers(): array
     {
         return (array)$this->config['restApiUsers'];

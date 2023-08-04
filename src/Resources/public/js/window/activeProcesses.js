@@ -184,7 +184,7 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create({
                     method : 'post',
                     params : {
                         id : item.id,
-                        published : true
+                        published : false
                     },
                     success: function (content) {
                         let result = Ext.decode(content.responseText);

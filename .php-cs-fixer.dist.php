@@ -2,12 +2,9 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->in([
-        __DIR__ . '/src',
+        __DIR__ . '/src'
     ])
 
-    ->exclude([
-
-    ])
 
     // do not fix views
     ->notName('*.html.php')
@@ -19,6 +16,12 @@ $config->setRules([
     '@PSR1'                  => true,
     '@PSR2'                  => true,
     'array_syntax'           => ['syntax' => 'short'],
+
+    'header_comment'         => [
+        'comment_type' => 'PHPDoc',
+        'header' => 'Created by Elements.at New Media Solutions GmbH' . PHP_EOL
+    ],
+
     'blank_line_before_statement'         => true,
     'encoding'                            => true,
     'function_typehint_space'             => true,
@@ -56,6 +59,7 @@ $config->setRules([
     'space_after_semicolon'               => true,
     'standardize_not_equals'              => true,
     'ternary_operator_spaces'             => true,
+    'trailing_comma_in_multiline'         => true,
     'whitespace_after_comma_in_array'     => true,
 ]);
 

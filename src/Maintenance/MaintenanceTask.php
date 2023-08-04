@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Maintenance;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
@@ -10,10 +15,7 @@ use Twig\Environment;
 
 class MaintenanceTask implements TaskInterface
 {
-    /**
-     * @var Environment
-     */
-    protected $renderingEngine;
+    protected \Twig\Environment $renderingEngine;
 
     /**
      * SystemEventsListener constructor.

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Service;
 
 use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
@@ -11,10 +16,21 @@ class CommandsValidator
 {
     protected string $strategy;
 
+    /**
+     * @var array<string>
+     */
     protected array $whiteList = [];
 
+    /**
+     * @var array<string>
+     */
     protected array $blackList = [];
 
+    /**
+     * @param string $strategy
+     * @param array<string> $whiteList
+     * @param array<string> $blackList
+     */
     public function __construct(string $strategy = 'default', array $whiteList = [], array $blackList = [])
     {
         $this->setStrategy($strategy);
@@ -22,7 +38,10 @@ class CommandsValidator
         $this->setBlackList($blackList);
     }
 
-    public function getValidCommands()
+    /**
+     * @return array<mixed>
+     */
+    public function getValidCommands(): array
     {
 
         $application = new Application(\Pimcore::getKernel());
@@ -33,11 +52,21 @@ class CommandsValidator
         return $commands;
     }
 
-    protected function getCommandsAll($commands)
+    /**
+     * @param array<mixed> $commands
+     *
+     * @return array<mixed>
+     */
+    protected function getCommandsAll(array $commands): array
     {
         return $commands;
     }
 
+    /**
+     * @param array<mixed> $commands
+     *
+     * @return array<mixed>
+     */
     protected function getCommandsDefault(array $commands): array
     {
         $validCommands = [];
@@ -78,17 +107,18 @@ class CommandsValidator
         // Get traits of all parent classes
         do {
             $traits = array_merge(class_uses($class, $autoload), $traits);
+            // @phpstan-ignore-next-line
         } while ($class = get_parent_class($class));
 
         // Get traits of all parent traits
         $traitsToSearch = $traits;
-        while (!empty($traitsToSearch)) {
+        while ($traitsToSearch !== []) {
             $newTraits = class_uses(array_pop($traitsToSearch), $autoload);
             $traits = array_merge($newTraits, $traits);
             $traitsToSearch = array_merge($newTraits, $traitsToSearch);
         }
 
-        foreach ($traits as $trait => $same) {
+        foreach (array_keys($traits) as $trait) {
             $traits = array_merge(class_uses($trait, $autoload), $traits);
         }
 

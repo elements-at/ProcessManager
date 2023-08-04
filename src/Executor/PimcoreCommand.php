@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor;
@@ -37,11 +29,11 @@ class PimcoreCommand extends AbstractExecutor
         $options = str_replace('|', '', trim((string) $options));
         $command = Console::getPhpCli() . ' ' . realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' ' . $this->getValues()['command'];
 
-        if ($options) {
+        if ($options !== '' && $options !== '0') {
             $command .= ' ' . $options;
         }
 
-        if($monitoringItem) {
+        if($monitoringItem instanceof \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem) {
             $commands = \Pimcore::getKernel()->getContainer()->get(CommandsValidator::class)->getValidCommands();
 
             if(!array_key_exists($this->getValues()['command'], $commands)) {

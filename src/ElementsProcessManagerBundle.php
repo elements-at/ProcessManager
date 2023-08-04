@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
@@ -35,6 +27,9 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements Pimc
     use PackageVersionTrait;
     use BundleAdminClassicTrait;
 
+    /**
+     * @return array<mixed>
+     */
     public static function getMaintenanceOptions(): array
     {
 
@@ -47,22 +42,25 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements Pimc
                 [
                     'logLevel' => 'DEBUG',
                     'class' => '\\' . \Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console::class,
-                    'simpleLogFormat' => true
+                    'simpleLogFormat' => true,
                 ],
                 [
                     'logLevel' => 'DEBUG',
                     'filepath' => $logDir . 'process-manager-maintenance.log',
                     'class' => '\\' . \Elements\Bundle\ProcessManagerBundle\Executor\Logger\File::class,
                     'simpleLogFormat' => true,
-                    'maxFileSizeMB' => 50
-                ]
-            ]
+                    'maxFileSizeMB' => 50,
+                ],
+            ],
         ];
     }
 
-    protected static $_config = null;
+    /**
+     * @var BundleConfiguration|null
+     */
+    protected static BundleConfiguration|null $_config = null;
 
-    protected static $monitoringItem;
+    protected static ?MonitoringItem $monitoringItem = null;
 
     final public const BUNDLE_NAME = 'ElementsProcessManagerBundle';
 
@@ -75,17 +73,17 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements Pimc
     final public const MONITORING_ITEM_ENV_VAR = 'monitoringItemId';
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getCssPaths(): array
     {
         return [
-            '/bundles/elementsprocessmanager/css/admin.css'
+            '/bundles/elementsprocessmanager/css/admin.css',
         ];
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getJsPaths(): array
     {
@@ -145,17 +143,22 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements Pimc
             ->addCompilerPass(new Compiler\ExecutorDefinitionPass());
     }
 
-    public static function shutdownHandler($arguments): void
+    /**
+     * @param array<mixed> $arguments
+     *
+     * @return void
+     */
+    public static function shutdownHandler(array $arguments): void
     {
         /**
          * @var $monitoringItem MonitoringItem
          */
-        if ($monitoringItem = self::getMonitoringItem()) {
+        if (($monitoringItem = self::getMonitoringItem()) instanceof \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem) {
             $error = error_get_last();
             Helper::executeMonitoringItemLoggerShutdown($monitoringItem);
 
             if (in_array($error['type'], [E_WARNING, E_DEPRECATED, E_STRICT, E_NOTICE])) {
-                if ($config = Configuration::getById($monitoringItem->getConfigurationId())) {
+                if (($config = Configuration::getById($monitoringItem->getConfigurationId())) instanceof \Elements\Bundle\ProcessManagerBundle\Model\Configuration) {
                     $versions = $config->getKeepVersions();
                     if (is_numeric($versions)) {
                         $list = new MonitoringItem\Listing();
@@ -180,7 +183,12 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements Pimc
         }
     }
 
-    public static function startup($arguments): void
+    /**
+     * @param array<mixed> $arguments
+     *
+     * @return void
+     */
+    public static function startup(array $arguments): void
     {
         $monitoringItem = $arguments['monitoringItem'];
         if ($monitoringItem instanceof MonitoringItem) {
@@ -228,13 +236,13 @@ class ElementsProcessManagerBundle extends AbstractPimcoreBundle implements Pimc
     /**
      * @param bool $createDummyObjectIfRequired
      *
-     * @return MonitoringItem
+     * @return MonitoringItem|null
      */
     public static function getMonitoringItem(bool $createDummyObjectIfRequired = true): ?MonitoringItem
     {
         if ($createDummyObjectIfRequired && !self::$monitoringItem) {
             if(getenv(self::MONITORING_ITEM_ENV_VAR)) {
-                self::$monitoringItem = MonitoringItem::getById(getenv(self::MONITORING_ITEM_ENV_VAR));
+                self::$monitoringItem = MonitoringItem::getById((int)getenv(self::MONITORING_ITEM_ENV_VAR));
                 self::$monitoringItem->setStatus(MonitoringItem::STATUS_RUNNING)->save();
             } else {
                 self::$monitoringItem = new MonitoringItem();

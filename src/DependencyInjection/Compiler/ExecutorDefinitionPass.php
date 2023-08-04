@@ -1,13 +1,8 @@
 <?php
 
 /**
- * Pimcore
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under following license:
- * - Pimcore Enterprise License (PEL)
- *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\DependencyInjection\Compiler;
@@ -31,8 +26,8 @@ class ExecutorDefinitionPass implements CompilerPassInterface
         foreach(Enums\General::EXECUTOR_CLASS_TYPES as $category) {
             $config[$category] = [];
             $taggedServices = $container->findTaggedServiceIds("elements.processManager.$category");
-            if (sizeof($taggedServices)) {
-                foreach ($taggedServices as $id => $tags) {
+            if ($taggedServices !== []) {
+                foreach (array_keys($taggedServices) as $id) {
                     $object = $container->get($id);
 
                     $tmp = [

@@ -1,33 +1,32 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Callback;
 
 abstract class AbstractCallback
 {
-    public $extJsClass = '';
+    public string $extJsClass = '';
 
-    public $name = '';
+    public string $name = '';
 
     protected string $jsFile ='';
 
-    protected $config = [];
+    /**
+     * @var array<mixed>
+     */
+    protected array $config = [];
 
     /**
      * AbstractCallback constructor.
      *
+     * @param string $name
+     * @param string $extJsClass
+     * @param string $jsFile
+     * @param array<mixed> $config
      */
     public function __construct(string $name, string $extJsClass, string $jsFile = '', array $config = [])
     {
@@ -56,7 +55,7 @@ abstract class AbstractCallback
     /**
      * @param string $extJsClass
      */
-    public function setExtJsClass($extJsClass)
+    public function setExtJsClass(string $extJsClass): void
     {
         $this->extJsClass = $extJsClass;
     }
@@ -72,25 +71,25 @@ abstract class AbstractCallback
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
 
     /**
-     * @param array $config
+     * @param array<mixed> $config
      *
      * @return $this
      */
-    public function setConfig($config)
+    public function setConfig(array $config)
     {
         $this->config = $config;
 
@@ -110,7 +109,7 @@ abstract class AbstractCallback
      *
      * @return $this
      */
-    public function setJsFile($jsFile)
+    public function setJsFile(string $jsFile)
     {
         $this->jsFile = $jsFile;
 

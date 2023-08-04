@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Action;
@@ -21,14 +13,14 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class Download extends AbstractAction
 {
-    public $name = 'download';
+    public string $name = 'download';
 
-    public $extJsClass = 'pimcore.plugin.processmanager.executor.action.download';
+    public string $extJsClass = 'pimcore.plugin.processmanager.executor.action.download';
 
     /**
      * @var string
      */
-    public $accessKey = '';
+    public string $accessKey = '';
 
     /**
      * @var string
@@ -77,7 +69,7 @@ class Download extends AbstractAction
      *
      * @return $this
      */
-    public function setAccessKey($accessKey)
+    public function setAccessKey(string $accessKey)
     {
         $this->accessKey = $accessKey;
 
@@ -130,39 +122,39 @@ class Download extends AbstractAction
         return $this;
     }
 
-    protected function buildFilePath($actionData)
+    /**
+     * @param array<mixed> $actionData
+     *
+     * @return string
+     */
+    protected function buildFilePath(array $actionData): string
     {
         $filePath = $actionData['filepath'];
         $isAbsoluteFilePath = $actionData['isAbsoluteFilePath'] ?? $this->isAbsoluteFilePath();
-        $file = $isAbsoluteFilePath ? $filePath : PIMCORE_PROJECT_ROOT.$filePath;
 
-        return $file;
+        return $isAbsoluteFilePath ? $filePath : PIMCORE_PROJECT_ROOT.$filePath;
     }
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $actionData
+     * @param array<mixed> $actionData
      *
      * @return bool
      */
-    protected function downloadFileExists($monitoringItem, $actionData)
+    protected function downloadFileExists(MonitoringItem $monitoringItem, array $actionData): bool
     {
-        if ($actionData['filepath']) {
-            $file = $this->buildFilePath($actionData);
-        } else {
-            $file = $monitoringItem->getLogFile();
-        }
+        $file = $actionData['filepath'] ? $this->buildFilePath($actionData) : $monitoringItem->getLogFile();
 
         return is_readable($file);
     }
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $actionData
+     * @param array<mixed> $actionData
      *
      * @return string
      */
-    public function getGridActionHtml($monitoringItem, $actionData)
+    public function getGridActionHtml(MonitoringItem $monitoringItem, array $actionData): string
     {
         if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
 
@@ -174,18 +166,20 @@ class Download extends AbstractAction
                 return $this->trans('plugin_pm_download_file_doesnt_exist');
             }
         }
+
+        return '';
     }
 
     /** Performs the action
      *
      * @param MonitoringItem $monitoringItem
-     * @param array $actionData
+     * @param array<mixed> $actionData
      *
      * @return BinaryFileResponse
      *
      * @throws \Exception
      */
-    public function execute($monitoringItem, $actionData)
+    public function execute(MonitoringItem $monitoringItem, array $actionData)
     {
         $file = $this->buildFilePath($actionData);
         if (is_readable($file)) {
@@ -200,10 +194,12 @@ class Download extends AbstractAction
     }
 
     /**
-     * @param $monitoringItem MonitoringItem
-     * @param $actionData array
+     * @param MonitoringItem $monitoringItem
+     * @param array<mixed> $actionData
+     *
+     * @return void
      */
-    public function preMonitoringItemDeletion($monitoringItem, $actionData)
+    public function preMonitoringItemDeletion(MonitoringItem $monitoringItem, array $actionData): void
     {
         if ($actionData['deleteWithMonitoringItem'] == true || $actionData['deleteWithMonitoringItem'] == 'on') {
             $file = $this->buildFilePath($actionData);
@@ -213,7 +209,13 @@ class Download extends AbstractAction
         }
     }
 
-    public function toJson(MonitoringItem $monitoringItem, $actionData)
+    /**
+     * @param MonitoringItem $monitoringItem
+     * @param array<mixed> $actionData
+     *
+     * @return array<string, mixed>
+     */
+    public function toJson(MonitoringItem $monitoringItem, array $actionData): array
     {
         $data = parent::toJson($monitoringItem, $actionData);
         if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
@@ -226,7 +228,7 @@ class Download extends AbstractAction
     }
 
     /**
-     * @inheritDoc
+     * @return array<mixed>
      */
     public function getStorageData(): array
     {

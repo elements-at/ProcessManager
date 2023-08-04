@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
@@ -63,12 +55,12 @@ class MonitoringItemController extends UserAwareController
         }
 
         $callbacks = [
-            'executedByUser' => function ($f) {
+            'executedByUser' => function ($f): string {
                 $db = \Pimcore\Db::get();
                 $ids = $db->fetchFirstColumn('SELECT id FROM users where name LIKE ' . $db->quote('%' . $f->value . '%')) ?: [0];
 
                 return ' executedByUser IN( ' . implode(',', $ids) . ') ';
-            }
+            },
         ];
         if ($filterCondition = QueryParams::getFilterCondition(
             $request->get('filter', ''),
@@ -93,12 +85,10 @@ class MonitoringItemController extends UserAwareController
             $filterConditionArray = QueryParams::getFilterCondition($request->get('filter', ''), ['id', 'o_id', 'pid'], false, $callbacks);
 
             if ($filterConditionArray && isset($filterConditionArray['id'])) {
+            } elseif ($condition !== '' && $condition !== '0') {
+                $condition .= ' AND published=1';
             } else {
-                if ($condition) {
-                    $condition .= ' AND published=1';
-                } else {
-                    $condition .= ' published=1';
-                }
+                $condition .= ' published=1';
             }
         }
         $list->setCondition($condition);
@@ -122,7 +112,11 @@ class MonitoringItemController extends UserAwareController
 
         if ($monitoringItem) {
             if ($monitoringItem->getExecutedByUser() == $this->getPimcoreUser()->getId()) {
-                foreach ($request->request->all() as $key => $value) {
+                $params = $request->request->all();
+                if(isset($params['published']) && $params['published'] === 'false') {
+                    $params['published'] = false;
+                }
+                foreach ($params as $key => $value) {
                     $setter = 'set' . ucfirst($key);
                     if (method_exists($monitoringItem, $setter)) {
                         $monitoringItem->$setter($value);
@@ -155,6 +149,9 @@ class MonitoringItemController extends UserAwareController
 
         $list = $this->getProcessesForCurrentUser();
         $params = $request->request->all();
+        if(isset($params['published']) && $params['published'] === 'false') {
+            $params['published'] = false;
+        }
         /**
          * @var MonitoringItem $item
          */
@@ -174,7 +171,7 @@ class MonitoringItemController extends UserAwareController
         $data = [
             'total' => 0,
             'active' => 0,
-            'items' => []
+            'items' => [],
         ];
 
         try {
@@ -206,7 +203,7 @@ class MonitoringItemController extends UserAwareController
     protected function getItemData(MonitoringItem $item): array
     {
         $tmp = $item->getObjectVars();
-        $tmp['messageShort'] = Text::cutStringRespectingWhitespace((int)$tmp['message'], 30);
+        $tmp['messageShort'] = Text::cutStringRespectingWhitespace($tmp['message'] ?? '', 30);
         $tmp['steps'] = '-';
         if ($item->getTotalSteps() > 0 || $item->getCurrentStep()) {
             $tmp['steps'] = $item->getCurrentStep() . '/' . $item->getTotalSteps();
@@ -216,11 +213,7 @@ class MonitoringItemController extends UserAwareController
 
         if ($tmp['executedByUser']) {
             $user = User::getById($tmp['executedByUser']);
-            if ($user) {
-                $tmp['executedByUser'] = $user->getName();
-            } else {
-                $tmp['executedByUser'] = 'User id: ' . $tmp['executedByUser'];
-            }
+            $tmp['executedByUser'] = $user instanceof \Pimcore\Model\User ? $user->getName() : 'User id: ' . $tmp['executedByUser'];
         } else {
             $tmp['executedByUser'] = 'System';
         }
@@ -234,7 +227,7 @@ class MonitoringItemController extends UserAwareController
                  * @var AbstractAction $class
                  */
                 $class = new $action['class'];
-                if ($s = $class->getGridActionHtml($item, $action)) {
+                if (($s = $class->getGridActionHtml($item, $action)) !== '' && ($s = $class->getGridActionHtml($item, $action)) !== '0') {
                     $tmp['action'] .= $s;
                 }
             }
@@ -242,7 +235,7 @@ class MonitoringItemController extends UserAwareController
         $tmp['actionItems'] = [];
 
         if ($tmp['actions']) {
-            $actionItems = json_decode((string)$tmp['actions'], true, 512, JSON_THROW_ON_ERROR);
+            $actionItems = $tmp['actions'];
 
             foreach ($actionItems as $i => $v) {
                 if ($class = $v['class']) {
@@ -265,7 +258,7 @@ class MonitoringItemController extends UserAwareController
                 $class = new $logger['class'];
                 if (\Pimcore\Tool::classExists($class::class)) {
                     $logger['index'] = $i;
-                    if ($s = $class->getGridLoggerHtml($item, $logger)) {
+                    if (($s = $class->getGridLoggerHtml($item, $logger)) !== '' && ($s = $class->getGridLoggerHtml($item, $logger)) !== '0') {
                         $tmp['logger'] .= $s;
                     }
                 }
@@ -279,14 +272,14 @@ class MonitoringItemController extends UserAwareController
 
         if ($tmp['retry'] == 1) {
             $config = Configuration::getById($item->getConfigurationId() ?? '');
-            if ($config) {
+            if ($config instanceof \Elements\Bundle\ProcessManagerBundle\Model\Configuration) {
                 if ($config->getActive() == 0) {
                     $tmp['retry'] = 0;
                 } else {
                     $uniqueExecution = $config->getExecutorClassObject()->getValues()['uniqueExecution'] ?? false;
                     if ($uniqueExecution) {
                         $runningProcesses = $config->getRunningProcesses();
-                        if (!empty($runningProcesses)) {
+                        if ($runningProcesses !== []) {
                             $tmp['retry'] = 0;
 
                         }
@@ -327,18 +320,16 @@ class MonitoringItemController extends UserAwareController
                      * @var AbstractLogger $class
                      */
                     $class = new $config['class'];
-                    if (\Pimcore\Tool::classExists($class::class)) {
-                        if ($i == $loggerIndex) {
-                            /**
-                             * @var Application $logger
-                             */
-                            $logger = $class;
-                            if (!$config['logLevel']) {
-                                $config['logLevel'] = 'DEBUG';
-                            }
-
-                            break;
+                    if (\Pimcore\Tool::classExists($class::class) && $i == $loggerIndex) {
+                        /**
+                         * @var Application $logger
+                         */
+                        $logger = $class;
+                        if (!$config['logLevel']) {
+                            $config['logLevel'] = 'DEBUG';
                         }
+
+                        break;
                     }
                 }
             }
@@ -357,7 +348,7 @@ class MonitoringItemController extends UserAwareController
     {
         $config = [];
         $logFile = null;
-        if (null !== $profiler) {
+        if ($profiler instanceof \Symfony\Component\HttpKernel\Profiler\Profiler) {
             $profiler->disable();
         }
         $viewData = [];
@@ -370,19 +361,17 @@ class MonitoringItemController extends UserAwareController
                  * @var AbstractLogger $class
                  */
                 $class = new $config['class'];
-                if (\Pimcore\Tool::classExists($class::class)) {
-                    if ($i == $loggerIndex) {
-                        /**
-                         * @var File $logger
-                         */
-                        $logger = $class;
-                        $logFile = $logger->getLogFile($config, $monitoringItem);
-                        if (!$config['logLevel']) {
-                            $config['logLevel'] = 'DEBUG';
-                        }
-
-                        break;
+                if (\Pimcore\Tool::classExists($class::class) && $i == $loggerIndex) {
+                    /**
+                     * @var File $logger
+                     */
+                    $logger = $class;
+                    $logFile = $logger->getLogFile($config, $monitoringItem);
+                    if (!$config['logLevel']) {
+                        $config['logLevel'] = 'DEBUG';
                     }
+
+                    break;
                 }
             }
         }
@@ -404,11 +393,11 @@ class MonitoringItemController extends UserAwareController
                 $data = explode("\n", shell_exec('tail -n 1000 ' . $logFile));
                 $warning = '<span style="color:#ff131c">The log file is to large to view all contents (' . $fileSizeMb . 'MB). The last 1000 lines are displayed. File: ' . $logFile . '</span>';
                 array_unshift($data, $warning);
-                array_push($data, $warning);
+                $data[] = $warning;
             }
 
             foreach ($data as $i => $row) {
-                if ($row) {
+                if ($row !== '' && $row !== '0') {
                     if (strpos($row, '.WARNING')) {
                         $data[$i] = '<span style="color:#ffb13b">' . $row . '</span>';
                     }
@@ -458,7 +447,7 @@ class MonitoringItemController extends UserAwareController
     {
         $this->checkPermission('plugin_pm_permission_delete_monitoring_item');
         $logLevels = array_filter(explode(',', (string)$request->get('logLevels')));
-        if (!empty($logLevels)) {
+        if ($logLevels !== []) {
             $list = new MonitoringItem\Listing();
             $conditions = [];
             foreach ($logLevels as $loglevel) {

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Service;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
@@ -19,7 +24,7 @@ class UploadManger
         foreach ($files as $key => $upload) {
             if ($callbackSettings[$key] ?? null) {
                 $hasUploads = true;
-                if (!$monitoringItem->getId()) {
+                if ($monitoringItem->getId() === 0) {
                     $monitoringItem->save();
                 }
 
@@ -28,7 +33,7 @@ class UploadManger
                 $target = $upload->move($uploadDir, $secureFileName);
                 $callbackSettings[$key] = [
                     'file' => $target->getRealPath(),
-                    'originalName' => $upload->getClientOriginalName()
+                    'originalName' => $upload->getClientOriginalName(),
                 ];
             }
         }

@@ -1,28 +1,20 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model;
 
 use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
-use mysql_xdevapi\DocResult;
 use Pimcore\Logger;
 use Pimcore\Tool;
 
 /**
  * @method  Configuration save($params = []) Configuration
  * @method  Configuration delete() void
+ * @method Configuration|null getDao()
  */
 class Configuration extends \Pimcore\Model\AbstractModel
 {
@@ -34,30 +26,30 @@ class Configuration extends \Pimcore\Model\AbstractModel
 
     public string $description;
 
-    public $creationDate;
+    public mixed $creationDate;
 
-    public $modificationDate;
+    public mixed $modificationDate;
 
-    public $executorClass;
+    public mixed $executorClass;
 
     public string $executorSettings;
 
     public string $cronJob;
 
-    public $lastCronJobExecution;
+    public mixed $lastCronJobExecution;
 
     public bool $active;
 
-    public $keepVersions;
+    public mixed $keepVersions;
 
-    public $restrictToRoles;
+    public mixed $restrictToRoles;
 
-    public $restrictToPermissions;
+    public ?string $restrictToPermissions = null;
 
-    protected $executorClassObject;
+    protected AbstractExecutor $executorClassObject;
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getId(): ?string
     {
@@ -70,9 +62,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -88,14 +80,14 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription(mixed $description)
+    public function setDescription(mixed $description): void
     {
         $this->description = $description;
     }
@@ -108,7 +100,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->creationDate;
     }
 
-    public function setCreationDate(mixed $creationDate)
+    public function setCreationDate(mixed $creationDate): void
     {
         $this->creationDate = $creationDate;
     }
@@ -121,11 +113,16 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->modificationDate;
     }
 
-    public function setModificationDate(mixed $modificationDate)
+    public function setModificationDate(mixed $modificationDate): void
     {
         $this->modificationDate = $modificationDate;
     }
 
+    /**
+     * @param string $id
+     *
+     * @return Configuration|null
+     */
     public static function getById(string $id): ?Configuration
     {
         $self = new self();
@@ -133,6 +130,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         if (!is_null($self->getId())) {
             return $self;
         }
+
         return null;
     }
 
@@ -169,16 +167,10 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-    /**
-     * @return AbstractExecutor
-     */
-    public function getExecutorClassObject()
+    public function getExecutorClassObject(): AbstractExecutor
     {
-        if (!$this->executorClassObject) {
+        if (!isset($this->executorClassObject)) {
 
-            /**
-             * @var AbstractExecutor $class
-             */
             $className = $this->getExecutorClass();
             $class = new $className();
             $class->setDataFromResource($this);
@@ -188,12 +180,16 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->executorClassObject;
     }
 
+    /**
+     * @return mixed|void
+     *
+     * @throws \JsonException
+     */
     public function getCommand()
     {
         $executorClass = $this->getExecutorClassObject();
-        if ($executorClass) {
-            return $executorClass->getCommand();
-        }
+
+        return $executorClass->getCommand();
     }
 
     /**
@@ -224,6 +220,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     public function setGroup(string $group): self
     {
         $this->group = $group;
+
         return $this;
     }
 
@@ -239,6 +236,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
         }
 
         $this->cronJob = $cronJob;
+
         return $this;
     }
 
@@ -251,7 +249,7 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @return $this
+     * @return mixed $this
      */
     public function setLastCronJobExecution(mixed $lastCronJobExecution)
     {
@@ -260,9 +258,14 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
+    /**
+     * @return int|void
+     *
+     * @throws \Exception
+     */
     public function getNextCronJobExecutionTimestamp()
     {
-        if ($this->getCronJob()) {
+        if ($this->getCronJob() !== '' && $this->getCronJob() !== '0') {
             if (Tool::classExists('\\' . \Cron\CronExpression::class)) {
                 $cron = new \Cron\CronExpression($this->getCronJob());
                 $lastExecution = $this->getLastCronJobExecution();
@@ -271,9 +274,8 @@ class Configuration extends \Pimcore\Model\AbstractModel
                 }
                 $lastRunDate = new \DateTime(date('Y-m-d H:i', $lastExecution));
                 $nextRun = $cron->getNextRunDate($lastRunDate);
-                $nextRunTs = $nextRun->getTimestamp();
 
-                return $nextRunTs;
+                return $nextRun->getTimestamp();
             } else {
                 Logger::error('Class \Cron\CronExpression does not exist');
             }
@@ -281,9 +283,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
-    public function getActive()
+    public function getActive(): bool
     {
         return (bool)$this->active;
     }
@@ -317,14 +319,14 @@ class Configuration extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param $method
-     * @param $arguments
+     * @param mixed $method
+     * @param array<mixed> $arguments
      *
      * @return Configuration|Configuration[]
      *
      * @throws \Exception
      */
-    public static function __callStatic($method, $arguments)
+    public static function __callStatic(mixed $method, array $arguments)
     {
 
         // check for custom static getters like Object::getByMyfield()
@@ -364,7 +366,12 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-    protected function implodeAsString($value): string
+    /**
+     * @param mixed $value
+     *
+     * @return string
+     */
+    protected function implodeAsString(mixed $value): string
     {
         if (is_array($value)) {
             $value = implode(',', $value);
@@ -379,6 +386,11 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $value;
     }
 
+    /**
+     * @param array<mixed>|string $restrictToPermissions
+     *
+     * @return $this
+     */
     public function setRestrictToPermissions(array | string $restrictToPermissions): self
     {
         $this->restrictToPermissions = $this->implodeAsString($restrictToPermissions);

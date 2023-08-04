@@ -1,13 +1,8 @@
 <?php
 
 /**
- * Pimcore
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under following license:
- * - Pimcore Enterprise License (PEL)
- *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\DependencyInjection;
@@ -29,11 +24,11 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('elements_process_manager');
 
-        // $debugEmailAddresses = \Pimcore\Config::getSystemConfiguration()["email"]["debug"]["email_addresses"];
-        // $debugEmailAddresses = array_filter(preg_split('/,|;/',$debugEmailAddresses));
-
         $debugEmailAddresses = [];
         $rootNode = $treeBuilder->getRootNode();
+        /**
+         * @phpstan-ignore-next-line
+         */
         $rootNode
             ->children()
                 ->integerNode('archiveThresholdLogs')

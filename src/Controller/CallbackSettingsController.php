@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
@@ -77,7 +69,7 @@ class CallbackSettingsController extends UserAwareController
         try {
             $setting = CallbackSetting::getById($request->get('id'));
             if ($setting) {
-                $setting->setId(-1)->setName('Copy - ' . $setting->getName())->save();
+                $setting->setId(null)->setName('Copy - ' . $setting->getName())->save();
 
                 return $this->jsonResponse(['success' => true]);
             } else {
@@ -102,10 +94,8 @@ class CallbackSettingsController extends UserAwareController
 
         if ($id = $request->get('id')) {
             $list->setCondition(' `id` = ?', [$id]);
-        } else {
-            if ($type = $request->get('type')) {
-                $list->setCondition(' `type` = ?', [$type]);
-            }
+        } elseif ($type = $request->get('type')) {
+            $list->setCondition(' `type` = ?', [$type]);
         }
 
         $data = [];

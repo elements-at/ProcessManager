@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
@@ -20,30 +12,38 @@ use Monolog\Handler\StreamHandler;
 
 class File extends AbstractLogger
 {
-    protected $streamHandler = null;
+    protected StreamHandler|null $streamHandler = null;
 
-    public $name = 'file';
+    public string $name = 'file';
 
-    public $extJsClass = 'pimcore.plugin.processmanager.executor.logger.file';
+    public string $extJsClass = 'pimcore.plugin.processmanager.executor.logger.file';
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $loggerData
+     * @param array<mixed> $actionData
      *
      * @return string
      */
-    public function getGridLoggerHtml($monitoringItem, $loggerData)
+    public function getGridLoggerHtml(MonitoringItem $monitoringItem, array $actionData): string
     {
-        $logFile = $this->getLogFile($loggerData, $monitoringItem);
+        $logFile = $this->getLogFile($actionData, $monitoringItem);
         if (is_readable($logFile)) {
-            $icon = ($loggerData['icon'] ?? null) ?: '/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg';
-            $title = ($loggerData['title'] ?? null) ?: 'File Logger';
+            $icon = ($actionData['icon'] ?? null) ?: '/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg';
+            $title = ($actionData['title'] ?? null) ?: 'File Logger';
 
-            return '<a href="#" onclick="var tmp = new pimcore.plugin.processmanager.executor.logger.file(); tmp.showLogs(' . $monitoringItem->getId() . ',' . (int)$loggerData['index'] . ');"><img src="' . $icon . '" alt="Download" height="18" title="' . $title . '"/></a>';
+            return '<a href="#" onclick="var tmp = new pimcore.plugin.processmanager.executor.logger.file(); tmp.showLogs(' . $monitoringItem->getId() . ',' . (int)$actionData['index'] . ');"><img src="' . $icon . '" alt="Download" height="18" title="' . $title . '"/></a>';
         }
+
+        return '';
     }
 
-    public function createStreamHandler($config, $monitoringItem)
+    /**
+     * @param array<mixed> $config
+     * @param MonitoringItem $monitoringItem
+     *
+     * @return StreamHandler|null
+     */
+    public function createStreamHandler(array $config, MonitoringItem $monitoringItem): ?StreamHandler
     {
         if (!$this->streamHandler) {
             if (empty($config['logLevel'])) {
@@ -86,19 +86,13 @@ class File extends AbstractLogger
     }
 
     /**
-     * @param $config
+     * @param array<mixed> $config
      * @param $monitoringItem MonitoringItem
      *
      * @return string
      */
-    public function getLogFile($config, $monitoringItem)
+    public function getLogFile(array $config, MonitoringItem $monitoringItem)
     {
-        if ($v = $config['filepath'] ?? null) {
-            $logFile = PIMCORE_PROJECT_ROOT.$v;
-        } else {
-            $logFile = $monitoringItem->getLogFile();
-        }
-
-        return $logFile;
+        return ($v = $config['filepath'] ?? null) ? PIMCORE_PROJECT_ROOT.$v : $monitoringItem->getLogFile();
     }
 }

@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
@@ -21,24 +13,29 @@ use Monolog\Logger;
 
 trait ExecutionTrait
 {
-    protected $commandObject;
+    protected mixed $commandObject;
 
-    protected static $childProcessErrorHandling = 'strict';
+    protected static string $childProcessErrorHandling = 'strict';
 
-    protected static $childProcessCheckInterval = 500000; //microseconds
+    protected static int $childProcessCheckInterval = 500000; //microseconds
 
     /**
      * @param int $microseconds
      */
-    public static function setChildProcessCheckInterval($microseconds)
+    public static function setChildProcessCheckInterval(int $microseconds): void
     {
         self::$childProcessCheckInterval = $microseconds;
     }
 
-    protected static function getCommand($options)
+    /**
+     * @param array<mixed> $options
+     *
+     * @return string
+     */
+    protected static function getCommand(array $options): string
     {
         global $argv;
-        $command = !empty($options['command']) ? $options['command'] : implode(' ', $argv);
+        $command = empty($options['command']) ? implode(' ', $argv) : $options['command'];
 
         return trim((string) $command);
     }
@@ -51,22 +48,23 @@ trait ExecutionTrait
     /**
      * @param string $childProcessErrorHandling
      *
-     * @return $this
+     * @return void
      */
-    public static function setChildProcessErrorHandling($childProcessErrorHandling)
+    public static function setChildProcessErrorHandling(string $childProcessErrorHandling): void
     {
         static::$childProcessErrorHandling = $childProcessErrorHandling;
     }
 
     /**
-     * @param $monitoringId
-     * @param array $options
+     * @param array<mixed> $options
      *
-     * @return MonitoringItem
+     * @return MonitoringItem|null
+     *
+     * @throws \JsonException
      */
-    public static function initProcessManager($monitoringId, $options = [])
+    public static function initProcessManager(?int $monitoringId, array $options = []): ?\Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem
     {
-        if (!ElementsProcessManagerBundle::getMonitoringItem(false)) {
+        if (!ElementsProcessManagerBundle::getMonitoringItem(false) instanceof \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem) {
             if(!array_key_exists('autoCreate', $options)) {
                 $options['autoCreate'] = false;
             }
@@ -75,7 +73,7 @@ trait ExecutionTrait
                 $monitoringItem = MonitoringItem::getById($monitoringId);
                 ElementsProcessManagerBundle::setMonitoringItem($monitoringItem);
             } elseif(getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR)) { //check for env passed
-                $monitoringId = getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR);
+                $monitoringId = (int)getenv(ElementsProcessManagerBundle::MONITORING_ITEM_ENV_VAR);
                 $monitoringItem = MonitoringItem::getById($monitoringId);
                 ElementsProcessManagerBundle::setMonitoringItem($monitoringItem);
             }
@@ -93,9 +91,8 @@ trait ExecutionTrait
 
                 if ($configId = $monitoringItem->getConfigurationId()) {
                     $config = Configuration::getById($configId);
-                    if ($executor = $config->getExecutorClassObject()) {
-                        $monitoringItem->setLoggers($executor->getLoggers());
-                    }
+                    $executor = $config->getExecutorClassObject();
+                    $monitoringItem->setLoggers($executor->getLoggers());
                 }
 
                 unset($options['id']);
@@ -103,13 +100,13 @@ trait ExecutionTrait
                 /**
                  * only set console logger if dont pass loggers or the config doesn't have loggers
                  */
-                if (empty($options['loggers']) && empty($monitoringItem->getLoggers())) {
+                if (empty($options['loggers']) && $monitoringItem->getLoggers() === []) {
                     $monitoringItem->setLoggers([
                         [
                             'logLevel' => 'DEBUG',
                             'simpleLogFormat' => 'on',
-                            'class' => '\\' . \Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console::class
-                        ]
+                            'class' => '\\' . \Elements\Bundle\ProcessManagerBundle\Executor\Logger\Console::class,
+                        ],
                     ]);
                 }
 
@@ -122,9 +119,9 @@ trait ExecutionTrait
 
             $monitoringItem = ElementsProcessManagerBundle::getMonitoringItem();
             if ($monitoringId) {
-                if ($monitoringItem) {
+                if ($monitoringItem instanceof \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem) {
                     $config = Configuration::getById($monitoringItem->getConfigurationId());
-                    if ($config) {
+                    if ($config instanceof \Elements\Bundle\ProcessManagerBundle\Model\Configuration) {
                         if (!$monitoringItem->getName()) {
                             $monitoringItem->setName($config->getName())->save();
                         }
@@ -132,7 +129,7 @@ trait ExecutionTrait
                             exit('ProcessManager: Config with ID ' . $config->getId().' is disabled - exiting');
                         }
                     }
-                    $values = $config ? $config->getExecutorClassObject()->getValues() : $options;
+                    $values = $config instanceof \Elements\Bundle\ProcessManagerBundle\Model\Configuration ? $config->getExecutorClassObject()->getValues() : $options;
                     if (!empty($values['uniqueExecution']) && !$monitoringItem->getParentId()) { //dont check if it is a child process
                         self::doUniqueExecutionCheck($config, $options);
                     }
@@ -141,7 +138,7 @@ trait ExecutionTrait
                 $options['monitoringItem'] = $monitoringItem;
 
                 if (!defined('PIMCORE_CONSOLE') || !PIMCORE_CONSOLE) {
-                    register_shutdown_function(function ($arguments) {
+                    register_shutdown_function(function ($arguments): void {
                         ElementsProcessManagerBundle::shutdownHandler($arguments);
                     }, $options);
                 }
@@ -157,10 +154,12 @@ trait ExecutionTrait
     }
 
     /**
-     * @param $config
-     * @param $options
+     * @param mixed $config
+     * @param array<mixed> $options
+     *
+     * @return void
      */
-    protected static function doUniqueExecutionCheck($config, $options)
+    protected static function doUniqueExecutionCheck(mixed $config, array $options): void
     {
         //when we have a config we check for the config id to determine the processes
         if ($config) {
@@ -183,7 +182,7 @@ trait ExecutionTrait
             }
         }
 
-        if ($count = count($processesRunning)) {
+        if (($count = count($processesRunning)) !== 0) {
             foreach ($processesRunning as $process) {
                 //only delete the item if the other process doesn't use the same monitoring ID
                 if ($process->getId() != ElementsProcessManagerBundle::getMonitoringItem()->getId()) {
@@ -197,9 +196,9 @@ trait ExecutionTrait
     }
 
     /**
-     * @return MonitoringItem
+     * @return MonitoringItem|null
      */
-    public static function getMonitoringItem()
+    public static function getMonitoringItem(): ?\Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem
     {
         return ElementsProcessManagerBundle::getMonitoringItem();
     }
@@ -223,11 +222,13 @@ trait ExecutionTrait
     }
 
     /**
-     * @param array $allowedUsers
+     * @param array<mixed> $allowedUsers
+     *
+     * @return void
      *
      * @throws \Exception
      */
-    public static function checkExecutingUser($allowedUsers = [])
+    public static function checkExecutingUser(array $allowedUsers = []): void
     {
         $configFile = PIMCORE_WEB_ROOT.'/index.php';
         $owner = fileowner($configFile);
@@ -253,14 +254,16 @@ trait ExecutionTrait
 
     /**
      * @param int $numberOfchildProcesses number of child processes to run in parallel
-     * @param array $workload workload to process
+     * @param array<mixed> $workload workload to process
      * @param int $batchSize items to process per child process
      * @param null $callback callback to modifiy the monitoring item before start (e.g. alter actions,loggers...)
      * @param int $startAfterPackage Start after package (skip packages before)
      *
+     * @return void
+     *
      * @throws \Exception
      */
-    public static function executeChildProcesses(MonitoringItem $monitoringItem, array $workload, $numberOfchildProcesses = 5, $batchSize = 10, $callback = null, $startAfterPackage = null)
+    public static function executeChildProcesses(MonitoringItem $monitoringItem, array $workload, int $numberOfchildProcesses = 5, int $batchSize = 10, callable $callback = null, $startAfterPackage = null): void
     {
         $workloadChunks = array_chunk($workload, $batchSize); //entries per process
         $childProcesses = $monitoringItem->getChildProcesses();
@@ -287,7 +290,6 @@ trait ExecutionTrait
                     $attempts = $i === 1 ? "$i time" : "$i times";
                     $monitoringItem->getLogger()->warning("Can't start child (tried $attempts) - reason: " . $result['message']);
 
-
                     sleep(5);
                     if($x == 3) {
                         throw new \Exception("Can't start child  - reason: " . $result['message']);
@@ -301,7 +303,14 @@ trait ExecutionTrait
         self::waitForChildProcesses($monitoringItem, $i * $batchSize);
     }
 
-    protected static function childProcessCheck(MonitoringItem $monitoringItem)
+    /**
+     * @param MonitoringItem $monitoringItem
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected static function childProcessCheck(MonitoringItem $monitoringItem): void
     {
         $statuses = $monitoringItem->getChildProcessesStatus();
         $monitoringItem->setModificationDate(time())->save();
@@ -322,11 +331,20 @@ trait ExecutionTrait
         }
 
     }
-
-    /**
+    /*
      * @param int $i
      * @param int $batchSize
      * @param int $numberOfchildProcesses
+     *
+     * @throws \Exception
+     */
+
+    /**
+     * @param MonitoringItem $monitoringItem
+     * @param int $baseline
+     * @param int $maxProcesses
+     *
+     * @return void
      *
      * @throws \Exception
      */

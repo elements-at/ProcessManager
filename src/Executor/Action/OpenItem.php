@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Action;
@@ -19,19 +11,13 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 class OpenItem extends AbstractAction
 {
-    public $name = 'openItem';
+    public string $name = 'openItem';
 
-    public $extJsClass = 'pimcore.plugin.processmanager.executor.action.openItem';
+    public string $extJsClass = 'pimcore.plugin.processmanager.executor.action.openItem';
 
-    /**
-     * @var string
-     */
-    protected $label = '';
+    protected string $label = '';
 
-    /**
-     * @var string
-     */
-    protected $type = '';
+    protected string $type = '';
 
     /**
      * @var int
@@ -48,7 +34,7 @@ class OpenItem extends AbstractAction
      *
      * @return $this
      */
-    public function setLabel($label)
+    public function setLabel(string $label)
     {
         $this->label = $label;
 
@@ -65,7 +51,7 @@ class OpenItem extends AbstractAction
      *
      * @return $this
      */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
 
@@ -91,19 +77,26 @@ class OpenItem extends AbstractAction
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $actionData
+     * @param array<mixed> $actionData
+     *
+     * @return object|null
      */
-    protected function getItem($monitoringItem, $actionData): ?object
+    protected function getItem(MonitoringItem $monitoringItem, array $actionData): ?object
     {
         return \Pimcore\Model\Element\Service::getElementById($actionData['type'], $actionData['itemId']);
     }
 
-    protected function getIcon($type)
+    /**
+     * @param $type string
+     *
+     * @return string
+     */
+    protected function getIcon(string $type): string
     {
         $icons = [
             'document' => '/bundles/pimcoreadmin/img/flat-white-icons/page.svg',
             'object' => '/bundles/pimcoreadmin/img/flat-white-icons/object.svg',
-            'asset' =>  '/bundles/pimcoreadmin/img/flat-white-icons/camera.svg'
+            'asset' =>  '/bundles/pimcoreadmin/img/flat-white-icons/camera.svg',
         ];
 
         return $icons[$type];
@@ -111,11 +104,11 @@ class OpenItem extends AbstractAction
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $actionData
+     * @param array<mixed> $actionData
      *
      * @return string
      */
-    public function getGridActionHtml($monitoringItem, $actionData)
+    public function getGridActionHtml(MonitoringItem $monitoringItem, array $actionData): string
     {
         if (in_array($monitoringItem->getStatus(), $actionData['executeAtStates'])) {
 
@@ -125,16 +118,23 @@ class OpenItem extends AbstractAction
                 $type = $item->getType();
                 $method = 'pimcore.helpers.open'.ucfirst((string) $actionData['type']);
                 $cssClass = 'process_manager_icon_action_open '.$actionData['type'].' ';
-                $s =  '<a href="#" onClick="'.$method.'('.$actionData['itemId'].',\''.$item->getType().'\');" class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
 
-                return $s;
+                return '<a href="#" onClick="'.$method.'('.$actionData['itemId'].',\''.$item->getType().'\');" class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
             } else {
                 return $this->trans('plugin_pm_item_doesnt_exist');
             }
         }
+
+        return '';
     }
 
-    public function toJson(MonitoringItem $monitoringItem, $actionData)
+    /**
+     * @param MonitoringItem $monitoringItem
+     * @param $actionData array<mixed>
+     *
+     * @return array<string,mixed>
+     */
+    public function toJson(MonitoringItem $monitoringItem, array $actionData): array
     {
         $data = parent::toJson($monitoringItem, $actionData);
         $data['item_exists'] = false;
@@ -153,12 +153,18 @@ class OpenItem extends AbstractAction
         return $data;
     }
 
-    public function execute($monitoringItem, $actionData)
+    /**
+     * @param $monitoringItem MonitoringItem
+     * @param array<mixed> $actionData
+     *
+     * @return void
+     */
+    public function execute(MonitoringItem $monitoringItem, array $actionData): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @return array<string,mixed>
      */
     public function getStorageData(): array
     {
@@ -167,7 +173,7 @@ class OpenItem extends AbstractAction
             'type' => $this->getType(),
             'itemId' => $this->getItemId(),
             'executeAtStates' => $this->getExecuteAtStates(),
-            'class' => self::class
+            'class' => self::class,
         ];
     }
 }

@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
@@ -47,12 +39,12 @@ class ConfigController extends UserAwareController
             }
             $result = [
                 'success' => true,
-                'data' => $values
+                'data' => $values,
             ];
         } catch (\Exception $e) {
             $result = [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
 
@@ -93,7 +85,7 @@ class ConfigController extends UserAwareController
             $tmp['active'] = (int)$tmp['active'];
 
             try {
-                if ($item->getCronJob()) {
+                if ($item->getCronJob() !== '' && $item->getCronJob() !== '0') {
                     $nextRunTs = $item->getNextCronJobExecutionTimestamp();
                     if ($nextRunTs) {
                         $tmp['cronJob'] .= ' <br/>(Next run:' . date('Y-m-d H:i:s', $nextRunTs) . ')';
@@ -207,7 +199,7 @@ class ConfigController extends UserAwareController
             $this->getPimcoreUser()->getId(),
             [],
             null,
-            function ($monitoringItem, $executor) use ($request, $uploadManger) {
+            function ($monitoringItem, $executor) use ($request, $uploadManger): void {
                 $uploadManger->saveUploads($request, $monitoringItem);
             }
         );

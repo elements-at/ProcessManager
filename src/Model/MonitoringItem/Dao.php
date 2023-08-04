@@ -1,21 +1,15 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
@@ -30,14 +24,16 @@ use Pimcore\Db;
 class Dao extends AbstractDao
 {
     /**
-     * @var MonitoringItem
+     * @var MonitoringItem|null
+     *
+     * @phpstan-ignore-next-line
      */
-    protected $model;
+    protected $model = null;
 
     /**
-     * @var null | \Pimcore\Db\Connection
+     * @var null | Connection
      */
-    protected static $dbTransactionFree;
+    protected static ?Connection $dbTransactionFree;
 
     public function getTableName(): string
     {
@@ -47,9 +43,9 @@ class Dao extends AbstractDao
     /**
      * @param bool $preventModificationDateUpdate
      *
-     * @return $this ->model
+     * @throws Exception|\JsonException
      */
-    public function save($preventModificationDateUpdate = false)
+    public function save(bool $preventModificationDateUpdate = false): MonitoringItem|\Pimcore\Model\AbstractModel|null
     {
         if ($this->model->getIsDummy()) {
             return $this->model;
@@ -60,7 +56,7 @@ class Dao extends AbstractDao
          * the satus won't be updated as the transaction isn't committed (e.g when a exception is thrown within a transaction)
          */
         if (Db::get()->isTransactionActive()) {
-            if (!self::$dbTransactionFree) {
+            if (!self::$dbTransactionFree instanceof Connection) {
                 self::$dbTransactionFree = DriverManager::getConnection($this->db->getParams());
             }
             $db = self::$dbTransactionFree;
@@ -77,10 +73,11 @@ class Dao extends AbstractDao
         if (!$preventModificationDateUpdate) {
             $data['modificationDate'] = time();
         }
-        $quoteKeyData= [];
-        array_walk($data, function ($value, $key) use (&$quoteKeyData) { $quoteKeyData['`'.$key.'`'] = $value; });
-        if (!$quoteKeyData['`id`']) {
-            unset($quoteKeyData['`id`']);
+        $quoteKeyData = [];
+        array_walk($data, function ($value, $key) use (&$quoteKeyData): void {
+            $quoteKeyData['`' . $key . '`'] = $value;
+        });
+        if (empty($quoteKeyData['`id`'])) {
             $db->insert($this->getTableName(), $quoteKeyData);
             $this->model->setId($db->lastInsertId($this->getTableName()));
         } else {
@@ -94,7 +91,7 @@ class Dao extends AbstractDao
     {
         $id = $this->model->getId();
 
-        if ($id) {
+        if ($id !== 0) {
             foreach ((array)$this->model->getActions() as $action) {
                 if ($class = $action['class']) {
                     /**
@@ -117,5 +114,19 @@ class Dao extends AbstractDao
 
             $this->model = null;
         }
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @return array<mixed>
+     */
+    public function convertDataFromRecourse(array $data): array
+    {
+        if ($data['metaData']) {
+            $data['metaData'] = json_decode($data['metaData'], true);
+        }
+
+        return $data;
     }
 }

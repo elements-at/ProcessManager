@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
@@ -20,25 +12,16 @@ use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
 
 /**
- * Class Dao
- *
+ * @property CallbackSetting|null $model
  */
 class Dao extends AbstractDao
 {
-    /**
-     * @var CallbackSetting
-     */
-    protected $model;
-
     public function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING;
     }
 
-    /**
-     * @return $this->model
-     */
-    public function save()
+    public function save(): ?CallbackSetting
     {
         $data = $this->getValidStorageValues();
         if (!$data['modificationDate']) {
@@ -47,22 +30,26 @@ class Dao extends AbstractDao
         if (!$data['creationDate']) {
             $data['creationDate'] = time();
         }
-        if (!$data['id']) {
-            unset($data['id']);
+        if (empty($data['id'])) {
             $this->db->insert($this->getTableName(), $data);
             $this->model->setId($this->db->lastInsertId($this->getTableName()));
         } else {
             $this->db->update($this->getTableName(), $data, ['id' => $this->model->getId()]);
         }
 
-        return $this->getById($this->model->getId());
+        /**
+         * @var CallbackSetting $model
+         */
+        $model = $this->getById($this->model->getId());
+
+        return $model;
     }
 
-    public function delete()
+    public function delete(): void
     {
         $id = $this->model->getId();
 
-        if ($id) {
+        if ($id !== 0) {
             $this->db
                 ->prepare('DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?')
                 ->executeQuery([$id]);

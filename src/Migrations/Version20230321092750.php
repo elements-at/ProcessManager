@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;

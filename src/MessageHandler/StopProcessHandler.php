@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\MessageHandler;
 
 use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;

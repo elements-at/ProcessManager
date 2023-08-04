@@ -1,36 +1,40 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Dao;
 
-class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
+use Doctrine\DBAL\Exception;
+use Pimcore\Model\AbstractModel;
+
+abstract class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
 {
-    protected $validColumns = [];
+    /**
+     * @var array<mixed>
+     */
+    protected array $validColumns = [];
 
     /**
      * Get the valid columns from the database
      *
      * @return void
      */
-    public function init()
+    public function init(): void
     {
+
         $tableName = $this->getTableName();
         $this->validColumns = $this->getValidTableColumns($tableName);
     }
 
-    protected function getValidStorageValues()
+    abstract protected function getTableName(): string;
+
+    /**
+     * @return array<mixed>
+     */
+    protected function getValidStorageValues(): array
     {
         $data = [];
         foreach ($this->model->getObjectVars() as $key => $value) {
@@ -39,10 +43,8 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
                     $value = $value::class;
                 } elseif(is_array($value)) {
                     foreach($value as $k => $v) {
-                        if(is_object($v)) {
-                            if(method_exists($v, 'getStorageData')) {
-                                $value[$k] = $v->getStorageData();
-                            }
+                        if(is_object($v) && method_exists($v, 'getStorageData')) {
+                            $value[$k] = $v->getStorageData();
                         }
                     }
                     $value = json_encode($value, JSON_THROW_ON_ERROR);
@@ -53,24 +55,40 @@ class AbstractDao extends \Pimcore\Model\Dao\AbstractDao
                 $data[$key] = $value;
             }
         }
-        if (!$data['creationDate']) {
+        if (empty($data['creationDate'])) {
             $data['creationDate'] = time();
         }
-        if (!$data['modificationDate']) {
+        if (empty($data['modificationDate'])) {
             $data['modificationDate'] = time();
         }
 
         return $data;
     }
 
-    public function getById($id)
+    /**
+     * @return AbstractModel|null
+     *
+     * @throws Exception
+     */
+    public function getById(mixed $id): ?AbstractModel
     {
         $data = $this->db->fetchAssociative('SELECT * FROM ' . $this->getTableName() . ' WHERE id= :id', ['id' => $id]);
         if (!$data) {
             return null;
         }
+        $data = $this->convertDataFromRecourse($data);
         $this->model->setValues($data);
 
         return $this->model;
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @return array<mixed>
+     */
+    public function convertDataFromRecourse(array $data): array
+    {
+        return $data;
     }
 }

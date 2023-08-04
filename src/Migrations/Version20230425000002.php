@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
@@ -29,7 +34,7 @@ class Version20230425000002 extends BundleAwareMigration
             $isDirty = false;
             if ($actions = $item->getActions()) {
                 foreach ($actions as $key => $action) {
-                    if (!key_exists('executeAtStates', $action)) {
+                    if (!array_key_exists('executeAtStates', $action)) {
                         $actions[$key]['executeAtStates'] = ['finished'];
                         $isDirty = true;
                     }

@@ -1,33 +1,22 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-use Elements\Bundle\ProcessManagerBundle\Executor\AbstractExecutor;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\Dao\AbstractDao;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
+/**
+ * @property Configuration $model
+ */
 class Dao extends AbstractDao
 {
-    /**
-     * @var Configuration
-     */
-    protected $model;
-
     protected function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION;
@@ -53,9 +42,12 @@ class Dao extends AbstractDao
     }
 
     /**
-     * @return $this->model
+     * @param array<mixed> $params
+     *
+     * @throws \Doctrine\DBAL\Exception
+     * @throws \JsonException
      */
-    public function save($params = [])
+    public function save(array $params = []): ?Configuration
     {
         $data = $this->getValidStorageValues();
 
@@ -67,7 +59,7 @@ class Dao extends AbstractDao
         }
 
         $quoteKeyData= [];
-        array_walk($data, function ($value, $key) use (&$quoteKeyData) { $quoteKeyData['`'.$key.'`'] = $value; });
+        array_walk($data, function ($value, $key) use (&$quoteKeyData): void { $quoteKeyData['`'.$key.'`'] = $value; });
 
         if (isset($params['oldId'])) {
             if ($params['oldId'] != '') {
@@ -75,24 +67,22 @@ class Dao extends AbstractDao
             } else {
                 $this->db->insert($this->getTableName(), $quoteKeyData);
             }
+        } elseif ($id = $this->getById($id = $this->model->getId())) {
+            $this->db->update($this->getTableName(), $quoteKeyData, ['id' => $this->model->getId()]);
         } else {
-            if ($id = $this->getById($id = $this->model->getId())) {
-                $this->db->update($this->getTableName(), $quoteKeyData, ['id' => $this->model->getId()]);
-            } else {
-                $this->db->insert($this->getTableName(), $quoteKeyData);
-            }
+            $this->db->insert($this->getTableName(), $quoteKeyData);
         }
 
         return $this->getById($this->model->getId());
     }
 
-    public function getById($id)
+    public function getById(mixed $id): ?Configuration
     {
+        /**
+         * @var Configuration|null $model
+         */
         $model = parent::getById($id);
         if ($model) {
-            /**
-             * @var $class AbstractExecutor
-             */
             $className = $model->getExecutorClass();
             if ($className) {
                 $class = new $className;
@@ -101,5 +91,7 @@ class Dao extends AbstractDao
 
             return $model;
         }
+
+        return null;
     }
 }

@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
@@ -21,24 +13,32 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class EmailSummary extends AbstractLogger
 {
-    protected $streamHandler = null;
+    protected StreamHandler|null $streamHandler = null;
 
-    public $name = 'emailSummary';
+    public string $name = 'emailSummary';
 
-    public $extJsClass = 'pimcore.plugin.processmanager.executor.logger.emailSummary';
+    public string $extJsClass = 'pimcore.plugin.processmanager.executor.logger.emailSummary';
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $loggerData
+     * @param array<mixed> $actionData
      *
      * @return string
      */
-    public function getGridLoggerHtml($monitoringItem, $loggerData)
+    public function getGridLoggerHtml(MonitoringItem $monitoringItem, array $actionData): string
     {
         return '';
     }
 
-    public function createStreamHandler($config, $monitoringItem)
+    /**
+     * @param array<mixed> $config
+     * @param MonitoringItem $monitoringItem
+     *
+     * @return StreamHandler|null
+     *
+     * @throws \JsonException
+     */
+    public function createStreamHandler(array $config, MonitoringItem $monitoringItem): ?StreamHandler
     {
         if (!$this->streamHandler) {
             if (empty($config['logLevel'])) {
@@ -58,7 +58,15 @@ class EmailSummary extends AbstractLogger
         return $this->streamHandler;
     }
 
-    public function getLogFile($monitoringItem, $config)
+    /**
+     * @param $monitoringItem MonitoringItem
+     * @param array<mixed> $config
+     *
+     * @return string
+     *
+     * @throws \JsonException
+     */
+    public function getLogFile(MonitoringItem $monitoringItem, array $config): string
     {
         $dir = \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::getLogDir().'email/' . $monitoringItem->getId() ;
 
@@ -66,24 +74,25 @@ class EmailSummary extends AbstractLogger
             $filesystem = new Filesystem();
             $filesystem->mkdir($dir, 0755);
         }
-        $dir .= '/'.md5(json_encode($config, JSON_THROW_ON_ERROR)).'.log' ;
 
-        return $dir;
+        return $dir . ('/'.md5(json_encode($config, JSON_THROW_ON_ERROR)).'.log');
     }
 
     /**
-     * @param $monitoringItem
+     * @param array<mixed> $loggerConfig
+     *
+     * @return array<mixed>
      */
-    public function handleShutdown(MonitoringItem $monitoringItem, array $loggerConfig)
+    public function handleShutdown(MonitoringItem $monitoringItem, array $loggerConfig): array
     {
 
         $logFile = $this->getLogFile($monitoringItem, $loggerConfig);
         if($file = is_file($logFile)) {
             $mail = new \Pimcore\Mail();
-            $mail->setSubject($loggerConfig['subject']);
+            $mail->subject($loggerConfig['subject']);
 
             $to = array_filter(explode(';', (string) $loggerConfig['to']));
-            if($to) {
+            if($to !== []) {
                 foreach($to as &$email) {
                     $email = trim($email);
                     $mail->addTo($email);

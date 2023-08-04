@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
@@ -43,7 +35,7 @@ class SystemEventsListener implements EventSubscriberInterface
             return;
         }
 
-        if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
+        if (($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) instanceof \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem) {
             $error = $e->getError();
             $monitoringItem->setMessage('ERROR: ' . $error->getMessage());
             $monitoringItem->getLogger()->error($error->getMessage());
@@ -57,36 +49,34 @@ class SystemEventsListener implements EventSubscriberInterface
             return;
         }
 
-        if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
+        if (($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) instanceof \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem) {
             Helper::executeMonitoringItemLoggerShutdown($monitoringItem);
         }
 
-        if ($e->getExitCode() == 0) {
-            if ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem()) {
-                if ($config = Configuration::getById($monitoringItem->getConfigurationId() ?? '')) {
-                    $versions = $config->getKeepVersions();
-                    if (is_numeric($versions)) {
-                        $list = new MonitoringItem\Listing();
-                        $list->setOrder('DESC')->setOrderKey('id')->setOffset((int)$versions)->setLimit(
-                            100_000_000_000
-                        ); //a limit has to defined otherwise the offset won't work
-                        $list->setCondition(
-                            'status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? AND parentId IS NULL ',
-                            [$config->getId(), $monitoringItem->getPid()]
-                        );
+        if ($e->getExitCode() == 0 && ($monitoringItem = ElementsProcessManagerBundle::getMonitoringItem())) {
+            if (($config = Configuration::getById($monitoringItem->getConfigurationId() ?? '')) instanceof \Elements\Bundle\ProcessManagerBundle\Model\Configuration) {
+                $versions = $config->getKeepVersions();
+                if (is_numeric($versions)) {
+                    $list = new MonitoringItem\Listing();
+                    $list->setOrder('DESC')->setOrderKey('id')->setOffset((int)$versions)->setLimit(
+                        100_000_000_000
+                    ); //a limit has to defined otherwise the offset won't work
+                    $list->setCondition(
+                        'status ="finished" AND configurationId=? AND IFNULL(pid,0) != ? AND parentId IS NULL ',
+                        [$config->getId(), $monitoringItem->getPid()]
+                    );
 
-                        $items = $list->load();
-                        foreach ($items as $item) {
-                            $item->delete();
-                        }
+                    $items = $list->load();
+                    foreach ($items as $item) {
+                        $item->delete();
                     }
                 }
-                if (!$monitoringItem->getMessage()) {
-                    $monitoringItem->setMessage('finished');
-                }
-                $monitoringItem->setCompleted();
-                $monitoringItem->setPid(null)->save();
             }
+            if (!$monitoringItem->getMessage()) {
+                $monitoringItem->setMessage('finished');
+            }
+            $monitoringItem->setCompleted();
+            $monitoringItem->setPid(null)->save();
         }
     }
 }

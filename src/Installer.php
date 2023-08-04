@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
@@ -22,6 +14,9 @@ use Pimcore\Model\User\Permission\Definition;
 
 class Installer extends SettingsStoreAwareInstaller
 {
+    /**
+     * @var array<mixed>
+     */
     protected array $permissions = [
         Enums\Permissions::VIEW,
         Enums\Permissions::CONFIGURE,
@@ -136,7 +131,7 @@ class Installer extends SettingsStoreAwareInstaller
         $tables = [
             ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION,
             ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM,
-            ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING
+            ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING,
         ];
         foreach ($tables as $table) {
             $this->getDb()->executeQuery('DROP TABLE IF EXISTS ' . $table);

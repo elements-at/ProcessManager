@@ -1,25 +1,17 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace App\Command;
 
+use Elements\Bundle\ProcessManagerBundle\Executor\Action;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use \Elements\Bundle\ProcessManagerBundle\Executor\Action;
 
 class ProcessManagerSampleCommandAdvanced extends AbstractCommand
 {
@@ -40,7 +32,7 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->initProcessManager($input->getOption('monitoring-item-id'),['autoCreate' => true]);
+        $this->initProcessManager($input->getOption('monitoring-item-id'), ['autoCreate' => true]);
 
         $classList = new \Pimcore\Model\DataObject\ClassDefinition\Listing();
         $classList->setLimit(1);
@@ -105,7 +97,6 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
         fclose($file);
         $monitoringItem->setCurrentWorkload(1)->setTotalWorkload(1)->setMessage('csv file created')->save();
 
-
         //adding some actions programmatically
         $downloadAction = new Action\Download();
         $downloadAction
@@ -122,10 +113,11 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
 
         $monitoringItem->setActions([
             $downloadAction,
-            $openItemAction
+            $openItemAction,
         ]);
 
         $monitoringItem->setMessage('Job finished')->setCompleted();
+
         return self::SUCCESS;
     }
 }

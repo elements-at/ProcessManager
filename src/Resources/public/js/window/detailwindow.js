@@ -87,12 +87,10 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
             fieldLabel: t('plugin_pm_metaData'),
             name: "metaData",
             readOnly: true,
-            value: this.data.metaData ? JSON.stringify(Ext.decode(this.data.metaData), null, '\t') : '',
+            value: this.data.metaData ? JSON.stringify(this.data.metaData, null, '\t') : '',
             width : "100%",
             height: 250
         });
-
-        console.log(this.data);
 
         items.push({
             xtype: "textarea",

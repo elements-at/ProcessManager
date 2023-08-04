@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
@@ -30,7 +22,7 @@ class RestController extends FrontendController
     protected function getApiUser(Request $request): JsonResponse|\Pimcore\Model\User
     {
         $user = \Pimcore\Model\User::getByName($request->get('username'));
-        if(!$user) {
+        if(!$user instanceof \Pimcore\Model\User) {
             return $this->json(['success' => false, 'message' => 'User not found']);
         }
 
@@ -78,7 +70,7 @@ class RestController extends FrontendController
         } elseif ($name = $request->get('name')) {
             $list->setCondition('name = ?', [$name]);
         }
-        $config = $list->load()[0];
+        $config = $list->current();
         if (!$config) {
             return $this->json(['success' => false, 'message' => "Couldn't find a process to execute."]);
         }

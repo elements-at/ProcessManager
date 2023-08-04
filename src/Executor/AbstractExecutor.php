@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor;
@@ -27,12 +19,24 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     protected ?Configuration $config = null;
 
+    /**
+     * @var array<mixed>
+     */
     protected array $values = [];
 
+    /**
+     * @var array<mixed>
+     */
     protected array $loggers = [];
 
+    /**
+     * @var array<mixed>
+     */
     protected array $executorConfig = [];
 
+    /**
+     * @var array<mixed>
+     */
     protected array $actions = [];
 
     protected bool $isShellCommand = false;
@@ -58,8 +62,9 @@ abstract class AbstractExecutor implements \JsonSerializable
      */
     public function getName(): string
     {
-        if (!$this->name) {
-            $this->name = lcfirst(array_pop(explode('\\', static::class)));
+        if ($this->name === '' || $this->name === '0') {
+            $array = explode('\\', static::class);
+            $this->name = lcfirst(array_pop($array));
         }
 
         return $this->name;
@@ -70,9 +75,10 @@ abstract class AbstractExecutor implements \JsonSerializable
      *
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -81,9 +87,10 @@ abstract class AbstractExecutor implements \JsonSerializable
         return $this->config;
     }
 
-    public function setConfig(Configuration $config) : self
+    public function setConfig(Configuration $config): self
     {
         $this->config = $config;
+
         return $this;
     }
 
@@ -95,33 +102,40 @@ abstract class AbstractExecutor implements \JsonSerializable
     public function setExtJsClass(string $extJsClass): self
     {
         $this->extJsClass = $extJsClass;
+
         return $this;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getValues(): array
     {
         return $this->values;
     }
 
     /**
-     * @param array $values
+     * @param array<mixed> $values
      *
      * @return $this
      */
-    public function setValues($values)
+    public function setValues(array $values)
     {
         $this->values = $values;
 
         return $this;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getExtJsSettings(): array
     {
         $data = [];
         $executorConfig = [
             'extJsClass' => $this->getExtJsClass(),
             'name' => $this->getName(),
-            'class' => $this->getConfig()->getExecutorClass()
+            'class' => $this->getConfig()->getExecutorClass(),
         ];
         $data['executorConfig'] = $executorConfig;
 
@@ -148,11 +162,19 @@ abstract class AbstractExecutor implements \JsonSerializable
         return $data;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getActions(): array
     {
         return $this->actions;
     }
 
+    /**
+     * @param array<mixed> $actions
+     *
+     * @return $this
+     */
     public function setActions(array $actions): self
     {
         $this->actions = $actions;
@@ -179,13 +201,11 @@ abstract class AbstractExecutor implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $values = ['class' => static::class, ...get_object_vars($this)];
-
-        return $values;
+        return ['class' => static::class, ...get_object_vars($this)];
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getLoggers()
     {
@@ -193,11 +213,11 @@ abstract class AbstractExecutor implements \JsonSerializable
     }
 
     /**
-     * @param array $loggers
+     * @param array<mixed> $loggers
      *
      * @return $this
      */
-    public function setLoggers($loggers)
+    public function setLoggers(array $loggers)
     {
         $this->loggers = $loggers;
 
@@ -215,13 +235,18 @@ abstract class AbstractExecutor implements \JsonSerializable
         $data = [
             'values' => (array)$this->getValues(),
             'actions' => $actions,
-            'loggers' => (array)$this->getLoggers()
+            'loggers' => (array)$this->getLoggers(),
         ];
 
         return json_encode($data, JSON_THROW_ON_ERROR);
     }
 
-    protected function setData($values)
+    /**
+     * @param array<mixed> $values
+     *
+     * @return $this
+     */
+    protected function setData(array $values)
     {
         foreach ($values as $key => $value) {
             $setter = 'set' . ucfirst((string)$key);
@@ -236,7 +261,7 @@ abstract class AbstractExecutor implements \JsonSerializable
     /**
      * @return Configuration
      */
-    public function setDataFromResource(Configuration $configuration)
+    public function setDataFromResource(Configuration $configuration): Configuration
     {
         $settings = $configuration->getExecutorSettings();
         if (is_string($settings)) {

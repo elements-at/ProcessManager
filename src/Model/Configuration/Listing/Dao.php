@@ -1,25 +1,22 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 
+use Doctrine\DBAL\Exception;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
+use Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 use Pimcore\Model;
 
+/**
+ * @property Listing $model
+ */
 class Dao extends Model\Listing\Dao\AbstractDao
 {
     public static function getTableName(): string
@@ -28,7 +25,9 @@ class Dao extends Model\Listing\Dao\AbstractDao
     }
 
     /**
-     * @return array
+     * @return array<mixed>
+     *
+     * @throws Exception
      */
     public function load(): array
     {
@@ -47,14 +46,20 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . static::getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
     }
 
+    /**
+     * @return array<mixed>
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function loadIdList(): array
     {
         $condition = $this->getCondition();
         $conditionVariables = $this->model->getConditionVariables();
         $types = [];
+
         if ($user = $this->model->getUser()) {
             $ids = Helper::getAllowedConfigIdsByUser($user);
-            $condition .= $condition ? ' AND ' : ' WHERE ';
+            $condition .= $condition !== '' && $condition !== '0' ? ' AND ' : ' WHERE ';
             if ($ids) {
                 $condition .= ' id IN('. implode(',', wrapArrayElements($ids, "'")).')';
             } else {

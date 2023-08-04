@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
@@ -19,6 +11,7 @@ use Carbon\Carbon;
 use Elements\Bundle\ProcessManagerBundle\Model\CallbackSetting;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
 use Twig\Environment;
 
 class Maintenance
@@ -28,14 +21,14 @@ class Maintenance
      */
     protected $monitoringItem;
 
-    protected $renderingEngine;
+    protected \Twig\Environment $renderingEngine;
 
     public function __construct(Environment $renderingEngine)
     {
         $this->renderingEngine = $renderingEngine;
     }
 
-    public function execute()
+    public function execute(): void
     {
         $this->monitoringItem = ElementsProcessManagerBundle::getMonitoringItem();
         $this->monitoringItem->setTotalSteps(3)->save();
@@ -45,6 +38,9 @@ class Maintenance
         $this->deleteExpiredMonitoringItems();
     }
 
+    /**
+     * @return void
+     */
     protected function deleteExpiredMonitoringItems()
     {
         $list = new Model\MonitoringItem\Listing();
@@ -61,7 +57,7 @@ class Maintenance
         }
     }
 
-    public function checkProcesses()
+    public function checkProcesses(): void
     {
         $this->monitoringItem->setCurrentStep(1)->setStatus('Checking processes')->save();
 
@@ -103,16 +99,16 @@ class Maintenance
             }
         }
 
-        if ($reportItems) {
+        if ($reportItems !== []) {
             $config = ElementsProcessManagerBundle::getConfiguration();
             $recipients = $config->getReportingEmailAddresses();
-            if ($recipients) {
+            if ($recipients !== []) {
                 $mail = new \Pimcore\Mail();
-                $mail->setSubject('ProcessManager - failed processes (' . \Pimcore\Tool::getHostUrl().')');
+                $mail->subject('ProcessManager - failed processes (' . \Pimcore\Tool::getHostUrl().')');
 
                 $html = $this->renderingEngine->render('@ElementsProcessManager/reportEmail.html.twig', [
                     'totalItemsCount' => count($reportItems),
-                    'reportItems' => array_slice($reportItems, 0, 5)
+                    'reportItems' => array_slice($reportItems, 0, 5),
                 ]);
 
                 $mail->html($html);
@@ -121,7 +117,7 @@ class Maintenance
                     try {
                         $mail->addTo($emailAdr);
                     } catch (\Exception $e) {
-                        $logger = \Pimcore\Log\ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
+                        $logger = ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
                         $message = "Can't add E-Mail address : " . $e->getMessage();
                         $logger->emergency($message);
                         \Pimcore\Logger::emergency($message);
@@ -131,7 +127,7 @@ class Maintenance
                 try {
                     $mail->send();
                 } catch (\Exception $e) {
-                    $logger = \Pimcore\Log\ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
+                    $logger = ApplicationLogger::getInstance('ProcessManager', true); // returns a PSR-3 compatible logger
                     $message = "Can't send E-Mail: " . $e->getMessage();
                     $logger->emergency($message);
                     \Pimcore\Logger::emergency($message);
@@ -139,7 +135,7 @@ class Maintenance
             }
         }
         /**
-         * @var $item MonitoringItem
+         * @var MonitoringItem $item
          */
         foreach ($reportItems as $key => $item) {
             $item->setReportedDate(time())->save();
@@ -147,7 +143,7 @@ class Maintenance
         $this->monitoringItem->setStatus('Processes checked')->save();
     }
 
-    public function executeCronJobs()
+    public function executeCronJobs(): void
     {
         $this->monitoringItem->setCurrentStep(2)->setMessage('Checking cronjobs')->save();
 
@@ -167,15 +163,13 @@ class Maintenance
             if ($diff <= 0) {
                 $params = [];
                 //add default callback settings if defined
-                if ($settings = $config->getExecutorSettings()) {
+                if (($settings = $config->getExecutorSettings()) !== '' && ($settings = $config->getExecutorSettings()) !== '0') {
                     $settings = json_decode((string) $settings, true, 512, JSON_THROW_ON_ERROR);
                     if (isset($settings['values']['defaultPreDefinedConfig'])) {
                         $preDefinedConfigId = $settings['values']['defaultPreDefinedConfig'];
                         $callbackSetting = CallbackSetting::getById($preDefinedConfigId);
-                        if ($callbackSetting) {
-                            if ($v = $callbackSetting->getSettings()) {
-                                $params = json_decode($v, true, 512, JSON_THROW_ON_ERROR);
-                            }
+                        if ($callbackSetting && ($v = $callbackSetting->getSettings())) {
+                            $params = json_decode($v, true, 512, JSON_THROW_ON_ERROR);
                         }
                     }
                 }
@@ -195,13 +189,16 @@ class Maintenance
         $this->monitoringItem->setMessage('Cronjobs executed')->setCompleted();
     }
 
+    /**
+     * @return void
+     */
     protected function clearMonitoringLogs()
     {
         $this->monitoringItem->setCurrentStep(3)->setMessage('Clearing monitoring logs')->save();
         $logger = $this->monitoringItem->getLogger();
 
         $threshold = ElementsProcessManagerBundle::getConfiguration()->getArchiveThresholdLogs();
-        if ($threshold) {
+        if ($threshold !== 0) {
             $timestamp = Carbon::createFromTimestamp(time())->subDay()->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
