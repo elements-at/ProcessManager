@@ -23,12 +23,22 @@
 .process-manager-notification-progress-bar {
   /*  height:30px;*/
 }
-.plugin-process-manager-status-finished,
+.plugin-process-manager-item-status-finished {
+    color: #006402;
+    font-weight: bold;
+}
+
+.plugin-process-manager-item-status-failed {
+    color: darkred;
+    font-weight: bold;
+}
+
+/*.plugin-process-manager-status-finished,*/
 .process-manager-notification-progress-bar.finished,
 .process-manager-notification-progress-bar.finished .x-progress-bar {
     background-color: #9ACD32;
 }
-.plugin-process-manager-status-failed,
+/*.plugin-process-manager-status-failed,*/
 .process-manager-notification-progress-bar.finished_with_errors ,
 .process-manager-notification-progress-bar.finished_with_errors .x-progress-bar ,
 .process-manager-notification-progress-bar.failed,

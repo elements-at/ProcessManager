@@ -238,3 +238,40 @@ pimcore.plugin.processmanager = Class.create({
 
 const processmanagerPlugin = new pimcore.plugin.processmanager();
 
+/**
+ * Handle events triggered by action columns is Process Log panel
+ */
+document.addEventListener('processManager.monitoringItemGrid', (e) => {
+    e.preventDefault();
+    let currentTarget = e.detail.sourceEvent.currentTarget;
+
+    //print out the parameters of the event
+    if(e.detail.trigger === 'monitoringItemRestart'){
+        processmanagerPlugin.monitoringItemRestart(e.detail.monitoringId);
+    }else if(e.detail.trigger === 'showLogs'){
+        let tmpObject = new pimcore.plugin.processmanager.executor.logger.file();
+        let actionIndex = e.detail.sourceEvent.currentTarget.getAttribute('data-process-manager-action-index');
+        tmpObject.showLogs(e.detail.monitoringId,actionIndex);
+    }else if(e.detail.trigger === 'download'){
+        let accessKey = e.detail.sourceEvent.currentTarget.getAttribute('data-process-manager-access-key');
+        processmanagerPlugin.download(e.detail.monitoringId,accessKey);
+    }else if(e.detail.trigger === 'openItem'){
+        let itemId = currentTarget.getAttribute('data-process-manager-item-id');
+        let itemType = currentTarget.getAttribute('data-process-manager-item-type');
+        let actionType = currentTarget.getAttribute('data-process-manager-item-action-type');
+        pimcore.helpers["open" + actionType](itemId,itemType);
+    }else if(e.detail.trigger === 'jsEvent'){
+        let eventName = currentTarget.getAttribute('data-process-manager-event-name');
+        let actionData = {};
+        for(let i = 0; i < e.detail.monitoringItemData.actions.length; i++){
+            if(e.detail.monitoringItemData.actions[i].eventName === eventName){
+                actionData = e.detail.monitoringItemData.actions[i];
+            }
+        }
+        processmanagerPluginJsEvent.executeActionForGridList({
+            monitoringItem : e.detail.monitoringItemData,
+            actionData : actionData,
+            sourceEvent : e
+        });
+    }
+});

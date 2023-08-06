@@ -47,6 +47,40 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             itemsPerPage
         );
 
+        this.store.addListener("load", function(){
+            //let items = Ext.ComponentQuery.query('a[process-manager-trigger]');
+            let items = document.querySelectorAll('[data-process-manager-trigger]');
+            for (let i = 0; i < items.length; i++) {
+                items[i].addEventListener("click", function(e,a,b) {
+                    let monitoringId = e.currentTarget.getAttribute('data-process-manager-id');
+                    let monitoringItemData = this.store.findRecord('id',monitoringId).data;
+                    let trigger = e.currentTarget.getAttribute('data-process-manager-trigger');
+                    const event = new CustomEvent('processManager.monitoringItemGrid', {
+                        detail: {
+                            trigger : trigger,
+                            monitoringId : monitoringId,
+                            monitoringItemData : monitoringItemData,
+                            monitoringClass : this,
+                            sourceEvent: e
+                        }
+                    });
+
+                    document.dispatchEvent(event);
+
+
+                   // console.log(trigger);
+                   // console.log(monitoringId);
+                   // console.log(monitoringItemData);
+
+                    //console.log(e.currentTarget.getAttribute('data-process-manager-trigger'));
+                    //console.log(e.currentTarget.getAttribute('data-process-manager-id'));
+                    //items[i].classList.toggle("red");
+                }.bind(this));
+            }
+
+        }.bind(this));
+
+
 
         this.intervalInSeconds = {
             xtype: "numberfield",
@@ -142,6 +176,16 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
         gridColumns.push({header: "Parent ID", width: 70, sortable: true, dataIndex: 'parentId', filter: 'numeric',hidden: true});
 
         gridColumns.push({
+            header: t("status"),
+            width: 100,
+            sortable: true,
+            dataIndex: 'status',
+            filter: 'string',
+            renderer: function (v) {
+                return '<span class="plugin-process-manager-item-status plugin-process-manager-item-status-' + v + '">' + v + "</span>";
+            }
+        });
+        gridColumns.push({
             header: "Configuration ID",
             width: 40,
             hidden: true,
@@ -215,7 +259,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
             filter: 'string'
         });
         gridColumns.push({header: t("group"), width: 100, sortable: false, dataIndex: 'group', filter: 'string',hidden: true});
-        gridColumns.push({header: t("status"), width: 100, sortable: true, dataIndex: 'status', filter: 'string'});
+
         gridColumns.push({header: t("steps"), width: 50, sortable: false, dataIndex: 'steps'});
         gridColumns.push({header: t("plugin_pm_monitor_duration"), width: 100, dataIndex: 'duration'});
 
@@ -286,7 +330,7 @@ pimcore.plugin.processmanager.panel.monitoringItem = Class.create({
                 sortable: false,
                 renderer: function (v, x, record) {
                     if (record.get('retry')) {
-                        let data =  '<a href="#" onClick="processmanagerPlugin.monitoringItemRestart(' + record.get('id') + ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" title="Restart" /></a>';
+                        let data =  '<a href="#" data-process-manager-trigger="monitoringItemRestart" data-process-manager-id="' + record.get('id') + '"><img src="/bundles/pimcoreadmin/img/flat-color-icons/refresh.svg" height="18" title="Restart" /></a>';
                         if(record.get('callbackSettingsString') != '[]'){
                             data +=  '<a href="#" onClick="processmanagerPlugin.monitoringReopenCallback(\'' + record.get('configurationId') +'\',' + record.get('id')+ ')"><img src="/bundles/pimcoreadmin/img/flat-color-icons/go.svg" height="18" title="Reopen" /></a>';
                         }

@@ -31,7 +31,11 @@ class File extends AbstractLogger
             $icon = ($actionData['icon'] ?? null) ?: '/bundles/pimcoreadmin/img/flat-color-icons/file-border.svg';
             $title = ($actionData['title'] ?? null) ?: 'File Logger';
 
-            return '<a href="#" onclick="var tmp = new pimcore.plugin.processmanager.executor.logger.file(); tmp.showLogs(' . $monitoringItem->getId() . ',' . (int)$actionData['index'] . ');"><img src="' . $icon . '" alt="Download" height="18" title="' . $title . '"/></a>';
+            return '<a href="#"
+                data-process-manager-trigger="showLogs"
+                data-process-manager-id="' . $monitoringItem->getId() . '"
+                data-process-manager-action-index="' . (int)$actionData['index'] . '"
+                ><img src="' . $icon . '" alt="Download" height="18" title="' . $title . '"/></a>';
         }
 
         return '';
@@ -49,10 +53,10 @@ class File extends AbstractLogger
             if (empty($config['logLevel'])) {
                 $config['logLevel'] = 'DEBUG';
             }
-            $logLevel = constant('\Psr\Log\LogLevel::'.$config['logLevel']);
+            $logLevel = constant('\Psr\Log\LogLevel::' . $config['logLevel']);
             $logFile = $this->getLogFile($config, $monitoringItem);
 
-            if(!array_key_exists('maxFileSizeMB', $config)) {
+            if (!array_key_exists('maxFileSizeMB', $config)) {
                 $config['maxFileSizeMB'] = null;
             }
 
@@ -65,7 +69,7 @@ class File extends AbstractLogger
                 while ($logFileSize > $config['maxFileSizeMB']) {
                     clearstatcache(); //clear php internal cache otherwise the size won't be correct
 
-                    $monitoringItem->getLogger()->notice('Log file size exceeded. Filesize: ' . $logFileSize.'MB. Max file size: ' . $config['maxFileSizeMB'] . '. Removing old data.');
+                    $monitoringItem->getLogger()->notice('Log file size exceeded. Filesize: ' . $logFileSize . 'MB. Max file size: ' . $config['maxFileSizeMB'] . '. Removing old data.');
                     $data = explode("\n", file_get_contents($logFile));
                     $data = array_slice($data, count($data) / 2);
                     file_put_contents($logFile, implode("\n", $data));
@@ -93,6 +97,6 @@ class File extends AbstractLogger
      */
     public function getLogFile(array $config, MonitoringItem $monitoringItem)
     {
-        return ($v = $config['filepath'] ?? null) ? PIMCORE_PROJECT_ROOT.$v : $monitoringItem->getLogFile();
+        return ($v = $config['filepath'] ?? null) ? PIMCORE_PROJECT_ROOT . $v : $monitoringItem->getLogFile();
     }
 }

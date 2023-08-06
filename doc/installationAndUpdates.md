@@ -36,8 +36,9 @@ Then execute
 
 ```command
 ./bin/console pimcore:bundle:install ElementsProcessManagerBundle
+./bin/console doctrine:migrations:migrate --prefix=Elements\\Bundle\\ProcessManagerBundle 
 ```
-to install the bundle.
+to install the bundle and execute all migrations.
 
 
 ## Post installation

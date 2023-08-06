@@ -56,11 +56,12 @@ trait ExecutionTrait
     }
 
     /**
+     * @param int|null $monitoringId
      * @param array<mixed> $options
      *
      * @return MonitoringItem|null
      *
-     * @throws \JsonException
+     * @throws \Exception
      */
     public static function initProcessManager(?int $monitoringId, array $options = []): ?\Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem
     {

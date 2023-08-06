@@ -114,8 +114,11 @@ class JsEvent extends AbstractAction
         $js = 'processmanagerPluginJsEvent.executeActionForGridList('.htmlspecialchars(json_encode($data, JSON_THROW_ON_ERROR)).')';
         $img = '<img src="'.($actionData['icon'] ?: '/bundles/pimcoreadmin/img/flat-color-icons/biohazard.svg').'" />';
 
-        return '<a href="javascript://" onClick="'.$js
-            .'" class="process_manager_icon_download process_manager_action_js_event"'
+        return '<a href="#"
+                    data-process-manager-trigger="jsEvent"
+                    data-process-manager-id="' . $monitoringItem->getId() . '"
+                    data-process-manager-event-name="' . $actionData['eventName'] . '"
+                             class="process_manager_icon_download process_manager_action_js_event"'
             .'alt="'.$actionData['label'].'">'.$img.'</a>';
 
     }

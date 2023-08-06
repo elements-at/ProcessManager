@@ -90,9 +90,11 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
         $csvFile = PIMCORE_SYSTEM_TEMP_DIRECTORY . '/process-manager-example.csv';
 
         $file = fopen($csvFile, 'w');
-        array_unshift($data, array_keys($data[0]));
-        foreach ($data as $row) {
-            fputcsv($file, $row);
+        if(!empty($data)){
+            array_unshift($data, array_keys($data[0]));
+            foreach ($data as $row) {
+                fputcsv($file, $row);
+            }
         }
         fclose($file);
         $monitoringItem->setCurrentWorkload(1)->setTotalWorkload(1)->setMessage('csv file created')->save();

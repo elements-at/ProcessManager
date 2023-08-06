@@ -26,7 +26,7 @@ class ConfigController extends UserAwareController
     use JsonHelperTrait;
 
     #[Route(path: '/get-by-id')]
-    public function getByIdAction(Request $request): JsonResponse
+    public function getById(Request $request): JsonResponse
     {
         try {
             $list = new Configuration\Listing();
@@ -52,7 +52,7 @@ class ConfigController extends UserAwareController
     }
 
     #[Route(path: '/list')]
-    public function listAction(Request $request): JsonResponse
+    public function list(Request $request): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::VIEW);
         $data = [];
@@ -101,7 +101,7 @@ class ConfigController extends UserAwareController
     }
 
     #[Route(path: '/save', methods: ['POST'])]
-    public function saveAction(Request $request): JsonResponse
+    public function save(Request $request): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::CONFIGURE);
 
@@ -134,6 +134,7 @@ class ConfigController extends UserAwareController
         // $executorClass->setValues($values)->setExecutorConfig($executorConfig)->setActions($actions);
         $request_configuration = $request->request->get('id');
         $configuration = Configuration::getById($request->get('id'));
+
 
         if ($request_configuration == '') { // Does the id exist?
             $configuration = new Configuration();
@@ -175,7 +176,7 @@ class ConfigController extends UserAwareController
     }
 
     #[Route(path: '/activate-disable')]
-    public function activateDisableAction(Request $request): JsonResponse
+    public function activateDisable(Request $request): JsonResponse
     {
         try {
             $config = Configuration::getById($request->get('id'));
@@ -188,7 +189,7 @@ class ConfigController extends UserAwareController
     }
 
     #[Route(path: '/execute')]
-    public function executeAction(Request $request, UploadManger $uploadManger): JsonResponse
+    public function execute(Request $request, UploadManger $uploadManger): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::EXECUTE);
         $callbackSettings = $request->get('callbackSettings') ? json_decode((string)$request->get('callbackSettings'), true, 512, JSON_THROW_ON_ERROR) : [];

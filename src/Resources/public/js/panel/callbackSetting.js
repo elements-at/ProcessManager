@@ -94,7 +94,6 @@ pimcore.plugin.processmanager.panel.callbackSetting = Class.create({
                         icon: "/bundles/pimcoreadmin/img/flat-color-icons/settings.svg",
                         handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
-                            console.log(processmanagerPlugin.config.executorCallbackClasses);
 
                             var conf = processmanagerPlugin.config.executorCallbackClasses[rec.get('type')];
                             if(!conf){

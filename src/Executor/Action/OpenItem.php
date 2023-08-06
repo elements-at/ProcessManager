@@ -119,7 +119,15 @@ class OpenItem extends AbstractAction
                 $method = 'pimcore.helpers.open'.ucfirst((string) $actionData['type']);
                 $cssClass = 'process_manager_icon_action_open '.$actionData['type'].' ';
 
-                return '<a href="#" onClick="'.$method.'('.$actionData['itemId'].',\''.$item->getType().'\');" class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
+                return '<a href="#"
+                            data-process-manager-trigger="openItem"
+                            data-process-manager-id="' . $monitoringItem->getId() . '"
+                            data-process-manager-item-id="' . $actionData['itemId'] . '"
+                            data-process-manager-item-action-type="' . ucfirst((string) $actionData['type']) . '"
+                            data-process-manager-item-type="' . $item->getType() . '"
+
+
+                class="'.$cssClass.' " alt="'.$this->trans('open').'" title="'.$this->trans('open').'">&nbsp;</a>&nbsp;';
             } else {
                 return $this->trans('plugin_pm_item_doesnt_exist');
             }

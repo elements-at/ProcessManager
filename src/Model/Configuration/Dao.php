@@ -62,7 +62,7 @@ class Dao extends AbstractDao
         array_walk($data, function ($value, $key) use (&$quoteKeyData): void { $quoteKeyData['`'.$key.'`'] = $value; });
 
         if (isset($params['oldId'])) {
-            if ($params['oldId'] != '') {
+            if ($params['oldId'] !== '') {
                 $this->db->update($this->getTableName(), $quoteKeyData, ['id' => $params['oldId']]);
             } else {
                 $this->db->insert($this->getTableName(), $quoteKeyData);
