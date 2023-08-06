@@ -60,3 +60,23 @@ pimcore.plugin.processmanager.executor.action.jsEvent = new Class.create(pimcore
 });
 
 var processmanagerPluginJsEvent = new pimcore.plugin.processmanager.executor.action.jsEvent();
+
+document.addEventListener('processManager.monitoringItemGrid', (e) => {
+    e.preventDefault();
+    let currentTarget = e.detail.sourceEvent.currentTarget;
+    if(e.detail.trigger === 'jsEvent'){
+        let eventName = currentTarget.getAttribute('data-process-manager-event-name');
+        let actionData = {};
+        for(let i = 0; i < e.detail.monitoringItemData.actions.length; i++){
+            if(e.detail.monitoringItemData.actions[i].eventName === eventName){
+                actionData = e.detail.monitoringItemData.actions[i];
+            }
+        }
+        processmanagerPluginJsEvent.executeActionForGridList({
+            monitoringItem : e.detail.monitoringItemData,
+            actionData : actionData,
+            sourceEvent : e
+        });
+    }
+
+});
