@@ -135,7 +135,6 @@ class ConfigController extends UserAwareController
         $request_configuration = $request->request->get('id');
         $configuration = Configuration::getById($request->get('id'));
 
-
         if ($request_configuration == '') { // Does the id exist?
             $configuration = new Configuration();
             $configuration->setActive(true);

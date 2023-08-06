@@ -9,6 +9,7 @@ namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Monolog\Handler\StreamHandler;
+use Pimcore\Bundle\ApplicationLoggerBundle\Handler\ApplicationLoggerDb;
 
 abstract class AbstractLogger
 {
@@ -95,7 +96,6 @@ abstract class AbstractLogger
      * @param array<mixed> $config
      * @param MonitoringItem $monitoringItem
      *
-     * @return StreamHandler|null
      */
-    abstract public function createStreamHandler(array $config, MonitoringItem $monitoringItem): ?StreamHandler;
+    abstract public function createStreamHandler(array $config, MonitoringItem $monitoringItem): StreamHandler | ApplicationLoggerDb | null;
 }

@@ -15,6 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Filesystem\Filesystem;
 
 class MigrationGeneratorCommand extends AbstractCommand
 {
@@ -109,6 +110,10 @@ final class <versionName> extends AbstractMigration
 
         $config = ElementsProcessManagerBundle::getConfiguration();
         $configMigrationsDirectory = $config->getConfigurationMigrationsDirectory();
+
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($configMigrationsDirectory);
+
         $db = \Pimcore\Db::get();
 
         foreach ($configurationIds as $configurationId) {

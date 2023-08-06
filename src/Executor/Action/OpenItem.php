@@ -62,13 +62,15 @@ class OpenItem extends AbstractAction
 
     /**
      * @param array<mixed> $data
+     *
      * @return array<mixed>
      */
     protected function prepareDataForSetValues(array $data): array
     {
-        if(isset($data['itemId']) && $data['itemId'] === ''){
+        if(isset($data['itemId']) && $data['itemId'] === '') {
             $data['itemId'] = null;
         }
+
         return parent::prepareDataForSetValues($data);
     }
 

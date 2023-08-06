@@ -102,6 +102,7 @@ class JsEvent extends AbstractAction
     public function getGridActionHtml(MonitoringItem $monitoringItem, array $actionData): string
     {
         $img = '<img src="' . ($actionData['icon'] ?: '/bundles/pimcoreadmin/img/flat-color-icons/biohazard.svg') . '" />';
+
         return '<a href="#"
                     data-process-manager-trigger="jsEvent"
                     data-process-manager-id="' . $monitoringItem->getId() . '"

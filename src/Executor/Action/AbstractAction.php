@@ -117,9 +117,11 @@ abstract class AbstractAction
 
     /**
      * @param array<mixed> $data
+     *
      * @return array<mixed>
      */
-    protected function prepareDataForSetValues(array $data): array{
+    protected function prepareDataForSetValues(array $data): array
+    {
         return $data;
     }
 

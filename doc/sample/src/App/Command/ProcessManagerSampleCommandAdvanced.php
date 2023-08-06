@@ -90,7 +90,7 @@ class ProcessManagerSampleCommandAdvanced extends AbstractCommand
         $csvFile = PIMCORE_SYSTEM_TEMP_DIRECTORY . '/process-manager-example.csv';
 
         $file = fopen($csvFile, 'w');
-        if(!empty($data)){
+        if(!empty($data)) {
             array_unshift($data, array_keys($data[0]));
             foreach ($data as $row) {
                 fputcsv($file, $row);
