@@ -106,12 +106,21 @@ abstract class AbstractAction
      */
     public function setValues(array $data): void
     {
+        $data = $this->prepareDataForSetValues($data);
         foreach($data as $key => $value) {
             $setter = 'set' . ucfirst($key);
             if(method_exists($this, $setter)) {
                 $this->$setter($value);
             }
         }
+    }
+
+    /**
+     * @param array<mixed> $data
+     * @return array<mixed>
+     */
+    protected function prepareDataForSetValues(array $data): array{
+        return $data;
     }
 
     /**

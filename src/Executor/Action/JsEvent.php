@@ -101,25 +101,13 @@ class JsEvent extends AbstractAction
      */
     public function getGridActionHtml(MonitoringItem $monitoringItem, array $actionData): string
     {
-        $js = "var event = new CustomEvent('%s', {detail: %s});
-                    console.log('Dispatch event', event);
-                    document.dispatchEvent(event);";
-
-        $js = sprintf($js, $actionData['eventName'], htmlspecialchars(json_encode($actionData, JSON_THROW_ON_ERROR)));
-
-        $data = [
-            'actionData' => $actionData,
-            'monitoringItem' => $monitoringItem,
-        ];
-        $js = 'processmanagerPluginJsEvent.executeActionForGridList('.htmlspecialchars(json_encode($data, JSON_THROW_ON_ERROR)).')';
-        $img = '<img src="'.($actionData['icon'] ?: '/bundles/pimcoreadmin/img/flat-color-icons/biohazard.svg').'" />';
-
+        $img = '<img src="' . ($actionData['icon'] ?: '/bundles/pimcoreadmin/img/flat-color-icons/biohazard.svg') . '" />';
         return '<a href="#"
                     data-process-manager-trigger="jsEvent"
                     data-process-manager-id="' . $monitoringItem->getId() . '"
                     data-process-manager-event-name="' . $actionData['eventName'] . '"
                              class="process_manager_icon_download process_manager_action_js_event"'
-            .'alt="'.$actionData['label'].'">'.$img.'</a>';
+            . 'alt="' . $actionData['label'] . '">' . $img . '</a>';
 
     }
 

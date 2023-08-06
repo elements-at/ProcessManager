@@ -62,7 +62,6 @@
 
 .process_manager_icon_download {
     text-decoration: none;
-    background-color: #393c3f !important;
     width: 27px;
     border-radius: 3px;
     height: 21px;
@@ -92,23 +91,20 @@
 .process_manager_icon_action_open {
     position: relative;
     text-decoration: none;
-    background-color: #393c3f !important;
-    width: 27px;
+    width: 22px;
     border-radius: 3px;
     height: 21px;
     display: inline-block;
-    background-image: url(/bundles/elementsprocessmanager/img/sprite-open-item-action.png);
-    background-position-y: -2px;
 }
 
 .process_manager_icon_action_open.document {
-    background-position-x: -2px;
+    background-image: url("/bundles/pimcoreadmin/img/flat-color-icons/document.svg");
 }
 .process_manager_icon_action_open.object {
-    background-position-x: -33px;
+    background-image: url("/bundles/pimcoreadmin/img/flat-color-icons/object.svg");
 }
 .process_manager_icon_action_open.asset {
-    background-position-x: -63px;
+    background-image: url("/bundles/pimcoreadmin/img/flat-color-icons/asset.svg");
 }
 .process-manager-callback-settings-table {
     border : 1px solid #ECECEC;

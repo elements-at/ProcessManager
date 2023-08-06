@@ -19,10 +19,7 @@ class OpenItem extends AbstractAction
 
     protected string $type = '';
 
-    /**
-     * @var int
-     */
-    protected $itemId = null;
+    protected ?int $itemId = null;
 
     public function getLabel(): string
     {
@@ -58,17 +55,24 @@ class OpenItem extends AbstractAction
         return $this;
     }
 
-    public function getItemId(): int
+    public function getItemId(): ?int
     {
         return $this->itemId;
     }
 
     /**
-     * @param int $itemId
-     *
-     * @return $this
+     * @param array<mixed> $data
+     * @return array<mixed>
      */
-    public function setItemId($itemId)
+    protected function prepareDataForSetValues(array $data): array
+    {
+        if(isset($data['itemId']) && $data['itemId'] === ''){
+            $data['itemId'] = null;
+        }
+        return parent::prepareDataForSetValues($data);
+    }
+
+    public function setItemId(?int $itemId): self
     {
         $this->itemId = $itemId;
 
