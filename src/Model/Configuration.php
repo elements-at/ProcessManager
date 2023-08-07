@@ -94,9 +94,9 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->description;
     }
 
-    public function setDescription(mixed $description)
+    public function setDescription(?string $description)
     {
-        $this->description = $description;
+        $this->description = (string)$description;
     }
 
     /**
@@ -233,13 +233,13 @@ class Configuration extends \Pimcore\Model\AbstractModel
         return $this->cronJob;
     }
 
-    public function setCronJob(string $cronJob): self
+    public function setCronJob(?string $cronJob): self
     {
         if ($cronJob && !\Cron\CronExpression::isValidExpression($cronJob)) {
             throw new \Exception('The cronjob expression "' . $cronJob.'" is not valid. Please provide a valid Cronjob expression');
         }
 
-        $this->cronJob = $cronJob;
+        $this->cronJob = (string)$cronJob;
 
         return $this;
     }

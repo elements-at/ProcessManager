@@ -45,7 +45,7 @@ class Helper
             $monitoringItem = new MonitoringItem();
             $monitoringItem->setName($config->getName());
             $monitoringItem->setStatus($monitoringItem::STATUS_INITIALIZING);
-            $monitoringItem->setConfigurationId($config->getId());
+            $monitoringItem->setConfigurationId((string)$config->getId());
             $monitoringItem->setCallbackSettings($callbackSettings);
             $monitoringItem->setExecutedByUser($userId);
             $monitoringItem->setActions($executor->getActions());
