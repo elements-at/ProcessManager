@@ -278,7 +278,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         if (is_array($data) && $data !== []) {
             foreach ($data as $key => $value) {
-                if (in_array($key, ['callbackSettings', 'actions', 'loggers']) && is_string($value)) {
+                if (in_array($key, ['callbackSettings', 'actions', 'loggers','metaData']) && is_string($value)) {
                     $value = json_decode($value, true);
                 }
                 if ($key == 'message') {
