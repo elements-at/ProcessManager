@@ -33,7 +33,7 @@ class Dao extends AbstractDao
     /**
      * @var null | Connection
      */
-    protected static ?Connection $dbTransactionFree;
+    protected static ?Connection $dbTransactionFree = null;
 
     public function getTableName(): string
     {
