@@ -24,6 +24,11 @@ class BundleConfiguration
         return $this->config["processTimeoutMinutes"];
     }
 
+    public function getProcessListRefresh() : int
+    {
+        return $this->config["processListRefresh"] ?? 3;
+    }
+
     /**
      * @return array
      */
