@@ -8,9 +8,9 @@ if(typeof defaultValue != 'function'){
     }
 }
 
-pimcore.registerNS("pimcore.plugin.processmanager");
+pimcore.registerNS('pimcore.plugin.processmanager');
 
-pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
+pimcore.plugin.processmanager = Class.create({
     config : {},
 
     getClassName: function() {
@@ -18,23 +18,22 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     },
 
     initialize: function() {
-        //only register plugin if user has a dataLogger permission
-        if(pimcore.currentuser.permissions.indexOf("plugin_pm_permission_view") >= 0 ||
-           pimcore.currentuser.permissions.indexOf("plugin_pm_permission_configure") >= 0
-        ){
-            pimcore.plugin.broker.registerPlugin(this);
-        }
+        document.addEventListener(pimcore.events.preMenuBuild, this.createNavigationEntry.bind(this));
     },
- 
-    pimcoreReady: function (params,broker){
-        var extrasMenu = pimcore.globalmanager.get("layout_toolbar").extrasMenu;
-        if(extrasMenu){
-            extrasMenu.insert(extrasMenu.items.length+1, {
+
+    createNavigationEntry: function (e) {
+        let menu = e.detail.menu;
+        const user = pimcore.globalmanager.get('user');
+        if (menu.extras &&
+            (user.isAllowed("plugin_pm_permission_view") || user.isAllowed("plugin_pm_permission_configure"))
+        ) {
+            menu.extras.items.push({
                 text: t("plugin_pm"),
                 iconCls: "plugin_pmicon",
                 cls: "pimcore_main_menu",
                 handler: this.showProcessManager.bind(this)
             });
+        }
 
             //ignore process manager process log request exceptions as otherwise annoying errors can pop up in the pimcore backend
             Ext.Ajax.on({requestexception: function (conn, response, options) {
@@ -42,10 +41,6 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
                     options.ignoreErrors = true;
                 }
             }, priority: 1000});
-        }
-        if(extrasMenu){
-            extrasMenu.updateLayout();
-        }
 
         this.getConfig();
     },
@@ -53,9 +48,12 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     showProcessManager : function (config){
         config = defaultValue(config,{});
         if (pimcore.globalmanager.get("plugin_pm_cnf")) {
-            return Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_pm_panel");
+            Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_pm_panel");
+            if(config.activeTab){
+                Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(config.activeTab);
+            }
         } else {
-            return pimcore.globalmanager.add("plugin_pm_cnf", new pimcore.plugin.processmanager.panel.general(config));
+            pimcore.globalmanager.add("plugin_pm_cnf", new pimcore.plugin.processmanager.panel.general(config));
         }
     },
 
@@ -194,11 +192,7 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     },
 
     openLogId : function (id){
-        if (Ext.getCmp("pimcore_plugin_pm_panel")) {
-            Ext.getCmp("pimcore_plugin_pm_panel").setActiveTab(1);
-        } else {
-            processmanagerPlugin.showProcessManager({activeTab: 1});
-        }
+        processmanagerPlugin.showProcessManager({activeTab: 1});
 
         let pm = pimcore.globalmanager.get("plugin_pm_cnf");
 
@@ -242,5 +236,21 @@ pimcore.plugin.processmanager = Class.create(pimcore.plugin.admin, {
     }
 });
 
-var processmanagerPlugin = new pimcore.plugin.processmanager();
+const processmanagerPlugin = new pimcore.plugin.processmanager();
 
+/**
+ * Handle events triggered by action columns is Process Log panel
+ */
+document.addEventListener('processManager.monitoringItemGrid', (e) => {
+    e.preventDefault();
+    let currentTarget = e.detail.sourceEvent.currentTarget;
+
+    //print out the parameters of the event
+    if(e.detail.trigger === 'monitoringItemRestart'){
+        processmanagerPlugin.monitoringItemRestart(e.detail.monitoringId);
+    }else if(e.detail.trigger === 'showLogs'){
+        let tmpObject = new pimcore.plugin.processmanager.executor.logger.file();
+        let actionIndex = e.detail.sourceEvent.currentTarget.getAttribute('data-process-manager-action-index');
+        tmpObject.showLogs(e.detail.monitoringId,actionIndex);
+    }
+});

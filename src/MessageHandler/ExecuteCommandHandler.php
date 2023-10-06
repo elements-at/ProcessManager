@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\MessageHandler;
 
 use Elements\Bundle\ProcessManagerBundle\Message\ExecuteCommandMessage;
@@ -10,10 +15,10 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class ExecuteCommandHandler
 {
-    public function __invoke(ExecuteCommandMessage $message)
+    public function __invoke(ExecuteCommandMessage $message): void
     {
         $pid = Console::execInBackground($message->getCommand(), $message->getOutputFile());
-        if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())){
+        if($monitoringItem = MonitoringItem::getById($message->getMonitoringItemId())) {
             $monitoringItem
                 ->setMessengerPending(false)
                 ->setPid($pid)

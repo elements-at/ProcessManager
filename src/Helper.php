@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
@@ -21,12 +13,24 @@ use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 
 class Helper
 {
-    public static function executeJob($configId, $callbackSettings = [], $userId = 0, $metaData = '[]', $parentMonitoringItemId = null, $callback = '')
+    /**
+     * @param string $configId
+     * @param array<mixed> $callbackSettings
+     * @param int $userId
+     * @param mixed $metaData
+     * @param mixed $parentMonitoringItemId
+     * @param callable|null $callback
+     *
+     * @return array<mixed>
+     *
+     * @throws \JsonException
+     */
+    public static function executeJob(string $configId, array $callbackSettings = [], int $userId = 0, mixed $metaData = [], mixed $parentMonitoringItemId = null, ?callable $callback = null)
     {
         try {
             $config = Configuration::getById($configId);
 
-            if(!$config){
+            if(!$config instanceof \Elements\Bundle\ProcessManagerBundle\Model\Configuration) {
                 $config = new Configuration();
                 $config->setExecutorClass(Executor\PimcoreCommand::class);
             }
@@ -35,8 +39,9 @@ class Helper
             $uniqueExecution = $executor->getValues()['uniqueExecution'] ?? false;
             if ($uniqueExecution && is_null($parentMonitoringItemId)) {
                 $running = $config->getRunningProcesses();
-                if (!empty($running)) {
+                if ($running !== []) {
                     $msg = "Can't start the process because " . count($running) . ' process is running (ID: ' . $running[0]->getId() . '). Please wait until this processes is finished.';
+
                     throw new \Exception($msg);
                 }
             }
@@ -52,8 +57,8 @@ class Helper
             $monitoringItem->setMetaData($metaData);
             $monitoringItem->setParentId($parentMonitoringItemId);
 
-            if ($executorSettings = $config->getExecutorSettings()) {
-                $executorData = json_decode($config->getExecutorSettings(), true);
+            if (($executorSettings = $config->getExecutorSettings()) !== '' && ($executorSettings = $config->getExecutorSettings()) !== '0') {
+                $executorData = json_decode((string) $config->getExecutorSettings(), true, 512, JSON_THROW_ON_ERROR);
 
                 if ($executorData['values']) {
                     $hideMonitoringItem = $executorData['values']['hideMonitoringItem'] ?? false;
@@ -65,8 +70,8 @@ class Helper
                 }
             }
 
-            if($callback){
-                $callback($monitoringItem,$executor);
+            if($callback) {
+                $callback($monitoringItem, $executor);
             }
             $monitoringItem->setMessengerPending(true);
             $item = $monitoringItem->save();
@@ -81,8 +86,6 @@ class Helper
                 $monitoringItem->setCommand($command)->save();
                 $command = $executor->getShellCommand($monitoringItem);
             }
-
-
             $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
             $message = new ExecuteCommandMessage($command, $monitoringItem->getId());
             $messageBus->dispatch($message);
@@ -93,11 +96,18 @@ class Helper
         }
     }
 
+    /**
+     * @param \Pimcore\Model\User $user
+     *
+     * @return array<mixed>
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
     public static function getAllowedConfigIdsByUser(\Pimcore\Model\User $user)
     {
         if (!$user->isAdmin()) {
             $roles = $user->getRoles();
-            if (empty($roles)) {
+            if ($roles === []) {
                 $roles[] = 'no_result';
             }
             $c = [];
@@ -106,44 +116,48 @@ class Helper
             }
             $c = ' (restrictToRoles = "" OR (' . implode(' OR ', $c) . ')) ';
 
-            if ($user->getPermissions()){
+            if ($user->getPermissions()) {
 
                 $permissionConditions = [];
-                foreach($user->getPermissions() as $permission){
+                foreach($user->getPermissions() as $permission) {
                     $permissionConditions[] = 'restrictToPermissions LIKE "%,' . $permission . ',%" ';
                 }
                 $c .= ' AND (restrictToPermissions = "" OR (' . implode(' OR ', $permissionConditions) . ')) ';
             }
 
-            $ids = \Pimcore\Db::get()->fetchCol('SELECT id FROM ' . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
-
-            return $ids;
+            return \Pimcore\Db::get()->fetchFirstColumn('SELECT id FROM ' . Configuration\Listing\Dao::getTableName() . ' WHERE ' . $c);
+        } else {
+            return \Pimcore\Db::get()->fetchFirstColumn('SELECT id FROM ' . Configuration\Listing\Dao::getTableName());
         }
     }
 
     /**
      * @param MonitoringItem $monitoringItem
+     * @param bool $preventModificationDateUpdate
      *
      * @return MonitoringItem
+     *
+     * @throws \JsonException
      */
-    public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem, $preventModificationDateUpdate = false){
+    public static function executeMonitoringItemLoggerShutdown(MonitoringItem $monitoringItem, $preventModificationDateUpdate = false): MonitoringItem
+    {
         $loggers = $monitoringItem->getLoggers();
 
-        foreach((array)$loggers as $i => $loggerConfig){
+        foreach((array)$loggers as $i => $loggerConfig) {
             $loggerClass = $loggerConfig['class'];
             if (!class_exists($loggerClass)) {
                 continue;
             }
             $logObj = new $loggerClass;
-            if(method_exists($logObj,'handleShutdown')){
-                $result = $logObj->handleShutdown($monitoringItem,$loggerConfig);
-                if($result){
-                    $loggers[$i] = array_merge($loggerConfig,$result);
+            if(method_exists($logObj, 'handleShutdown')) {
+                $result = $logObj->handleShutdown($monitoringItem, $loggerConfig);
+                if($result) {
+                    $loggers[$i] = array_merge($loggerConfig, $result);
                 }
             }
         }
-        $monitoringItem->setLoggers($loggers)->save($preventModificationDateUpdate);
+        $monitoringItem->setLoggers($loggers)->save();
+
         return $monitoringItem;
     }
-
 }

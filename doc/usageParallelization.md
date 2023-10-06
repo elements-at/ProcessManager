@@ -1,7 +1,7 @@
 ### How to use - Parallelization / Multiprocessing
 
 The Processmanager allows you to execute multiple child processes. Before you use the multiprocessing option please make sure
-that you have read the [Basic usage guide](/doc/usage.md).
+that you have read the [Basic usage guide](/doc/gettingStarted.md).
 
 To get started please take a look at the [Sample Command](sample/src/App/Command/MultiprocessingSampleCommand.php) which shows how to use the feature.
 

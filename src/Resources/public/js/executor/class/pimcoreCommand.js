@@ -8,15 +8,10 @@ pimcore.plugin.processmanager.executor.class.pimcoreCommand = Class.create(pimco
 
     getCommandList: function () {
 
-        var store = [];
+        let store = [];
 
-        var commandWhiteList = processmanagerPlugin.config.executorClasses.pimcoreCommand.config.commandWhiteList;
-
-        for (var key in processmanagerPlugin.config.pimcoreCommands) {
+        for (let key in processmanagerPlugin.config.pimcoreCommands) {
             if (processmanagerPlugin.config.pimcoreCommands.hasOwnProperty(key)) {
-                if (commandWhiteList && commandWhiteList.indexOf(key) == -1) {
-                    continue;
-                }
                 store.push([key, key]);
             }
         }
@@ -37,7 +32,7 @@ pimcore.plugin.processmanager.executor.class.pimcoreCommand = Class.create(pimco
     },
 
     getFormItems: function () {
-        var items = this.getDefaultItems();
+        let items = this.getDefaultItems();
         items.push(this.getCommandList());
         items.push(this.getTextField('commandOptions'));
         items.push(this.getCheckbox('uniqueExecution'));

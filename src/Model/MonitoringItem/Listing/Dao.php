@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem\Listing;
@@ -22,7 +14,9 @@ use Pimcore\Model;
 
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-    protected function getTableName()
+    protected $model;
+
+    protected function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM;
     }
@@ -30,50 +24,55 @@ class Dao extends Model\Listing\Dao\AbstractDao
     /**
      * @return string
      */
-    protected function getCondition()
+    protected function getCondition(): string
     {
         $condition = '';
-        if ($cond = $this->model->getCondition()) {
+        if (($cond = $this->model->getCondition()) !== '' && ($cond = $this->model->getCondition()) !== '0') {
             $condition .= ' WHERE ' . $cond . ' ';
         }
 
         /**
-         * @var \Pimcore\Model\User $user
+         * @var \Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem\Listing $list
          */
-        if ($user = $this->model->getUser()) {
-            if (!$user->isAdmin()) {
-                if ($ids = Helper::getAllowedConfigIdsByUser($user)) {
-                    if ($this->model->getCondition()) {
-                        $condition .= ' AND ';
-                    } else {
-                        $condition .= ' WHERE ';
-                    }
-                    $condition .= ' configurationId IN(' . implode(', ', wrapArrayElements($ids,"'")).')';
+        $list = $this->model;
+        if (($user = $list->getUser()) && !$user->isAdmin()) {
+            if ($ids = Helper::getAllowedConfigIdsByUser($user)) {
+                if ($this->model->getCondition() !== '' && $this->model->getCondition() !== '0') {
+                    $condition .= ' AND ';
+                } else {
+                    $condition .= ' WHERE ';
                 }
+                $condition .= ' configurationId IN(' . implode(', ', wrapArrayElements($ids, "'")).')';
             }
         }
 
         return $condition;
     }
 
-    public function load()
+    /**
+     * @return array<mixed>
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function load(): array
     {
         $sql = 'SELECT id FROM ' . $this->getTableName() . $this->getCondition() . $this->getOrder() . $this->getOffsetLimit();
-        $ids = $this->db->fetchCol($sql, $this->model->getConditionVariables());
+        $ids = $this->db->fetchFirstColumn($sql, $this->model->getConditionVariables());
 
         $items = [];
         foreach ($ids as $id) {
             $item = MonitoringItem::getById($id);
-            if($item){//hack because somehow it can happen that we dont get a monitoring id if we are using multiprocessing and the element would be empty
+            if($item) {//hack because somehow it can happen that we dont get a monitoring id if we are using multiprocessing and the element would be empty
                 $items[] = $item;
             }
         }
 
         $this->model->setData($items);
+
         return $items;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return (int) $this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . $this->getTableName() . ' '. $this->getCondition(), $this->model->getConditionVariables());
     }

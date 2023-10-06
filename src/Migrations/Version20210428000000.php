@@ -1,9 +1,14 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
-use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Doctrine\DBAL\Schema\Schema;
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Pimcore\Migrations\BundleAwareMigration;
 
 /**

@@ -39,7 +39,8 @@ $monitoringItem->save();
 
 ## Action Types:
 ### Download
-Provides a download button after the process has been finished. 
+Provides a download button after the process has been finished successfully. 
+
 Programmatically creation: 
 
 ```php
@@ -56,8 +57,19 @@ $monitoringItem->setActions([
 $monitoringItem->save();
 ```
 
+There is an optional property ```ExecuteAtStates``` available to define also other states than ```finished``` for providing the download button:
+
+```php
+$downloadAction
+    ->setExecuteAtStates(['finished','finished_with_errors'])
+    ->setAccessKey('myIcon')
+    ->setLabel('Download Icon')
+    ->setFilePath('/public/bundles/elementsprocessmanager/img/sprite-open-item-action.png')
+    ->setDeleteWithMonitoringItem(false);
+```
+
 ### Open Item
-The "Open item" shows a button after the process is finished with which the user can open an object/document/asset. 
+The "Open item" shows a button after the process is finished successfully with which the user can open an object/document/asset. 
 
 Programmatically creation: 
 
@@ -74,6 +86,9 @@ $monitoringItem->setActions([
 
 $monitoringItem->save();
 ```
+
+Also the Open Item action supports the optional property ```ExecuteAtStates``` as described above.
+
 ### JS Event
 The JS Event fires a custom javascript event. In your Bundle you can perform custom actions... 
 Lets assume you add an event with the event name "export.sayHello".

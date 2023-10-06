@@ -87,7 +87,7 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
             fieldLabel: t('plugin_pm_metaData'),
             name: "metaData",
             readOnly: true,
-            value: this.data.metaData ? JSON.stringify(Ext.decode(this.data.metaData), null, '\t') : '',
+            value: this.data.metaData ? JSON.stringify(this.data.metaData, null, '\t') : '',
             width : "100%",
             height: 250
         });
@@ -97,7 +97,7 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
             fieldLabel: t('plugin_pm_logger_data'),
             name: "loggers",
             readOnly: true,
-            value: JSON.stringify(Ext.decode(this.data.loggers), null, '\t'),
+            value: JSON.stringify(this.data.loggers, null, '\t'),
             width : "100%",
             height: 250
         });
@@ -107,7 +107,7 @@ pimcore.plugin.processmanager.window.detailwindow = Class.create({
             fieldLabel: t('plugin_pm_logger_actions'),
             name: "actions",
             readOnly: true,
-            value: JSON.stringify(Ext.decode(this.data.actions), null, '\t'),
+            value: JSON.stringify(this.data.actions, null, '\t'),
             width : "100%",
             height: 250
         });

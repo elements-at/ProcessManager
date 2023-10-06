@@ -1,11 +1,47 @@
 # Installation
 
-Add the bundle to your composer.json and enable/install it. 
-```command 
-composer require elements/process-manager-bundle
-./bin/console pimcore:bundle:enable ElementsProcessManagerBundle
-./bin/console pimcore:bundle:install ElementsProcessManagerBundle
+### Enable and install the PimcoreApplicationLoggerBundle 
+
+Open /config/bundle.php
+and add
+```php
+\Pimcore\Bundle\ApplicationLoggerBundle\PimcoreApplicationLoggerBundle::class => ['all' => true],
+``` 
+
+then execute:
+```command
+bin/console pimcore:bundle:install PimcoreApplicationLoggerBundle
 ```
+
+### Installation of the ProcessManager
+
+Execute 
+
+```command
+composer require elements/process-manager-bundle
+```
+
+to get the Bundle from composer.
+
+
+Open /config/bundle.php
+and add
+```php
+Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle::class => ['all' => true]
+``` 
+
+to enable the bundle.
+
+Then execute
+
+```command
+./bin/console pimcore:bundle:install ElementsProcessManagerBundle
+./bin/console doctrine:migrations:migrate --prefix=Elements\\Bundle\\ProcessManagerBundle 
+```
+to install the bundle and execute all migrations.
+
+
+## Post installation
 
 After the installation you have to configure the bundle. Execute
 ```command 

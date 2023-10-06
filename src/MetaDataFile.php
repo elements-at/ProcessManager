@@ -1,100 +1,93 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- * @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 class MetaDataFile
 {
+    /**
+     * @var MetaDataFile[]
+     */
+    protected static array $instances = [];
+
+    protected string $identifier;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
-    protected static $instances = [];
+    protected array $data;
 
-    /**
-     * @var string
-     */
-    protected $identifier;
-
-    /**
-     * @var array
-     */
-    protected $data;
-
-    /**
-     * @return string
-     */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
 
-    /**
-     * @param string $identifier
-     * @return $this
-     */
-    public function setIdentifier($identifier)
+    public function setIdentifier(string $identifier): self
     {
         $this->identifier = $identifier;
+
         return $this;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
 
     /**
-     * @param array $data
-     * @return $this
+     * @param array<mixed> $data
+     *
      */
-    public function setData($data)
+    public function setData(array $data): self
     {
         $this->data = $data;
+
         return $this;
     }
 
-    protected static function getFile($identifier)
+    /**
+     * @param string $identifier
+     *
+     * @return string
+     */
+    protected static function getFile(string $identifier): string
     {
         $datFile = PIMCORE_PRIVATE_VAR . '/process-manager-meta-data-files/';
-        \Pimcore\File::mkdir($datFile);
-        $datFile .= "$identifier.json";
-        return $datFile;
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($datFile, 0775);
+
+        return $datFile . "$identifier.json";
+    }
+
+    final public function __construct()
+    {
     }
 
     /**
      * Unique identifier for the file
      *
-     * @param $identifier
-     * @return static
+     * @param string $identifier
+     *
+     * @throws \JsonException
      */
-    public static function getById($identifier)
+    public static function getById(string $identifier): self
     {
-        if (isset(self::$instances[$identifier]) == false) {
+        if (!isset(self::$instances[$identifier])) {
+
             $tmp = new static();
             $tmp->setIdentifier($identifier);
 
             $file = self::getFile($identifier);
-            if (file_exists($file)) {
-                $data = json_decode(file_get_contents($file), true);
-            } else {
-                $data = [];
-            }
+            $data = file_exists($file) ? json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR) : [];
             $tmp->setData($data);
             self::$instances[$identifier] = $tmp;
         }
@@ -102,25 +95,27 @@ class MetaDataFile
         return self::$instances[$identifier];
     }
 
-    public function delete(){
+    public function delete(): void
+    {
         $file = self::getFile($this->getIdentifier());
-        if(is_file($file)){
+        if(is_file($file)) {
             @unlink($file);
         }
     }
 
-    public function save()
+    /**
+     * @throws \Exception
+     */
+    public function save(): void
     {
         $data = $this->getData();
         if (empty($data)) {
-            throw new \Exception("No data to save ");
+            throw new \Exception('No data to save ');
         }
-        $check = file_put_contents(self::getFile($this->getIdentifier()), json_encode($this->getData(),JSON_PRETTY_PRINT));
+        $check = file_put_contents(self::getFile($this->getIdentifier()), json_encode($this->getData(), JSON_PRETTY_PRINT));
 
         if (!$check) {
             throw new \Exception("Can't write file: " . $this->getIdentifier());
         }
     }
-
-
 }

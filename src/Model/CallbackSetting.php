@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model;
@@ -18,152 +10,92 @@ namespace Elements\Bundle\ProcessManagerBundle\Model;
 /**
  * Class MonitoringItem
  *
- * @method  MonitoringItem save() MonitoringItem
- * @method  MonitoringItem load() []MonitoringItem
+ * @method  CallbackSetting save() CallbackSetting
+ * @method  CallbackSetting delete()
+ * @method  CallbackSetting[] load()
+ * @method CallbackSetting\Dao getDao()
  */
 class CallbackSetting extends \Pimcore\Model\AbstractModel
 {
-    /**
-     * @var int
-     */
-    public $id;
+    public ?int $id;
 
-    /**
-     * @var string
-     */
-    public $name;
+    public string $name = '';
 
-    /**
-     * @var string
-     */
-    public $description;
+    public string $description = '';
 
-    /**
-     * @var string
-     */
-    public $settings;
+    public string $settings;
 
-    /**
-     * @var string
-     */
-    public $type;
+    public string $type;
 
-    /**
-     * @var int
-     */
-    public $creationDate;
+    public int $creationDate;
 
-    /**
-     * @var int
-     */
-    public $modificationDate;
+    public int $modificationDate;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return $this
-     */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     *
-     * @return $this
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSettings()
+    public function getSettings(): string
     {
         return $this->settings;
     }
 
-    /**
-     * @param string $settings
-     *
-     * @return $this
-     */
-    public function setSettings($settings)
+    public function setSettings(string $settings): self
     {
         $this->settings = $settings;
 
         return $this;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return self
-     */
-    public static function getById($id)
+    public static function getById(int $id): ?self
     {
         $self = new self();
+        /**
+         * @var CallbackSetting|null $model
+         */
+        $model = $self->getDao()->getById($id);
 
-        return $self->getDao()->getById($id);
+        return $model;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return $this
-     */
-    public function setType($type)
+    public function setType(string $type): self
     {
         $this->type = $type;
 

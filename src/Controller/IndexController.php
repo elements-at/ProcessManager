@@ -1,47 +1,35 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Controller;
 
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Elements\Bundle\ProcessManagerBundle\Enums;
 use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Elements\Bundle\ProcessManagerBundle\Service\CommandsValidator;
-use Pimcore\Bundle\AdminBundle\Controller\AdminController;
-use Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse;
+use Pimcore\Bundle\AdminBundle\Model\GridConfig;
+use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Controller\UserAwareController;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Translation\Translator;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\GridConfig;
-use \Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-use Elements\Bundle\ProcessManagerBundle\Enums;
-/**
- * @Route("/admin/elementsprocessmanager/index")
- */
-class IndexController extends AdminController
+
+#[Route(path: '/admin/elementsprocessmanager/index')]
+class IndexController extends UserAwareController
 {
-    /**
-     * @Route("/get-plugin-config")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function getPluginConfigAction(Request $request, CommandsValidator $commandsValidator, Translator $translator)
+    use JsonHelperTrait;
+
+    #[Route(path: '/get-plugin-config')]
+    public function getPluginConfigAction(CommandsValidator $commandsValidator, Translator $translator): JsonResponse
     {
         $this->checkPermission(Enums\Permissions::VIEW);
 
@@ -67,27 +55,24 @@ class IndexController extends AdminController
             ];
         }
 
-
         $data['permissions'] = [];
         $list = new \Pimcore\Model\User\Permission\Definition\Listing();
         $list->setOrder('ASC')->setOrderKey('key');
         foreach ($list->load() as $permission) {
             $data['permissions'][] = [
                 'key' => $permission->getKey(),
-                'name' => $translator->trans($permission->getKey(),[],'admin'). ' (' . $permission->getKey().')',
-                'category' => $permission->getCategory()
+                'name' => $translator->trans($permission->getKey(), [], 'admin'). ' (' . $permission->getKey().')',
+                'category' => $permission->getCategory(),
             ];
         }
 
-        usort($data['permissions'], function($a, $b) {
-            return strnatcasecmp($a['name'], $b['name']);
-        });
+        usort($data['permissions'], fn ($a, $b): int => strnatcasecmp($a['name'], $b['name']));
 
         $shortCutMenu = [];
 
         if($bundleConfig->getDisableShortcutMenu() == false) {
             $list = new Configuration\Listing();
-            $list->setUser($this->getAdminUser());
+            $list->setUser($this->getPimcoreUser());
             $list->setOrderKey('name');
             foreach ($list->load() as $config) {
                 $group = $config->getGroup() ?: 'default';
@@ -102,59 +87,41 @@ class IndexController extends AdminController
 
         $data['processListRefresh'] = $bundleConfig->getProcessListRefresh();
         
-        return $this->adminJson($data);
+        if($data['shortCutMenu'] ?? null) {
+            ksort($data['shortCutMenu'], SORT_LOCALE_STRING);
+        }
+
+        return  $this->jsonResponse($data);
     }
 
     /**
-     * @Route("/download")
-     *
-     * @param Request $request
-     *
-     * @return Response
+     * @throws \JsonException
      */
-    public function downloadAction(Request $request)
+    #[Route(path: '/download')]
+    public function downloadAction(Request $request): ?Response
     {
         $monitoringItem = MonitoringItem::getById($request->get('id'));
+        if(!$monitoringItem) {
+            throw $this->createNotFoundException('MonitoringItem Not Found');
+        }
         $actions = $monitoringItem->getActions();
         foreach ($actions as $action) {
             if ($action['accessKey'] == $request->get('accessKey')) {
                 $className = $action['class'];
                 /**
-                 * @var $class AbstractAction
+                 * @var AbstractAction $class
                  */
                 $class = new $className();
-                $result = $class->execute($monitoringItem, $action);
 
-                return $result;
+                return $class->execute($monitoringItem, $action);
             }
         }
+
+        return null;
     }
 
-    /**
-     * @Route("/update-plugin")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function updatePluginAction(Request $request)
-    {
-        //just for testing
-
-        $method = 'updateVersion'.$request->get('version');
-
-        Updater::getInstance()->$method();
-        die();
-    }
-
-    /**
-     * @Route("/property-list")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function propertyListAction(Request $request)
+    #[Route(path: '/property-list')]
+    public function propertyListAction(Request $request): JsonResponse
     {
         $result = [];
         $fieldName = $request->get('fieldName');
@@ -166,23 +133,18 @@ class IndexController extends AdminController
             }
         }
 
-        return $this->adminJson(['success' => true, 'data' => $result]);
+        return $this->jsonResponse(['success' => true, 'data' => $result]);
     }
 
     /**
-     * @Route("/get-classes")
      *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *
-     * @throws \Exception
+     * @return JsonResponse
      *
      */
-    public function getClassesAction(Request $request): JsonResponse
+    #[Route(path: '/get-classes')]
+    public function getClassesAction(): JsonResponse
     {
         $result = [];
-
         $list = new ClassDefinition\Listing();
         $list->setOrderKey('name')->setOrder('ASC');
         foreach ($list as $c) {
@@ -193,22 +155,17 @@ class IndexController extends AdminController
     }
 
     /**
-     * @Route("/get-grid-configs")
      *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *
-     * @throws \Exception
+     * @return JsonResponse
      *
      */
-    public function getGridConfigsAction(Request $request ): JsonResponse
+    #[Route(path: '/get-grid-configs')]
+    public function getGridConfigsAction(): JsonResponse
     {
         $result = [];
-
         $list = new GridConfig\Listing();
         $list->setOrderKey('name');
-        $list->setCondition('ownerId = ? OR shareGlobally =1',[$this->getAdminUser()->getId()]);
+        $list->setCondition('ownerId = ? OR shareGlobally =1', [$this->getPimcoreUser()->getId()]);
         $config = $list->load();
         foreach ($list as $c) {
             $result[] = ['id' => $c->getId(), 'name' => $c->getName()];

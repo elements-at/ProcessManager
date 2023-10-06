@@ -1,37 +1,35 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
 use Elements\Bundle\ProcessManagerBundle\Helper;
 use Elements\Bundle\ProcessManagerBundle\Model\Configuration;
+use Elements\Bundle\ProcessManagerBundle\Model\Configuration\Listing;
 use Pimcore\Model;
 
+/**
+ * @property Listing $model
+ */
 class Dao extends Model\Listing\Dao\AbstractDao
 {
-    public static function getTableName()
+    public static function getTableName(): string
     {
         return ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
+     *
+     * @throws Exception
      */
-    public function load()
+    public function load(): array
     {
         $items = [];
 
@@ -43,27 +41,32 @@ class Dao extends Model\Listing\Dao\AbstractDao
         return $items;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
-        return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . $this->getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
+        return (int)$this->db->fetchOne('SELECT COUNT(*) as amount FROM ' . static::getTableName() . ' ' . $this->getCondition(), $this->model->getConditionVariables());
     }
 
-    public function loadIdList()
+    /**
+     * @return array<mixed>
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function loadIdList(): array
     {
         $condition = $this->getCondition();
         $conditionVariables = $this->model->getConditionVariables();
         $types = [];
+
         if ($user = $this->model->getUser()) {
-            if ($ids = Helper::getAllowedConfigIdsByUser($user)) {
-                if ($condition) {
-                    $condition .= ' AND ';
-                } else {
-                    $condition .= ' WHERE ';
-                }
-                $condition .= ' id IN('. implode(",",wrapArrayElements($ids,"'")).')';
+            $ids = Helper::getAllowedConfigIdsByUser($user);
+            $condition .= $condition !== '' && $condition !== '0' ? ' AND ' : ' WHERE ';
+            if ($ids) {
+                $condition .= ' id IN('. implode(',', wrapArrayElements($ids, "'")).')';
+            } else {
+                $condition .= 'id IS NULL';
             }
         }
 
-        return $this->db->fetchCol('SELECT id FROM ' . $this->getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables,$types);
+        return $this->db->fetchFirstColumn('SELECT id FROM ' . static::getTableName() . $condition . $this->getOrder() . $this->getOffsetLimit(), $conditionVariables, $types);
     }
 }

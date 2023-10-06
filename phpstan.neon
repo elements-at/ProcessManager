@@ -1,0 +1,21 @@
+parameters:
+    level: 6
+
+    # optional - Default uses current php version
+    phpVersion: 80100 # PHP 8.1
+
+    paths:
+        - src
+
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+
+    excludePaths:
+        analyse:
+            - src/*/*.html.php
+            - src/Kernel.php
+
+	# see https://phpstan.org/config-reference#universal-object-crates
+    universalObjectCratesClasses:
+        - Pimcore\Config\Config
+        - Pimcore\Templating\Model\ViewModel

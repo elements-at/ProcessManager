@@ -76,3 +76,14 @@ pimcore.plugin.processmanager.executor.action.openItem = new Class.create(pimcor
     }
 
 });
+
+document.addEventListener('processManager.monitoringItemGrid', (e) => {
+    e.preventDefault();
+    let currentTarget = e.detail.sourceEvent.currentTarget;
+    if(e.detail.trigger === 'openItem'){
+        let itemId = currentTarget.getAttribute('data-process-manager-item-id');
+        let itemType = currentTarget.getAttribute('data-process-manager-item-type');
+        let actionType = currentTarget.getAttribute('data-process-manager-item-action-type');
+        pimcore.helpers["open" + actionType](itemId,itemType);
+    }
+});

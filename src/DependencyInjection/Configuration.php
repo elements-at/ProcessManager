@@ -1,13 +1,8 @@
 <?php
 
 /**
- * Pimcore
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under following license:
- * - Pimcore Enterprise License (PEL)
- *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\DependencyInjection;
@@ -25,53 +20,62 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('elements_process_manager');
 
-       # $debugEmailAddresses = \Pimcore\Config::getSystemConfiguration()["email"]["debug"]["email_addresses"];
-       # $debugEmailAddresses = array_filter(preg_split('/,|;/',$debugEmailAddresses));
-
         $debugEmailAddresses = [];
         $rootNode = $treeBuilder->getRootNode();
+        /**
+         * @phpstan-ignore-next-line
+         */
         $rootNode
             ->children()
-                ->integerNode("archiveThresholdLogs")
+                ->integerNode('archiveThresholdLogs')
                     ->defaultValue(7)
                     ->min(0)
-                    ->info("Defines how many days log entries are kept")
+                    ->info('Defines how many days log entries are kept')
                     ->end()
-                ->integerNode("processTimeoutMinutes")
+                ->integerNode('processTimeoutMinutes')
                     ->defaultValue(15)
                     ->min(0)
-                    ->info("If the MonitoringItem has not been save within X minutes it will be considered as hanging process")
+                    ->info('If the MonitoringItem has not been save within X minutes it will be considered as hanging process')
                     ->end()
-                ->integerNode("processListRefresh")
+                ->integerNode('processListRefresh')
                     ->defaultValue(3)
-                    ->min(0)
-                    ->info("Refresh interal of process list in seconds")
+                    ->min(1)
+                    ->info('Refresh interal of process list in seconds')
                     ->end()
-                ->booleanNode("disableShortcutMenu")
+                ->booleanNode('disableShortcutMenu')
                     ->defaultValue(false)
-                    ->info("Disable the shortcut menu on the left side in the Pimcore admin")
+                    ->info('Disable the shortcut menu on the left side in the Pimcore admin')
                     ->end()
-                ->arrayNode("reportingEmailAddresses")
+                ->arrayNode('reportingEmailAddresses')
                     ->defaultValue($debugEmailAddresses)
                     ->scalarPrototype()->end()
-                    ->info("Defines email addresses to which errors should be reported")
+                    ->info('Defines email addresses to which errors should be reported')
                     ->end()
 
-                ->arrayNode("additionalScriptExecutionUsers")
+                ->arrayNode('additionalScriptExecutionUsers')
                     ->scalarPrototype()->end()
-                    ->info("Defines additional system users which are allowed to execute the php scripts")
+                    ->info('Defines additional system users which are allowed to execute the php scripts')
                     ->end()
-                ->arrayNode("restApiUsers")
+                ->scalarNode('configurationMigrationsDirectory')
+                    ->defaultValue('%kernel.project_dir%/src/Migrations')
+                    ->info('Defines the directory where the bin/console process-manager:migrations:generate creates the migration files')
+                    ->end()
+                ->scalarNode('configurationMigrationsNamespace')
+                    ->defaultValue("App\Migrations")
+                    ->info('Namespace for the configuration migrations')
+                    ->end()
+                ->arrayNode('restApiUsers')
                         ->arrayPrototype()->children()
                             ->scalarNode('username')->isRequired()->end()
                             ->scalarNode('apiKey')->isRequired()->end()
 
             ->end()
         ;
+
         return $treeBuilder;
     }
 }

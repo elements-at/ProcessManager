@@ -1,31 +1,28 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
 
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Monolog\Handler\StreamHandler;
+use Pimcore\Bundle\ApplicationLoggerBundle\Handler\ApplicationLoggerDb;
 
 abstract class AbstractLogger
 {
-    const LOG_FORMAT_SIMPLE = "[%datetime%] %channel%.%level_name%: %message% \n";
-    public $extJsClass = '';
+    final public const LOG_FORMAT_SIMPLE = "[%datetime%] %channel%.%level_name%: %message% \n";
 
-    public $name = '';
+    public string $extJsClass = '';
 
-    protected $config = [];
+    public string $name = '';
+
+    /**
+     * @var array<mixed>
+     */
+    protected array $config = [];
 
     /**
      * @return string
@@ -40,7 +37,7 @@ abstract class AbstractLogger
      *
      * @return $this
      */
-    public function setExtJsClass($extJsClass)
+    public function setExtJsClass(string $extJsClass)
     {
         $this->extJsClass = $extJsClass;
 
@@ -60,7 +57,7 @@ abstract class AbstractLogger
      *
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -68,19 +65,19 @@ abstract class AbstractLogger
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
 
     /**
-     * @param array $config
+     * @param array<mixed> $config
      *
      * @return $this
      */
-    public function setConfig($config)
+    public function setConfig(array $config)
     {
         $this->config = $config;
 
@@ -89,17 +86,16 @@ abstract class AbstractLogger
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $actionData
+     * @param array<mixed> $actionData
      *
      * @return string
      */
-    abstract public function getGridLoggerHtml($monitoringItem, $actionData);
+    abstract public function getGridLoggerHtml(MonitoringItem $monitoringItem, array $actionData): string;
 
     /**
-     * @param array $config
+     * @param array<mixed> $config
      * @param MonitoringItem $monitoringItem
      *
-     * @return StreamHandler
      */
-    abstract public function createStreamHandler($config, $monitoringItem);
+    abstract public function createStreamHandler(array $config, MonitoringItem $monitoringItem): StreamHandler | ApplicationLoggerDb | null;
 }

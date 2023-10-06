@@ -1,10 +1,14 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
-use Elements\Bundle\ProcessManagerBundle\Executor\Action\AbstractAction;
 use Elements\Bundle\ProcessManagerBundle\Model\MonitoringItem;
 use Pimcore\Migrations\BundleAwareMigration;
 
@@ -26,11 +30,11 @@ class Version20230425000002 extends BundleAwareMigration
         $list = new MonitoringItem\Listing();
         $list->setOrder('DESC');
         $list->setOrderKey('id');
-        foreach($list->load() as $item){
+        foreach($list->load() as $item) {
             $isDirty = false;
             if ($actions = $item->getActions()) {
                 foreach ($actions as $key => $action) {
-                    if (!key_exists('executeAtStates',$action)){
+                    if (!array_key_exists('executeAtStates', $action)) {
                         $actions[$key]['executeAtStates'] = ['finished'];
                         $isDirty = true;
                     }

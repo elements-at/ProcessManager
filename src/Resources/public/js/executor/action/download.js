@@ -64,3 +64,12 @@ pimcore.plugin.processmanager.executor.action.download = new Class.create(pimcor
     }
 
 });
+
+document.addEventListener('processManager.monitoringItemGrid', (e) => {
+    e.preventDefault();
+    let currentTarget = e.detail.sourceEvent.currentTarget;
+    if(e.detail.trigger === 'download'){
+        let accessKey = e.detail.sourceEvent.currentTarget.getAttribute('data-process-manager-access-key');
+        processmanagerPlugin.download(e.detail.monitoringId,accessKey);
+    }
+});

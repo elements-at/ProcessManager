@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Action;
@@ -21,22 +13,32 @@ abstract class AbstractAction
 {
     use \Pimcore\Model\DataObject\Traits\ObjectVarTrait;
 
-    public $extJsClass = '';
+    public string $extJsClass = '';
 
-    public $name = '';
-    
-    public $executeAtStates = ['finished'];
-
-    protected $config = [];
+    public string $name = '';
 
     /**
-     * @param $key
+     * @var array<string>
+     */
+    public array $executeAtStates = ['finished'];
+
+    /**
+     * @var array<mixed>
+     */
+    protected array $config = [];
+
+    /**
+     * @param $key string
+     *
      * @return string
      */
-    protected function trans($key){
+    protected function trans(string $key): string
+    {
         $translator = \Pimcore::getKernel()->getContainer()->get('translator');
-        return $translator->trans($key,[],'admin');
+
+        return $translator->trans($key, [], 'admin');
     }
+
     /**
      * @return string
      */
@@ -50,7 +52,7 @@ abstract class AbstractAction
      *
      * @return $this
      */
-    public function setExtJsClass($extJsClass)
+    public function setExtJsClass(string $extJsClass)
     {
         $this->extJsClass = $extJsClass;
 
@@ -70,7 +72,7 @@ abstract class AbstractAction
      *
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -78,19 +80,19 @@ abstract class AbstractAction
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getExecuteAtStates()
+    public function getExecuteAtStates(): array
     {
         return $this->executeAtStates;
     }
 
     /**
-     * @param array $executeAtStates
+     * @param array<mixed> $executeAtStates
      *
      * @return $this
      */
-    public function setExecuteAtStates($executeAtStates)
+    public function setExecuteAtStates(array $executeAtStates)
     {
         $this->executeAtStates = $executeAtStates;
 
@@ -98,30 +100,45 @@ abstract class AbstractAction
     }
 
     /**
-     * @param array $data
+     * @param array<mixed> $data
+     *
+     * @return void
      */
-    public function setValues(array $data){
-        foreach($data as $key => $value){
-            $setter = "set" . ucfirst($key);
-            if(method_exists($this,$setter)){
+    public function setValues(array $data): void
+    {
+        $data = $this->prepareDataForSetValues($data);
+        foreach($data as $key => $value) {
+            $setter = 'set' . ucfirst($key);
+            if(method_exists($this, $setter)) {
                 $this->$setter($value);
             }
         }
     }
+
     /**
-     * @return array
+     * @param array<mixed> $data
+     *
+     * @return array<mixed>
      */
-    public function getConfig()
+    protected function prepareDataForSetValues(array $data): array
+    {
+        return $data;
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function getConfig(): array
     {
         return $this->config;
     }
 
     /**
-     * @param array $config
+     * @param array<mixed> $config
      *
      * @return $this
      */
-    public function setConfig($config)
+    public function setConfig(array $config)
     {
         $this->config = $config;
 
@@ -130,45 +147,47 @@ abstract class AbstractAction
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $actionData
+     * @param array<mixed> $actionData
      *
      * @return string
      */
-    abstract public function getGridActionHtml($monitoringItem, $actionData);
+    abstract public function getGridActionHtml(MonitoringItem $monitoringItem, array $actionData): string;
 
     /**
-     * Perfoms the action
+     * Performs the action
      *
      * @param $monitoringItem MonitoringItem
-     * @param $actionData array
+     * @param array<mixed> $actionData
      *
      * @return mixed
      */
-    abstract public function execute($monitoringItem, $actionData);
+    abstract public function execute(MonitoringItem $monitoringItem, array $actionData);
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $actionData array
+     * @param array<mixed> $actionData
      */
-    public function preMonitoringItemDeletion($monitoringItem, $actionData)
+    public function preMonitoringItemDeletion(MonitoringItem $monitoringItem, array $actionData): void
     {
     }
 
     /**
      * returns data which can be used in action classes
+     *
      * @param MonitoringItem $monitoringItem
-     * @param array $actionData
-     * @return array
+     * @param array<mixed> $actionData
+     *
+     * @return array<string,mixed>
      */
-    public function toJson(MonitoringItem $monitoringItem,$actionData){
-        $data = $this->getObjectVars();
-        return $data;
+    public function toJson(MonitoringItem $monitoringItem, array $actionData): array
+    {
+        return $this->getObjectVars();
     }
 
     /**
      * returns an array for storage in the database
      *
-     * @return array
+     * @return array<mixed>
      */
     abstract public function getStorageData(): array;
 }

@@ -2,16 +2,26 @@
 
 declare(strict_types=1);
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
+use Elements\Bundle\ProcessManagerBundle\ElementsProcessManagerBundle;
+use Pimcore\Migrations\BundleAwareMigration;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230321092750 extends AbstractMigration
+final class Version20230321092750 extends BundleAwareMigration
 {
+    protected function getBundleName(): string
+    {
+        return ElementsProcessManagerBundle::BUNDLE_NAME;
+    }
 
     public function up(Schema $schema): void
     {

@@ -1,45 +1,78 @@
 <?php
 
+/**
+ * Created by Elements.at New Media Solutions GmbH
+ *
+ */
+
 namespace Elements\Bundle\ProcessManagerBundle\Service;
 
 use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
+use Pimcore\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LazyCommand;
 
 class CommandsValidator
 {
     protected string $strategy;
 
+    /**
+     * @var array<string>
+     */
     protected array $whiteList = [];
+
+    /**
+     * @var array<string>
+     */
     protected array $blackList = [];
 
-    public function __construct(string $strategy = "default", array $whiteList = [], array $blackList = [])
+    /**
+     * @param string $strategy
+     * @param array<string> $whiteList
+     * @param array<string> $blackList
+     */
+    public function __construct(string $strategy = 'default', array $whiteList = [], array $blackList = [])
     {
         $this->setStrategy($strategy);
         $this->setWhiteList($whiteList);
         $this->setBlackList($blackList);
     }
 
-
-    public function getValidCommands()
+    /**
+     * @return array<mixed>
+     */
+    public function getValidCommands(): array
     {
 
-        $application = new \Pimcore\Console\Application(\Pimcore::getKernel());
-        $commands = $this->{"getCommands" . ucfirst($this->getStrategy())}($application->all());
+        $application = new Application(\Pimcore::getKernel());
+        $commands = $this->{'getCommands' . ucfirst($this->getStrategy())}($application->all());
 
         ksort($commands);
+
         return $commands;
     }
 
-    protected function getCommandsAll($commands){
+    /**
+     * @param array<mixed> $commands
+     *
+     * @return array<mixed>
+     */
+    protected function getCommandsAll(array $commands): array
+    {
         return $commands;
     }
 
-    protected function getCommandsDefault($commands)
+    /**
+     * @param array<mixed> $commands
+     *
+     * @return array<mixed>
+     */
+    protected function getCommandsDefault(array $commands): array
     {
         $validCommands = [];
 
         /**
-         * @var \Symfony\Component\Console\Command\Command
+         * @var Command $command
          */
         foreach ($commands as $name => $command) {
             if (in_array($name, $this->getBlackList())) {
@@ -48,6 +81,7 @@ class CommandsValidator
 
             if (in_array($name, $this->getWhiteList())) {
                 $validCommands[$name] = $command;
+
                 continue;
             }
 
@@ -60,7 +94,10 @@ class CommandsValidator
         return $validCommands;
     }
 
-    protected function classUsesTraits($class, $autoload = true)
+    /**
+     * @return array<string>
+     */
+    protected function classUsesTraits(LazyCommand | Command $class, bool $autoload = true): array
     {
         if ($class instanceof LazyCommand) {
             $class = $class->getCommand();
@@ -70,43 +107,38 @@ class CommandsValidator
         // Get traits of all parent classes
         do {
             $traits = array_merge(class_uses($class, $autoload), $traits);
+            // @phpstan-ignore-next-line
         } while ($class = get_parent_class($class));
 
         // Get traits of all parent traits
         $traitsToSearch = $traits;
-        while (!empty($traitsToSearch)) {
+        while ($traitsToSearch !== []) {
             $newTraits = class_uses(array_pop($traitsToSearch), $autoload);
             $traits = array_merge($newTraits, $traits);
             $traitsToSearch = array_merge($newTraits, $traitsToSearch);
-        };
+        }
 
-        foreach ($traits as $trait => $same) {
+        foreach (array_keys($traits) as $trait) {
             $traits = array_merge(class_uses($trait, $autoload), $traits);
         }
 
         return array_unique($traits);
     }
 
-    /**
-     * @return string
-     */
     public function getStrategy(): string
     {
         return $this->strategy;
     }
 
-    /**
-     * @param string $strategy
-     * @return $this
-     */
-    public function setStrategy($strategy)
+    public function setStrategy(string $strategy): static
     {
         $this->strategy = $strategy;
+
         return $this;
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getWhiteList(): array
     {
@@ -114,17 +146,17 @@ class CommandsValidator
     }
 
     /**
-     * @param array $whiteList
-     * @return $this
+     * @param array<string> $whiteList
      */
-    public function setWhiteList($whiteList)
+    public function setWhiteList(array $whiteList): static
     {
         $this->whiteList = $whiteList;
+
         return $this;
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getBlackList(): array
     {
@@ -132,12 +164,12 @@ class CommandsValidator
     }
 
     /**
-     * @param array $blackList
-     * @return $this
+     * @param array<string> $blackList
      */
-    public function setBlackList($blackList)
+    public function setBlackList(array $blackList): static
     {
         $this->blackList = $blackList;
+
         return $this;
     }
 }

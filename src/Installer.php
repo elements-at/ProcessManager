@@ -1,43 +1,36 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle;
 
+use Doctrine\DBAL\Connection;
 use Elements\Bundle\ProcessManagerBundle\Migrations\Version20210428000000;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Model\User\Permission\Definition;
-use Elements\Bundle\ProcessManagerBundle\Enums;
 
 class Installer extends SettingsStoreAwareInstaller
 {
-
-
+    /**
+     * @var array<mixed>
+     */
     protected array $permissions = [
         Enums\Permissions::VIEW,
         Enums\Permissions::CONFIGURE,
         Enums\Permissions::EXECUTE,
     ];
 
-    public function install()
+    public function install(): void
     {
         $this->createPermissions();
         $this->createTables();
         parent::install();
     }
 
-    protected function createPermissions()
+    protected function createPermissions(): void
     {
         foreach ($this->permissions as $permissionKey) {
             Definition::create($permissionKey);
@@ -47,24 +40,22 @@ class Installer extends SettingsStoreAwareInstaller
     /**
      * {@inheritdoc}
      */
-    public function needsReloadAfterInstall()
+    public function needsReloadAfterInstall(): bool
     {
         return true;
     }
 
-    /**
-     * @return \Pimcore\Db\Connection|\Pimcore\Db\ConnectionInterface
-     */
-    protected function getDb(){
+    protected function getDb(): Connection
+    {
         return \Pimcore\Db::get();
     }
 
-    protected function createTables()
+    protected function createTables(): void
     {
         $db = $this->getDb();
 
-        $db->query(
-            "CREATE TABLE IF NOT EXISTS `" . ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION . "` (
+        $db->executeQuery(
+            'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION . "` (
             `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             `creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
             `modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -85,8 +76,8 @@ class Installer extends SettingsStoreAwareInstaller
         ENGINE=InnoDB DEFAULT CHARSET=utf8
         ");
 
-        $db->query(
-            "CREATE TABLE IF NOT EXISTS `" . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . "` (
+        $db->executeQuery(
+            'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM . "` (
             `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `parentId` INT(11) NULL DEFAULT NULL,
             `creationDate` INT(11) UNSIGNED NOT NULL DEFAULT '0',
@@ -120,8 +111,8 @@ class Installer extends SettingsStoreAwareInstaller
            ENGINE=InnoDB DEFAULT CHARSET=utf8"
         );
 
-        $db->query(
-            "CREATE TABLE IF NOT EXISTS `" . ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING . "` (
+        $db->executeQuery(
+            'CREATE TABLE IF NOT EXISTS `' . ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING . "` (
             `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             `creationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
             `modificationDate` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -135,19 +126,19 @@ class Installer extends SettingsStoreAwareInstaller
         );
     }
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $tables = [
             ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION,
             ElementsProcessManagerBundle::TABLE_NAME_MONITORING_ITEM,
-            ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING
+            ElementsProcessManagerBundle::TABLE_NAME_CALLBACK_SETTING,
         ];
         foreach ($tables as $table) {
-            $this->getDb()->query("DROP TABLE IF EXISTS " . $table);
+            $this->getDb()->executeQuery('DROP TABLE IF EXISTS ' . $table);
         }
 
         foreach ($this->permissions as $permissionKey) {
-            $this->getDb()->query("DELETE FROM users_permission_definitions WHERE " . $this->getDb()->quoteIdentifier("key")." = :permission",["permission" => $permissionKey]);
+            $this->getDb()->executeQuery('DELETE FROM users_permission_definitions WHERE ' . $this->getDb()->quoteIdentifier('key').' = :permission', ['permission' => $permissionKey]);
         }
 
         parent::uninstall();

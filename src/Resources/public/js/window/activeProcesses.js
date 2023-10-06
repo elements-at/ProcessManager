@@ -1,6 +1,6 @@
 pimcore.registerNS("pimcore.plugin.processmanager.window.activeProcesses");
 
-pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plugin.admin, {
+pimcore.plugin.processmanager.window.activeProcesses = Class.create({
     displayList : [],
     toast : null,
 
@@ -46,9 +46,16 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
             hideLabel : true,
             xtype: 'displayfield',
             alignOnScroll : false,
-            value: item.name + ' (ID: <a href="#" class="process-manager-details-link" onclick="processmanagerPlugin.openLogId(' + item.id + ');  return false;">' + item.id +')</a>',
+            value: item.name + ' (ID: <a href="#" class="process-manager-details-link" id="processMangerOpenLogIdToastPanel'+ item.id+'" title="Show Process log entry" >' + item.id +')</a>',
             labelStyle : 'display:none',
-            cls: 'process-manager-active-processes-header-text'
+            cls: 'process-manager-active-processes-header-text',
+            listeners: {
+                afterrender : function (df,x,y){
+                    Ext.get('processMangerOpenLogIdToastPanel'+ item.id).on("click",function (){
+                        processmanagerPlugin.openLogId(item.id);
+                    });
+                }
+            }
         };
 
         let primaryBtn = Ext.create('Ext.Button', {
@@ -176,7 +183,7 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create(pimcore.plug
                     method : 'post',
                     params : {
                         id : item.id,
-                        published : true
+                        published : false
                     },
                     success: function (content) {
                         let result = Ext.decode(content.responseText);

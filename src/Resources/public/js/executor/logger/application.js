@@ -41,7 +41,7 @@ pimcore.plugin.processmanager.executor.logger.application = Class.create(pimcore
                             pimcore.globalmanager.get("pimcore_applicationlog_admin").activate();
                         }
                         catch (e) {
-                            pimcore.globalmanager.add("pimcore_applicationlog_admin", new pimcore.log.admin());
+                            pimcore.globalmanager.add("pimcore_applicationlog_admin", new pimcore.bundle.applicationlogger.log.admin());
                         }
                     }
 
@@ -80,3 +80,11 @@ pimcore.plugin.processmanager.executor.logger.application = Class.create(pimcore
     }
 });
 var processManagerApplicationLogger = new pimcore.plugin.processmanager.executor.logger.application();
+document.addEventListener('processManager.monitoringItemGrid', (e) => {
+    e.preventDefault();
+    let currentTarget = e.detail.sourceEvent.currentTarget;
+    if(e.detail.trigger === 'showApplicationLogs'){
+        let index = currentTarget.getAttribute('data-process-manager-action-index');
+        processManagerApplicationLogger.showLogs(e.detail.monitoringItemData.id,index);
+    }
+});

@@ -1,16 +1,8 @@
 <?php
 
 /**
- * Elements.at
+ * Created by Elements.at New Media Solutions GmbH
  *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) elements.at New Media Solutions GmbH (https://www.elements.at)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Elements\Bundle\ProcessManagerBundle\Executor\Logger;
@@ -20,22 +12,28 @@ use Monolog\Handler\StreamHandler;
 
 class Console extends AbstractLogger
 {
-    protected $streamHandler = null;
-    public $name = 'console';
-    public $extJsClass = 'pimcore.plugin.processmanager.executor.logger.console';
+    protected StreamHandler|null $streamHandler = null;
+
+    public string $name = 'console';
+
+    public string $extJsClass = 'pimcore.plugin.processmanager.executor.logger.console';
 
     /**
      * @param $monitoringItem MonitoringItem
-     * @param $loggerData
+     * @param array<mixed> $actionData
      *
      * @return string
      */
-    public function getGridLoggerHtml($monitoringItem, $loggerData)
+    public function getGridLoggerHtml(MonitoringItem $monitoringItem, array $actionData): string
     {
         return '';
     }
 
-    public function createStreamHandler($config, $monitoringItem)
+    /**
+     * @param array<mixed> $config
+     * @param MonitoringItem $monitoringItem
+     */
+    public function createStreamHandler(array $config, MonitoringItem $monitoringItem): ?StreamHandler
     {
         if (!$this->streamHandler && php_sapi_name() === 'cli') {
             if (empty($config['logLevel'])) {
