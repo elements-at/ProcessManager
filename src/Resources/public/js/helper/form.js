@@ -76,6 +76,42 @@ pimcore.plugin.processmanager.helper.form = Class.create({
         }, config);
     },
 
+    getMultiSelect : function (fieldName,config) {
+        config = defaultValue(config,{});
+
+        let store = new Ext.data.Store({
+            proxy: {
+                url: config.url,
+                type: 'ajax',
+                reader: {
+                    type: 'json',
+                    rootProperty: "data"
+                }
+            },
+            fields: ["key","value"],
+            autoLoad: true
+        });
+
+        let value = this.getFieldValue(fieldName);
+        if(value == ''){
+            value = null;
+        }
+        return Ext.create('Ext.ux.form.MultiSelect', this.mergeConfigs({
+            name: fieldName,
+            triggerAction: "all",
+            editable:false,
+            labelWidth: defaultValue(config.labelWidth,this.labelWidth),
+            fieldLabel: this.getFieldLabel(fieldName, config),
+            width:'100%',
+            height : defaultValue(config.height,100),
+            store: store,
+            displayField: "value",
+            valueField: "key",
+            afterLabelTextTpl: this.getTooltip(config.tooltip),
+            value: value
+        },config));
+    },
+
     getLocaleSelection : function (fieldName,config) {
         config = defaultValue(config,{});
         var localestore = [];
