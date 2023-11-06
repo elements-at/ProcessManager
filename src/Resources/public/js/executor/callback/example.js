@@ -46,6 +46,23 @@ pimcore.plugin.processmanager.executor.callback.example = Class.create(pimcore.p
             mandatory : true
         }));
 
+
+        /*Multi select
+        The URL should return an array like this:
+       {
+            "data": [
+                {
+                  "key": 345,
+                  "value": "My Display field"
+                }
+            ]
+        }
+         */
+       /* items.push(this.getMultiSelect('classificationIndustry',{
+            url : '/admin/app/get-multiselect-options?type=classificationIndustry',
+            height: 150
+        }));*/
+
         //Select field
         var selectConfig = config;
         selectConfig.store = [
