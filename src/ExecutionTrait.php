@@ -285,7 +285,7 @@ trait ExecutionTrait
             $monitoringItem->setMessage('Processing batch '. ($i + 1) . ' of ' . count($workloadChunks))->save();
 
             for($x = 1; $x <= 3; $x++) {
-                $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, json_encode($package, JSON_THROW_ON_ERROR), $monitoringItem->getId(), $callback);
+                $result = Helper::executeJob($monitoringItem->getConfigurationId(), $monitoringItem->getCallbackSettings(), 0, $package, $monitoringItem->getId(), $callback);
 
                 if($result['success'] == false) {
                     $attempts = $i === 1 ? "$i time" : "$i times";
