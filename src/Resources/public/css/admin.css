@@ -33,12 +33,12 @@
     font-weight: bold;
 }
 
-/*.plugin-process-manager-status-finished,*/
+.plugin-process-manager-status-finished,
 .process-manager-notification-progress-bar.finished,
 .process-manager-notification-progress-bar.finished .x-progress-bar {
     background-color: #9ACD32;
 }
-/*.plugin-process-manager-status-failed,*/
+.plugin-process-manager-status-failed,
 .process-manager-notification-progress-bar.finished_with_errors ,
 .process-manager-notification-progress-bar.finished_with_errors .x-progress-bar ,
 .process-manager-notification-progress-bar.failed,
