@@ -59,16 +59,18 @@ final class <versionName> extends AbstractMigration
     public function up(Schema $schema): void
     {
         $db = \Pimcore\Db::get();
+
+        $configurationData = \Pimcore\Db\Helper::quoteDataIdentifiers($db,$this->configurationData);
         if(Configuration::getById($this->configurationData[\'id\'])) {
             $db->update(
                 ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION,
-                $this->configurationData,
+                $configurationData,
                 [\'id\' => $this->configurationData[\'id\']]
             );
         }else{
             $db->insert(
                 ElementsProcessManagerBundle::TABLE_NAME_CONFIGURATION,
-                $this->configurationData
+                $configurationData
             );
         }
     }
