@@ -87,7 +87,7 @@ class CallbackSettingsController extends UserAwareController
         $list->setOrder('DESC');
         $list->setOrderKey('id');
         $list->setLimit($request->get('limit', 25));
-        $list->setOffset($request->get('start'));
+        $list->setOffset($request->get('start', 0));
         if ($filterCondition = QueryParams::getFilterCondition((string)$request->get('filter'))) {
             $list->setCondition($filterCondition);
         }
