@@ -1,128 +1,43 @@
 {% set ajaxRequest = app.request.get("ajax") %}
 {% if ajaxRequest == false %}
-    <html>
-    <head>
-        <title>Logs</title>
-        <meta http-equiv="Page-Enter" content="blendTrans(Duration=1.0)">
-        <meta http-equiv="Page-Exit" content="blendTrans(Duration=1.0)">
-        <style type="text/css">
-            body {
-                background-color: #000;
-                margin-top: 40px;
-                font-size: 13px;
-                color: #fff;
+<html>
+<head>
+    <title>Logs</title>
+    <meta http-equiv="Page-Enter" content="blendTrans(Duration=1.0)">
+    <meta http-equiv="Page-Exit" content="blendTrans(Duration=1.0)">
+    <script type="text/javascript" src="/bundles/elementsprocessmanager/js/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="/bundles/elementsprocessmanager/css/logFileLogger.css">
+</head>
+<body>
 
-                font-family: "Open Sans", "Helvetica Neue", helvetica, arial, verdana, sans-serif;
-            }
+<div id="content">
 
-            h1 {
-                font-size: 18px;
-                color: #f00;
-                font-weight: bold;
-                margin-bottom: 0px;
-            }
-
-            .reload {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                font-family: "Open Sans", "Helvetica Neue", helvetica, arial, verdana, sans-serif;
-                background-color: #ECECEC;
-                padding: 5px;
-                padding-left: 10px;
-                margin-bottom: 0px;
-            }
-
-            .reload {
-                color: #404040;
-            }
-
-            .reload label {
-                position: relative;
-                top: -2px;
-            }
-
-            .reloadWrapper {
-                float: left;
-                padding-right: 5px;
-            }
-
-            #content {
-                padding-bottom: 20px;
-                position: relative;
-            }
-
-            .reload label:hover {
-                cursor: pointer;
-            }
-        </style>
-        <script type="text/javascript" src="/bundles/elementsprocessmanager/js/jquery-3.5.1.js"></script>
-
-    </head>
-    <body>
-
-    <div id="content">
-
-{% endif %}
+    {% endif %}
 
     {% if monitoringItem.getPid() == false %}
         <h1>Process Finished</h1>
     {% endif %}
-
-        {% if ajaxRequest and monitoringItem.getPid() == false %}
-            <script type="text/javascript">
-                $('#autorefresh').attr('checked', false);
-            </script>
-        {% endif %}
     <pre>{{ data | raw }}</pre>
 
-{%  if ajaxRequest == false %}
+    {% if ajaxRequest == false %}
 </div>
 
 
 <form method="" class="reload">
     {% if monitoringItem.getPid() %}
-    <div class="reloadWrapper">
-        <input type="checkbox" value="refresh" name="refresh" id="autorefresh"
-        {% if monitoringItem.getPid() %} checked="checked" {% endif %} /> <label for="autorefresh"> Auto refresh |</label>
-    </div>
+        <div class="reloadWrapper">
+            <input type="checkbox" value="refresh" name="refresh" id="autorefresh"
+                {% if monitoringItem.getPid() %} checked="checked" {% endif %} /> <label for="autorefresh"> Auto refresh
+                |</label>
+        </div>
     {% endif %}
     <div class="loggerData">
-        <b>LogLevel:</b> {{ logLevel }}| <b>Log file:</b> {{ logFile }}
+        <b>LogLevel:</b> {{ logLevel }} | <b>Log file:</b> {{ logFile }}
     </div>
 </form>
-
 {% if monitoringItem.getPid() %}
-<script type="text/javascript">
-    var timer = null;
-
-
-    $(function () {
-        if ($('#autorefresh').is(':checked')) {
-            startRefresh();
-        }
-
-        $('#autorefresh').change(function () {
-            if (!this.checked) {
-                clearTimeout(timer);
-            } else {
-                startRefresh();
-            }
-        });
-    });
-
-
-    function startRefresh() {
-        timer = setTimeout(startRefresh, 1000);
-        $.get(location.href + '&ajax=1', function (data) {
-            $('#content').html(data);
-            $(window).scrollTop($(document).height());
-        });
-    }
-</script>
+    <script type="text/javascript" src="/bundles/elementsprocessmanager/js/logFileLogger.js"></script>
 {% endif %}
-
 </body>
 </html>
 {% endif %}
