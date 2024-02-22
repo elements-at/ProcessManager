@@ -19,7 +19,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class MigrationGeneratorCommand extends AbstractCommand
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('process-manager:migrations:generate')
