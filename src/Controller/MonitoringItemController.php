@@ -524,7 +524,6 @@ class MonitoringItemController extends UserAwareController
 
         $item = MonitoringItem::getById($request->get('id'));
         $data = $item->getObjectVars();
-        $data['callbackSettings'] = json_decode((string)$data['callbackSettings'], null, 512, JSON_THROW_ON_ERROR);
         $data['executorSettings']['values'] = [];
 
         return $this->jsonResponse($data);
