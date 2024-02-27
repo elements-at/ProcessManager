@@ -165,7 +165,7 @@ class Maintenance
                 //add default callback settings if defined
                 if (($settings = $config->getExecutorSettings()) !== '' && ($settings = $config->getExecutorSettings()) !== '0') {
                     $settings = json_decode((string) $settings, true, 512, JSON_THROW_ON_ERROR);
-                    if (isset($settings['values']['defaultPreDefinedConfig'])) {
+                    if (isset($settings['values']['defaultPreDefinedConfig']) && is_int($settings['values']['defaultPreDefinedConfig'])) {
                         $preDefinedConfigId = $settings['values']['defaultPreDefinedConfig'];
                         $callbackSetting = CallbackSetting::getById($preDefinedConfigId);
                         if ($callbackSetting && ($v = $callbackSetting->getSettings())) {

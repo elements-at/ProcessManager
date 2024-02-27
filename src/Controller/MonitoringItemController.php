@@ -113,7 +113,7 @@ class MonitoringItemController extends UserAwareController
         if ($monitoringItem) {
             if ($monitoringItem->getExecutedByUser() == $this->getPimcoreUser()->getId()) {
                 $params = $request->request->all();
-                if(isset($params['published']) && $params['published'] === 'false') {
+                if (isset($params['published']) && $params['published'] === 'false') {
                     $params['published'] = false;
                 }
                 foreach ($params as $key => $value) {
@@ -149,7 +149,7 @@ class MonitoringItemController extends UserAwareController
 
         $list = $this->getProcessesForCurrentUser();
         $params = $request->request->all();
-        if(isset($params['published']) && $params['published'] === 'false') {
+        if (isset($params['published']) && $params['published'] === 'false') {
             $params['published'] = false;
         }
         /**
@@ -422,6 +422,10 @@ class MonitoringItemController extends UserAwareController
         $viewData['data'] = $data;
         $viewData['monitoringItem'] = $monitoringItem;
 
+        if ($request->get('ajax')) {
+            return new JsonResponse(['html' => $this->renderView('@ElementsProcessManager/MonitoringItem/logFileLogger.html.twig', $viewData),
+                'monitoringItem' => $monitoringItem->getObjectVars()]);
+        }
         return $this->render('@ElementsProcessManager/MonitoringItem/logFileLogger.html.twig', $viewData);
     }
 
@@ -520,7 +524,6 @@ class MonitoringItemController extends UserAwareController
 
         $item = MonitoringItem::getById($request->get('id'));
         $data = $item->getObjectVars();
-        $data['callbackSettings'] = json_decode((string)$data['callbackSettings'], null, 512, JSON_THROW_ON_ERROR);
         $data['executorSettings']['values'] = [];
 
         return $this->jsonResponse($data);

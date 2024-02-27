@@ -246,8 +246,12 @@ document.addEventListener('processManager.monitoringItemGrid', (e) => {
     let currentTarget = e.detail.sourceEvent.currentTarget;
 
     //print out the parameters of the event
-    if(e.detail.trigger === 'monitoringItemRestart'){
-        processmanagerPlugin.monitoringItemRestart(e.detail.monitoringId);
+    let trigger = e.detail.trigger;
+
+    if(e.detail.trigger === 'monitoringReopenCallback'){
+        processmanagerPlugin.monitoringReopenCallback(e.detail.monitoringItemData.configurationId,e.detail.monitoringId);
+    }else if(typeof processmanagerPlugin[trigger] == 'function'){
+        processmanagerPlugin[trigger](e.detail.monitoringId);
     }else if(e.detail.trigger === 'showLogs'){
         let tmpObject = new pimcore.plugin.processmanager.executor.logger.file();
         let actionIndex = e.detail.sourceEvent.currentTarget.getAttribute('data-process-manager-action-index');

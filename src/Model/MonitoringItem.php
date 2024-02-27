@@ -12,6 +12,7 @@ use Elements\Bundle\ProcessManagerBundle\Executor\Logger\AbstractLogger;
 use Elements\Bundle\ProcessManagerBundle\Message\CheckCommandAliveMessage;
 use Elements\Bundle\ProcessManagerBundle\Message\StopProcessMessage;
 use Monolog\Logger;
+use mysql_xdevapi\SqlStatementResult;
 use Symfony\Component\Process\Process;
 
 /**
@@ -260,7 +261,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this;
     }
 
-    public static function getById(int $id): ? self
+    public static function getById(int $id): ?self
     {
         $self = new self();
 
@@ -277,7 +278,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         if (is_array($data) && $data !== []) {
             foreach ($data as $key => $value) {
-                if(in_array($key, ['callbackSettings', 'actions', 'loggers']) && is_string($value)) {
+                if (in_array($key, ['callbackSettings', 'actions', 'loggers','metaData']) && is_string($value)) {
                     $value = json_decode($value, true);
                 }
                 if ($key == 'message') {
@@ -437,7 +438,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
      */
     public function isAlive(): bool
     {
-        if($this->isMessengerPending()) {
+        if ($this->isMessengerPending()) {
             return true;
         }
         if ($this->getPid()) {
@@ -483,8 +484,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $currentWorkload = $this->getCurrentWorkload() ?: 1;
 
         $this->setMessage(
-            'Processing '.$itemType.' '.$currentWorkload.' from '.$this->getTotalWorkload(
-            ).' ('.($this->getTotalWorkload() - $currentWorkload).' remaining)',
+            'Processing ' . $itemType . ' ' . $currentWorkload . ' from ' . $this->getTotalWorkload() . ' (' . ($this->getTotalWorkload() - $currentWorkload) . ' remaining)',
             $logLevel
         );
 
@@ -511,17 +511,17 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $took = $this->getModificationDate() - $this->getCreationDate();
         if ($took > 0) {
             if ($took < 60) {
-                return $took.'s';
+                return $took . 's';
             }
 
             if ($took < 3600) {
                 $minutes = floor($took / 60);
                 $seconds = $took - ($minutes * 60);
 
-                return $minutes.'m '.$seconds.'s';
+                return $minutes . 'm ' . $seconds . 's';
             }
 
-            return gmdate('h', $took).'h '.gmdate('i', $took).'m '.gmdate('s', $took).'s';
+            return gmdate('h', $took) . 'h ' . gmdate('i', $took) . 'm ' . gmdate('s', $took) . 's';
         }
 
         return '';
@@ -535,12 +535,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         return $this->configurationId;
     }
 
-    /**
-     * @return $this
-     */
-    public function setConfigurationId(mixed $configurationId)
+    public function setConfigurationId(string|int|null $configurationId): self
     {
-        $this->configurationId = $configurationId;
+        $this->configurationId = (string)$configurationId;
 
         return $this;
     }
@@ -556,7 +553,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     /**
      * @return $this
      */
-    public function setPid(mixed $pid)
+    public function setPid(mixed $pid): self
     {
         $this->pid = $pid;
 
@@ -565,7 +562,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
 
     public function getLogFile(): string
     {
-        return ElementsProcessManagerBundle::getLogDir().$this->getId().'.log';
+        return ElementsProcessManagerBundle::getLogDir() . $this->getId() . '.log';
     }
 
     public function deleteLogFile(): self
@@ -617,10 +614,10 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
             $html .= '<table class="process-manager-callback-settings-table"><tr><th>Key</th><th>Value</th></tr>';
 
             foreach ($data as $key => $value) {
-                $html .= '<tr><td>'.$key.'</td><td>';
+                $html .= '<tr><td>' . $key . '</td><td>';
 
                 if (is_array($value)) {
-                    $html .= '<pre>'.print_r($value, true).'</pre>';
+                    $html .= '<pre>' . print_r($value, true) . '</pre>';
                 } else {
                     $html .= $value;
                 }
@@ -660,7 +657,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $data = [];
         foreach (['id', 'pid', 'name', 'command', 'creationDate', 'modificationDate', 'callbackSettings'] as $field) {
-            $data[$field] = $this->{'get'.ucfirst($field)}();
+            $data[$field] = $this->{'get' . ucfirst($field)}();
         }
 
         return $data;
@@ -742,9 +739,9 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $data = $this->getObjectVars();
 
-        $data['callbackSettings'] = json_decode((string) $data['callbackSettings'], true, 512, JSON_THROW_ON_ERROR);
-        $data['actions'] = json_decode((string) $data['actions'], true, 512, JSON_THROW_ON_ERROR);
-        $data['loggers'] = json_decode((string) $data['loggers'], true, 512, JSON_THROW_ON_ERROR);
+        $data['callbackSettings'] = json_decode((string)$data['callbackSettings'], true, 512, JSON_THROW_ON_ERROR);
+        $data['actions'] = json_decode((string)$data['actions'], true, 512, JSON_THROW_ON_ERROR);
+        $data['loggers'] = json_decode((string)$data['loggers'], true, 512, JSON_THROW_ON_ERROR);
         unset($data['command']);
 
         return $data;
@@ -762,7 +759,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     public function stopProcess(): bool
     {
         $pid = $this->getPid();
-        if($pid) {
+        if ($pid) {
             $messageBus = \Pimcore::getContainer()->get('messenger.bus.pimcore-core');
             $message = new StopProcessMessage($this->getId());
             $messageBus->dispatch($message);
@@ -794,7 +791,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
         $details = ['active' => [], 'failed' => [], 'finished' => []];
         $currentWorkload = 0;
 
-        foreach($this->getChildProcesses() as $child) {
+        foreach ($this->getChildProcesses() as $child) {
             $details[$child->getStatus()][] = ['id' => $child->getId(), 'message' => $child->getMessage(), 'alive' => $child->isAlive()];
 
             $currentWorkload += $child->getCurrentWorkload();

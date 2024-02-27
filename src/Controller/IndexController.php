@@ -21,6 +21,7 @@ use Pimcore\Translation\Translator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(path: '/admin/elementsprocessmanager/index')]
@@ -31,7 +32,11 @@ class IndexController extends UserAwareController
     #[Route(path: '/get-plugin-config')]
     public function getPluginConfigAction(CommandsValidator $commandsValidator, Translator $translator): JsonResponse
     {
-        $this->checkPermission(Enums\Permissions::VIEW);
+        try {
+            $this->checkPermission(Enums\Permissions::VIEW);
+        } catch (AccessDeniedHttpException $e) {
+            return $this->jsonResponse([]);
+        }
 
         $bundleConfig = ElementsProcessManagerBundle::getConfiguration();
         $data = $bundleConfig->getClassTypes();

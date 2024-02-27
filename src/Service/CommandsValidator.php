@@ -35,6 +35,8 @@ class CommandsValidator
     {
         $this->setStrategy($strategy);
         $this->setWhiteList($whiteList);
+        //add 'debug:translation', 'translation:extract' as they cause issues on Pimcore 11.1.4
+        $blackList = array_merge($blackList, ['debug:translation', 'translation:extract']);
         $this->setBlackList($blackList);
     }
 
