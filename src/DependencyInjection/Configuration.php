@@ -41,7 +41,7 @@ class Configuration implements ConfigurationInterface
                     ->min(0)
                     ->info('If the MonitoringItem has not been save within X minutes it will be considered as hanging process')
                     ->end()
-                ->integerNode('processListRefresh')
+                ->integerNode('refreshIntervalSeconds')
                     ->defaultValue(3)
                     ->min(1)
                     ->info('Refresh interal of process list in seconds')

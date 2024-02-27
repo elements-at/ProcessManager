@@ -90,7 +90,7 @@ class IndexController extends UserAwareController
             $data['shortCutMenu'] = $shortCutMenu ?: false;
         }
 
-        $data['processListRefresh'] = $bundleConfig->getProcessListRefresh();
+        $data['refreshIntervalSeconds'] = $bundleConfig->getRefreshIntervalSeconds();
         
         if($data['shortCutMenu'] ?? null) {
             ksort($data['shortCutMenu'], SORT_LOCALE_STRING);

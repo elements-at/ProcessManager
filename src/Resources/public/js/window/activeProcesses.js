@@ -9,7 +9,7 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create({
         this.refreshTask = runner.newTask({
             run: this.requestServerData.bind(this),
             fireOnStart : true,
-            interval: processmanagerPlugin.config.processListRefresh * 1000
+            interval: processmanagerPlugin.config.refreshIntervalSeconds * 1000
         });
     },
 
