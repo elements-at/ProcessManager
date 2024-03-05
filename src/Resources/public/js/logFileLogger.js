@@ -5,7 +5,6 @@ $(function () {
     }
 
     $('#autorefresh').on('change',function () {
-        alert('in cahnge');
         if (!this.checked) {
             clearTimeout(timer);
         } else {
