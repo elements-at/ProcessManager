@@ -3,14 +3,13 @@ pimcore.registerNS("pimcore.plugin.processmanager.window.activeProcesses");
 pimcore.plugin.processmanager.window.activeProcesses = Class.create({
     displayList : [],
     toast : null,
-    refreshIntervalSeconds : 3,
 
     initialize: function () {
         let runner = new Ext.util.TaskRunner(), task;
         this.refreshTask = runner.newTask({
             run: this.requestServerData.bind(this),
             fireOnStart : true,
-            interval: this.refreshIntervalSeconds * 1000
+            interval: processmanagerPlugin.config.refreshIntervalSeconds * 1000
         });
     },
 
@@ -198,12 +197,45 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create({
         //button.setDisabled(item.isAlive);
     },
 
+    _checkActionBtns: function(actionBtnsPanel, item) {
+
+        let needUpdate = false;
+        try {
+            if(item.actionItems.length != actionBtnsPanel.items.items.length){
+                needUpdate = true;
+            }else if(item.actionItems.length){
+                for(let i = 0; i < item.actionItems.length; i++){
+                    let actionData = item.actionItems[i];
+                    let panelData = actionBtnsPanel.items.items[i];
+
+                    if(actionData.executeAtStates.includes(item.status)){
+                        if(actionData.dynamicData && actionData.dynamicData.extJsClass){
+                            if(  (actionData.dynamicData.extJsClass == 'pimcore.plugin.processmanager.executor.action.download')
+                               ||(actionData.dynamicData.extJsClass == 'pimcore.plugin.processmanager.executor.action.openItem')){
+                                if(actionData.dynamicData.fileExists && panelData.disabled){
+                                    needUpdate = true;
+                                } else if(!actionData.dynamicData.fileExists && !panelData.disabled){
+                                    needUpdate = true;
+                                }
+                            }else{
+                                needUpdate = true;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (ex) {
+            needUpdate = true;
+        }
+        return needUpdate;
+    },
+
     _updateActionBtns: function(actionBtnsPanel, item) {
 
-        actionBtnsPanel.items.removeAll(); //do not remove them as it causes flickering
-        actionBtnsPanel.update();
+        if(this._checkActionBtns(actionBtnsPanel, item)){
+            actionBtnsPanel.items.removeAll(); //do not remove them as it causes flickering
+            actionBtnsPanel.update();
 
-        if(item.actionItems.length){
             for(let i = 0; i < item.actionItems.length; i++){
                 let actionData = item.actionItems[i];
 
@@ -216,10 +248,10 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create({
                 }
 
             }
-        }
 
-        actionBtnsPanel.update();
-        actionBtnsPanel.updateLayout();
+            actionBtnsPanel.update();
+            actionBtnsPanel.updateLayout();
+        }
     },
 
     _updatePanelTitle : function(data){
@@ -253,11 +285,18 @@ pimcore.plugin.processmanager.window.activeProcesses = Class.create({
 
                 if (items.length > 0) {
 
-
-                    // let activeItemIds = [];
+                    let cachedItems = [];
                     for (itemKey in items) {
-                        this._buildBar(items[itemKey]);
-                        activeItemIds.push(items[itemKey].id);
+                        if (this.toast && !this.getPanelByItemId(items[itemKey].id)) {
+                            cachedItems.push(items[itemKey]);
+                        } else {
+                            this._buildBar(items[itemKey]);
+                            activeItemIds.push(items[itemKey].id);
+                        }
+                    }
+                    for (let idx = cachedItems.length; idx--; ){
+                        this._buildBar(cachedItems[idx]);
+                        activeItemIds.push(cachedItems[idx].id);
                     }
 
                     if(!this.toast){
