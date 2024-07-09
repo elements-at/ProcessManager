@@ -777,7 +777,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     {
         $list = new MonitoringItem\Listing();
         $list->setCondition('parentId = ?', [$this->getId()]);
-        $list->setOrder('id');
+        $list->setOrderKey('id');
 
         return $list->load();
     }
