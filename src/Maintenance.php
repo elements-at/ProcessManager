@@ -199,7 +199,7 @@ class Maintenance
 
         $threshold = ElementsProcessManagerBundle::getConfiguration()->getArchiveThresholdLogs();
         if ($threshold !== 0) {
-            $timestamp = Carbon::createFromTimestamp(time())->subDay()->getTimestamp();
+            $timestamp = Carbon::createFromTimestamp(time())->subDay($threshold)->getTimestamp();
             $list = new MonitoringItem\Listing();
             $list->setCondition('modificationDate <= '. $timestamp);
             $items = $list->load();
