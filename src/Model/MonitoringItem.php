@@ -393,7 +393,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
     }
 
     /**
-     * @param mixed|int $logLevel
+     * @param int|false $logLevel Any valid \Monolog\Logger level, use `false` to not log at all.
      */
     public function setMessage(string $message, mixed $logLevel = \Monolog\Logger::NOTICE): self
     {
