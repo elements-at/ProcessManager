@@ -38,6 +38,8 @@ class Dao extends Model\Listing\Dao\AbstractDao
             $items[] = Configuration::getById($id);
         }
 
+        $this->model->setData($items);
+
         return $items;
     }
 
