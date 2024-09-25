@@ -281,7 +281,7 @@ class MonitoringItem extends \Pimcore\Model\AbstractModel
                 if (in_array($key, ['callbackSettings', 'actions', 'loggers','metaData']) && is_string($value)) {
                     $value = json_decode($value, true);
                 }
-                if ($key == 'message') {
+                if ($key == 'message' && is_string($value)) {
                     $this->setMessage($value, false);
                 } else {
                     $this->setValue($key, $value);
